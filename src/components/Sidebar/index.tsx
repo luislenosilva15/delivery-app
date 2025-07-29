@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Box,
   Drawer,
@@ -11,19 +10,20 @@ import {
 import { FiMenu } from "react-icons/fi";
 import SidebarContent from "./Content";
 
-export default function Sidebar({ children }: any) {
+export default function Sidebar({ children }: React.PropsWithChildren) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <Box minH="100vh">
-      <IconButton
-        display={{ base: "block", md: "none" }}
-        onClick={onOpen}
-        icon={<FiMenu />}
-        aria-label="Abrir menu"
-        variant="ghost"
-        m={4}
-      />
+    <Box>
+      <Box display={{ base: "block", md: "none" }}>
+        <IconButton
+          onClick={onOpen}
+          icon={<FiMenu />}
+          aria-label="Abrir menu"
+          variant="ghost"
+          m={4}
+        />
+      </Box>
 
       <Box
         display={{ base: "none", md: "block" }}
@@ -53,10 +53,7 @@ export default function Sidebar({ children }: any) {
         </DrawerContent>
       </Drawer>
 
-      {/* Conteúdo principal */}
-      <Box ml={{ md: "250px" }} p={6}>
-        {children}
-      </Box>
+      <Box>{children}</Box>
     </Box>
   );
 }

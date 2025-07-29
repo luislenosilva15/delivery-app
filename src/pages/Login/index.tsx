@@ -8,15 +8,10 @@ import {
   Input,
   Stack,
   Text,
-  useColorMode,
   useColorModeValue,
-  IconButton,
 } from "@chakra-ui/react";
-import { SunIcon, MoonIcon } from "@chakra-ui/icons";
 
 export default function LoginPage() {
-  const { colorMode, toggleColorMode } = useColorMode();
-
   return (
     <Flex
       minH="100vh"
@@ -24,14 +19,6 @@ export default function LoginPage() {
       justify="center"
       bg={useColorModeValue("gray.50", "gray.800")}
     >
-      <IconButton
-        aria-label="Alternar tema"
-        icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-        onClick={toggleColorMode}
-        position="fixed"
-        top={4}
-        right={4}
-      />
       <Stack spacing={8} mx="auto" maxW="lg" w="full" py={12} px={6}>
         <Stack align="center">
           <Heading

@@ -1,13 +1,9 @@
-"use client";
+// App.tsx
+import { RouterProvider } from "react-router-dom";
+import { router } from "./routes";
 
-import { Button } from "@chakra-ui/react";
-import { useColorMode } from "@/components/ui/color-mode";
+function App() {
+  return <RouterProvider router={router} />;
+}
 
-export const App = () => {
-  const { toggleColorMode } = useColorMode();
-  return (
-    <Button variant="outline" onClick={toggleColorMode}>
-      Toggle Mode
-    </Button>
-  );
-};
+export default App;
