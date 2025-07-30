@@ -38,7 +38,6 @@ export default function Sidebar({ children }: React.PropsWithChildren) {
         <SidebarContent />
       </Box>
 
-      {/* Sidebar mobile */}
       <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
         <DrawerOverlay />
         <DrawerContent>

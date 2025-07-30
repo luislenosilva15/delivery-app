@@ -6,6 +6,7 @@ import {
   useColorMode,
   useColorModeValue,
 } from "@chakra-ui/react";
+import UserProfile from "./UserProfile";
 
 const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -27,13 +28,23 @@ const Header = () => {
         Nome da Empresa
       </Text>
 
-      <Flex align="center" gap={4}>
-        <IconButton
-          aria-label="Alternar tema"
-          icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-          onClick={toggleColorMode}
-          size="sm"
+      <Flex flexDirection="row" gap={4}>
+        <UserProfile
+          name="Luis Silva"
+          avatarUrl="https://bit.ly/dan-abramov"
+          onProfileClick={() => {}}
+          onSettingsClick={() => {}}
+          onLogoutClick={() => {}}
         />
+
+        <Flex align="center" gap={4}>
+          <IconButton
+            aria-label="Alternar tema"
+            icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+            onClick={toggleColorMode}
+            size="md"
+          />
+        </Flex>
       </Flex>
     </Flex>
   );

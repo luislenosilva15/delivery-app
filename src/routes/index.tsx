@@ -7,6 +7,7 @@ import { PrivateRoutes } from "./PrivateRoutes";
 import LoginPage from "@/pages/Login";
 import DashboardPage from "@/pages/Dashboard";
 import SettingsPage from "@/pages/Settings";
+import SellsPage from "@/pages/Sells";
 
 export const router = createBrowserRouter([
   {
@@ -14,15 +15,19 @@ export const router = createBrowserRouter([
     children: [{ path: "/login", element: <LoginPage /> }],
   },
   {
-    element: <PrivateRoutes />, // check auth
+    element: <PrivateRoutes />,
     children: [
       {
-        element: <PrivateLayout />, // layout com sidebar
+        element: <PrivateLayout />,
         children: [{ path: "/", element: <DashboardPage /> }],
       },
       {
-        element: <PrivateLayout />, // layout com sidebar
+        element: <PrivateLayout />,
         children: [{ path: "/settings", element: <SettingsPage /> }],
+      },
+      {
+        element: <PrivateLayout />,
+        children: [{ path: "/sells", element: <SellsPage /> }],
       },
     ],
   },

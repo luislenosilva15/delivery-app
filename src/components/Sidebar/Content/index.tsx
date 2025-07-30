@@ -7,13 +7,12 @@ import {
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import SidebarItem from "../Item";
 import {
   FiChevronDown,
   FiChevronUp,
   FiClock,
-  FiFile,
   FiFileText,
   FiHelpCircle,
   FiHome,
@@ -21,13 +20,27 @@ import {
   FiStar,
 } from "react-icons/fi";
 
+import { BiStore } from "react-icons/bi";
+
+import { MdOutlineLocalGroceryStore } from "react-icons/md";
+import { useLocation, useNavigate } from "react-router-dom";
+
 function SidebarContent() {
   const [docOpen, setDocOpen] = useState(false);
 
+  const navigate = useNavigate();
+
+  const { pathname } = useLocation();
+
   const hoverBg = useColorModeValue("gray.100", "gray.700");
-  const activeBg = useColorModeValue("teal.100", "teal.700");
   const textColor = useColorModeValue("gray.800", "gray.100");
-  const mutedText = useColorModeValue("gray.600", "gray.400");
+
+  const optionIsActive = useCallback(
+    (route: string) => {
+      return route === pathname;
+    },
+    [pathname]
+  );
 
   return (
     <Flex direction="column" h="100%">
@@ -37,9 +50,13 @@ function SidebarContent() {
         </Text>
       </Box>
 
-      {/* Menu principal */}
       <VStack align="start" spacing={3}>
-        <SidebarItem icon={FiHome} label="Dashboard" />
+        <SidebarItem
+          icon={FiHome}
+          label="Início"
+          isActive={optionIsActive("/")}
+          onClick={() => navigate("/")}
+        />
         <SidebarItem icon={FiFileText} label="Analysis" />
 
         <Box w="full">
@@ -47,15 +64,15 @@ function SidebarContent() {
             align="center"
             cursor="pointer"
             onClick={() => setDocOpen(!docOpen)}
-            bg={docOpen ? activeBg : "transparent"}
+            bg="transparent"
             p={2}
             borderRadius="md"
             justify="space-between"
             _hover={{ bg: hoverBg }}
           >
             <Flex align="center">
-              <Icon as={FiFile} mr={2} color={textColor} />
-              <Text color={textColor}>Documents</Text>
+              <Icon as={BiStore} mr={2} color={textColor} fontSize="18px" />
+              <Text color={textColor}>Loja</Text>
             </Flex>
             <Icon
               as={docOpen ? FiChevronUp : FiChevronDown}
@@ -64,18 +81,12 @@ function SidebarContent() {
           </Flex>
           <Collapse in={docOpen} animateOpacity>
             <VStack pl={6} align="start" mt={2} spacing={2}>
-              <Text fontSize="sm" color={mutedText}>
-                Resumes
-              </Text>
-              <Text fontSize="sm" color={mutedText}>
-                Cover Letter
-              </Text>
-              <Text fontSize="sm" color={mutedText}>
-                Personal
-              </Text>
-              <Text fontSize="sm" color={mutedText}>
-                Education
-              </Text>
+              <SidebarItem
+                isActive={optionIsActive("/sells")}
+                onClick={() => navigate("/sells")}
+                icon={MdOutlineLocalGroceryStore}
+                label="Vendas"
+              />
             </VStack>
           </Collapse>
         </Box>
