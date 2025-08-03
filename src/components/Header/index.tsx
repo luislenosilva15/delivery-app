@@ -7,9 +7,22 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import UserProfile from "./UserProfile";
+import { useDispatch } from "react-redux";
+import { setLoggout } from "@/store/features/auth/authSlice";
+import { useAuth } from "@/hook/auth";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { user, company } = useAuth();
   const { colorMode, toggleColorMode } = useColorMode();
+
+  const bgColor = useColorModeValue("white", "gray.800");
+  const borderColor = useColorModeValue("gray.200", "gray.700");
+
+  if (!user || !company) return null;
 
   return (
     <Flex
@@ -17,24 +30,27 @@ const Header = () => {
       align="center"
       justify="space-between"
       padding="4"
-      bg={useColorModeValue("white", "gray.800")}
+      bg={bgColor}
       position="sticky"
       top="0"
       zIndex="10"
       borderBottom="1px solid"
-      borderColor={useColorModeValue("gray.200", "gray.700")}
+      borderColor={borderColor}
     >
       <Text fontSize="lg" fontWeight="bold">
-        Nome da Empresa
+        {company.name}
       </Text>
 
-      <Flex flexDirection="row" gap={4}>
+      <Flex flexDirection="row" gap={4} whiteSpace="nowrap" overflow="hidden">
         <UserProfile
-          name="Luis Silva"
-          avatarUrl="https://bit.ly/dan-abramov"
-          onProfileClick={() => {}}
+          name={user.name}
+          avatarUrl={user.imageUrl}
+          onProfileClick={() => navigate("/profile")}
           onSettingsClick={() => {}}
-          onLogoutClick={() => {}}
+          onLogoutClick={() => {
+            localStorage.removeItem("token");
+            dispatch(setLoggout());
+          }}
         />
 
         <Flex align="center" gap={4}>

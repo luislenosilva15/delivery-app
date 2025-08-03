@@ -3,6 +3,7 @@ import {
   Collapse,
   Flex,
   Icon,
+  Image,
   Text,
   useColorModeValue,
   VStack,
@@ -24,6 +25,7 @@ import { BiStore } from "react-icons/bi";
 
 import { MdOutlineLocalGroceryStore } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hook/auth";
 
 function SidebarContent() {
   const [docOpen, setDocOpen] = useState(false);
@@ -31,6 +33,8 @@ function SidebarContent() {
   const navigate = useNavigate();
 
   const { pathname } = useLocation();
+
+  const { company } = useAuth();
 
   const hoverBg = useColorModeValue("gray.100", "gray.700");
   const textColor = useColorModeValue("gray.800", "gray.100");
@@ -42,12 +46,18 @@ function SidebarContent() {
     [pathname]
   );
 
+  if (!company) return null;
+
   return (
     <Flex direction="column" h="100%">
-      <Box mb={6}>
-        <Text fontSize="2xl" fontWeight="bold" color={textColor}>
-          Logo
-        </Text>
+      <Box display="flex" justifyContent="center" mb={6}>
+        <Image
+          src={company.logoUrl}
+          alt="logo"
+          w="200px"
+          height="80px"
+          objectFit="contain"
+        />
       </Box>
 
       <VStack align="start" spacing={3}>

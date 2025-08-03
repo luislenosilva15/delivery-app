@@ -8,6 +8,7 @@ import LoginPage from "@/pages/Login";
 import DashboardPage from "@/pages/Dashboard";
 import SettingsPage from "@/pages/Settings";
 import SellsPage from "@/pages/Sells";
+import Profile from "@/pages/Profile";
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ export const router = createBrowserRouter([
       {
         element: <PrivateLayout />,
         children: [{ path: "/sells", element: <SellsPage /> }],
+      },
+      {
+        element: <PrivateLayout />,
+        children: [{ path: "/profile", element: <Profile /> }],
       },
     ],
   },
