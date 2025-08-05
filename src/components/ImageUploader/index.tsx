@@ -1,14 +1,24 @@
-import { Box, Avatar, Input, Stack, FormLabel } from "@chakra-ui/react";
-import { useState, type ChangeEvent } from "react";
+import {
+  Box,
+  Avatar,
+  Input,
+  Stack,
+  Button,
+  HStack,
+  Icon,
+} from "@chakra-ui/react";
+import { useRef, useState, type ChangeEvent } from "react";
+import { FiUpload, FiTrash2 } from "react-icons/fi";
 
 export default function ImageUploader({
   previewUrl,
   onChange,
 }: {
   previewUrl?: string;
-  onChange?: (file: File) => void;
+  onChange?: (file: File | null) => void;
 }) {
   const [preview, setPreview] = useState<string | null>(previewUrl ?? null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -22,6 +32,18 @@ export default function ImageUploader({
     }
   };
 
+  const handleRemoveImage = () => {
+    setPreview(null);
+    onChange?.(null);
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+  };
+
+  const triggerFileInput = () => {
+    inputRef.current?.click();
+  };
+
   return (
     <Box
       p={4}
@@ -33,15 +55,30 @@ export default function ImageUploader({
     >
       <Stack spacing={4} align="center">
         <Avatar size="2xl" src={preview ?? undefined} />
-        <FormLabel
-          htmlFor="file-input"
-          cursor="pointer"
-          color="primary.500"
-          _hover={{ textDecoration: "underline" }}
-        >
-          {previewUrl ? "Alterar imagem" : "Carregar imagem"}
-        </FormLabel>
+        <HStack spacing={3}>
+          <Button
+            onClick={triggerFileInput}
+            leftIcon={<Icon as={FiUpload} />}
+            colorScheme="blue"
+            variant="solid"
+            size="sm"
+          >
+            {preview ? "Alterar" : "Adicionar"}
+          </Button>
+          {preview && (
+            <Button
+              onClick={handleRemoveImage}
+              leftIcon={<Icon as={FiTrash2} />}
+              colorScheme="red"
+              variant="outline"
+              size="sm"
+            >
+              Remover
+            </Button>
+          )}
+        </HStack>
         <Input
+          ref={inputRef}
           id="file-input"
           type="file"
           accept="image/*"

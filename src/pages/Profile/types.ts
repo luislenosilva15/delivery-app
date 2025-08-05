@@ -4,5 +4,5 @@ export interface ProfileData {
   password: string;
   phone: string;
   image: string;
-  imageFile: File | null;
+  imageFile: File | null | string;
 }

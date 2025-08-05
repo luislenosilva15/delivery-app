@@ -1,4 +1,5 @@
 export const isValidPhone = (phone: string): boolean => {
+  if (!phone.length) return true;
   const digits = phone.replace(/\D/g, "");
   return digits.length === 11;
 };

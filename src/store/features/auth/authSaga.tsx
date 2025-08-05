@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { call, put, takeLatest } from "redux-saga/effects";
 import {
   setAuthValidRequest,
   setAuthValidSuccess,
+  setEditUserError,
+  setEditUserRequest,
+  setEditUserSuccess,
   setLoginError,
   setLoginRequest,
   setLoginSuccess,
@@ -13,6 +17,8 @@ import type {
   AuthResponse,
   LoginRequest,
   LoginResponse,
+  SetEditUserRequest,
+  SetEditUserResponse,
 } from "@/store/types/request";
 import { LOCAL_STORAGE_KEYS } from "@/localStorage";
 import { toast } from "@/utils/toast";
@@ -44,7 +50,7 @@ function* setLoginSaga(
     });
   } catch {
     toast({
-      title: "Erro ao realizar login",
+      title: "Email ou senha inválidos",
       status: "error",
     });
     yield put(setLoginError());
@@ -71,7 +77,44 @@ export function* setAuthValidSaga(): Generator<
   }
 }
 
+export function* setEditUserSaga(
+  action: PayloadAction<SetEditUserRequest>
+): Generator<any, void, AxiosResponse<SetEditUserResponse>> {
+  const { id, user } = action.payload;
+  try {
+    const formData = new FormData();
+    user?.name && formData.append("name", user.name);
+    user?.phone && formData.append("phone", user.phone);
+    user?.imageFile && formData.append("image", user.imageFile);
+    user?.password && formData.append("password", user.password);
+
+    if (user?.imageFile === null) {
+      formData.append("removeImage", "true");
+    }
+
+    const { data } = yield call(() => apiClient.patch(`/user/${id}`, formData));
+
+    yield put(
+      setEditUserSuccess({
+        user: data.user,
+      })
+    );
+    toast({
+      title: "Perfil editado com sucesso",
+      status: "success",
+    });
+  } catch (error) {
+    yield put(setEditUserError());
+    toast({
+      title: "Erro ao editar perfil, tente novamente",
+      status: "error",
+    });
+    console.log(error);
+  }
+}
+
 export default function* authSaga() {
   yield takeLatest(setLoginRequest.type, setLoginSaga);
   yield takeLatest(setAuthValidRequest.type, setAuthValidSaga);
+  yield takeLatest(setEditUserRequest.type, setEditUserSaga);
 }

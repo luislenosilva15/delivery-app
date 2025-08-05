@@ -17,16 +17,19 @@ import { maskPhone } from "@/utils/mask";
 import { isValidPassword, isValidPhone } from "@/utils/validations";
 import FormErrorInfo from "@/components/FormErrorInfo";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
+import { useDispatch } from "react-redux";
+import { setEditUserRequest } from "@/store/features/auth/authSlice";
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, isSubmitEditForm } = useAuth();
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState<ProfileData>({
     name: user?.name || "",
     email: user?.email || "",
     phone: user?.phone || "",
     image: user?.imageUrl || "",
-    imageFile: null,
+    imageFile: "",
     password: "",
   });
 
@@ -59,18 +62,29 @@ const Profile = () => {
 
     setPhoneError(null);
     setPasswordError(null);
-    console.log(formData);
+
+    dispatch(
+      setEditUserRequest({
+        user: {
+          imageFile: formData.imageFile,
+          name: formData.name,
+          phone: formData.phone,
+          password: formData.password,
+        },
+        id: user?.id as number,
+      })
+    );
   };
 
   return (
-    <Box mx="auto" p={8}>
-      <Stack spacing={6}>
+    <Box mx="auto" p={6}>
+      <Stack spacing={4}>
         <Heading size="lg">Editar Perfil</Heading>
 
         <form onSubmit={handleSubmit}>
           <ImageUploader
             previewUrl={user?.imageUrl}
-            onChange={(file: File) => {
+            onChange={(file: File | null) => {
               setFormData((prev) => ({
                 ...prev,
                 imageFile: file,
@@ -135,7 +149,14 @@ const Profile = () => {
               <FormErrorInfo>{passwordError}</FormErrorInfo>
             </FormControl>
 
-            <Button type="submit" colorScheme="primary" w="max-content" mt={2}>
+            <Button
+              type="submit"
+              colorScheme="primary"
+              w="max-content"
+              mt={2}
+              isLoading={isSubmitEditForm}
+              disabled={isSubmitEditForm}
+            >
               Salvar
             </Button>
           </Stack>

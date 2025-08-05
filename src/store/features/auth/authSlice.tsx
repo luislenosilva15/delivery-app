@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { TCompany, TUser } from "@/store/types/models";
-import type { LoginRequest } from "@/store/types/request";
+import type {
+  LoginRequest,
+  SetEditUserRequest,
+  SetEditUserResponse,
+} from "@/store/types/request";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 export interface AuthState {
@@ -67,6 +71,19 @@ const authSlice = createSlice({
       state.company = null;
       state.autenticated = false;
     },
+
+    setEditUserRequest(state, _action: PayloadAction<SetEditUserRequest>) {
+      state.isSubmitEditForm = true;
+    },
+
+    setEditUserSuccess(state, action: PayloadAction<SetEditUserResponse>) {
+      state.isSubmitEditForm = false;
+      state.user = action.payload.user;
+    },
+
+    setEditUserError(state) {
+      state.isSubmitEditForm = false;
+    },
   },
 });
 
@@ -78,6 +95,9 @@ export const {
   setAuthValidSuccess,
   setAuthValidError,
   setLoggout,
+  setEditUserRequest,
+  setEditUserSuccess,
+  setEditUserError,
 } = authSlice.actions;
 
 export default authSlice.reducer;

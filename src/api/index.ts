@@ -4,9 +4,6 @@ import axios from "axios";
 const apiClient = axios.create({
   baseURL: "http://localhost:3000",
   timeout: 5000,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 apiClient.interceptors.request.use(
@@ -14,6 +11,7 @@ apiClient.interceptors.request.use(
     const token = localStorage.getItem("token");
 
     if (token) {
+      config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${token}`;
     }
 

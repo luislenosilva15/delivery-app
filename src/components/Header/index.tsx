@@ -42,6 +42,15 @@ const Header = () => {
       </Text>
 
       <Flex flexDirection="row" gap={4} whiteSpace="nowrap" overflow="hidden">
+        <Flex align="center" gap={4}>
+          <IconButton
+            aria-label="Alternar tema"
+            icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+            onClick={toggleColorMode}
+            size="md"
+          />
+        </Flex>
+
         <UserProfile
           name={user.name}
           avatarUrl={user.imageUrl}
@@ -52,15 +61,6 @@ const Header = () => {
             dispatch(setLoggout());
           }}
         />
-
-        <Flex align="center" gap={4}>
-          <IconButton
-            aria-label="Alternar tema"
-            icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-            onClick={toggleColorMode}
-            size="md"
-          />
-        </Flex>
       </Flex>
     </Flex>
   );
