@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import { setLoggout } from "@/store/features/auth/authSlice";
 import { useAuth } from "@/hook/auth";
 import { useNavigate } from "react-router-dom";
+import OpeningHourButton from "./OpeningHourButton";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -43,6 +44,7 @@ const Header = () => {
 
       <Flex flexDirection="row" gap={4} whiteSpace="nowrap" overflow="hidden">
         <Flex align="center" gap={4}>
+          <OpeningHourButton />
           <IconButton
             aria-label="Alternar tema"
             icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}

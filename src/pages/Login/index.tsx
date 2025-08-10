@@ -85,9 +85,9 @@ export default function LoginPage() {
               <Button
                 isLoading={isSubmitting}
                 onClick={onLogin}
-                bg="blue.400"
+                bg="primary.400"
                 color="white"
-                _hover={{ bg: "blue.500" }}
+                _hover={{ bg: "primary.500" }}
                 disabled={disabledSubmitButton}
               >
                 Entrar

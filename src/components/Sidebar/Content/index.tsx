@@ -8,7 +8,7 @@ import {
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import SidebarItem from "../Item";
 import {
   FiChevronDown,
@@ -96,6 +96,24 @@ function SidebarContent() {
                 onClick={() => navigate("/sells")}
                 icon={MdOutlineLocalGroceryStore}
                 label="Vendas"
+              />
+              <SidebarItem
+                isActive={optionIsActive("/team")}
+                onClick={() => navigate("/team")}
+                icon={MdOutlineLocalGroceryStore}
+                label="Equipe"
+              />
+              <SidebarItem
+                isActive={optionIsActive("/opening-hour")}
+                onClick={() => navigate("/opening-hour")}
+                icon={MdOutlineLocalGroceryStore}
+                label="Horário"
+              />
+              <SidebarItem
+                isActive={optionIsActive("/about")}
+                onClick={() => navigate("/about")}
+                icon={MdOutlineLocalGroceryStore}
+                label="Sobre a loja"
               />
             </VStack>
           </Collapse>

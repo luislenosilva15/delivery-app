@@ -2,14 +2,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { call, put, takeLatest } from "redux-saga/effects";
 import {
+  setAlwaysOpenRequest,
+  setAlwaysOpenSuccess,
   setAuthValidRequest,
   setAuthValidSuccess,
+  setEditCompanyError,
+  setEditCompanyRequest,
+  setEditCompanySuccess,
+  setEditOpeningHoursRequest,
+  setEditOpeningHoursSuccess,
   setEditUserError,
   setEditUserRequest,
   setEditUserSuccess,
   setLoginError,
   setLoginRequest,
   setLoginSuccess,
+  setTemporaryClosedRequest,
+  setTemporaryClosedSuccess,
 } from "./authSlice";
 import apiClient from "@/api";
 import type { AxiosResponse } from "axios";
@@ -17,12 +26,18 @@ import type {
   AuthResponse,
   LoginRequest,
   LoginResponse,
+  SetEditCompanyRequest,
+  SetEditCompanyResponse,
+  SetEditOpeningHoursRequest,
   SetEditUserRequest,
   SetEditUserResponse,
-} from "@/store/types/request";
+  SetTemporaryClosedRequest,
+} from "@/store/features/auth/types/request";
 import { LOCAL_STORAGE_KEYS } from "@/localStorage";
 import { toast } from "@/utils/toast";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import { normalizeSchedule } from "./normalize";
+import type { TCompany } from "@/store/features/auth/types/models";
 
 function* setLoginSaga(
   action: PayloadAction<LoginRequest>
@@ -99,6 +114,7 @@ export function* setEditUserSaga(
         user: data.user,
       })
     );
+
     toast({
       title: "Perfil editado com sucesso",
       status: "success",
@@ -113,8 +129,125 @@ export function* setEditUserSaga(
   }
 }
 
+export function* setTemporaryClosedSaga(
+  action: PayloadAction<SetTemporaryClosedRequest>
+): Generator<any, void, AxiosResponse<string>> {
+  try {
+    yield call(() =>
+      apiClient.post(`opening-hours/temporary-closed`, {
+        closed: action.payload.closed,
+      })
+    );
+
+    yield put(setTemporaryClosedSuccess());
+  } catch (error) {
+    toast({
+      title: "Erro, tente novamente",
+      status: "error",
+    });
+    console.log(error);
+  }
+}
+
+export function* setEditOpeningHoursSaga(
+  action: PayloadAction<SetEditOpeningHoursRequest>
+): Generator<any, void, AxiosResponse<TCompany["openingHours"]>> {
+  try {
+    const openingHoursData = normalizeSchedule(action.payload.schedule as any);
+
+    const { data } = yield call(() =>
+      apiClient.patch(`opening-hours`, openingHoursData)
+    );
+
+    yield put(
+      setEditOpeningHoursSuccess({
+        openingHours: data,
+      })
+    );
+
+    toast({
+      title: "Horário de funcionamento editado com sucesso",
+      status: "success",
+    });
+  } catch (error) {
+    toast({
+      title: "Erro, tente novamente",
+      status: "error",
+    });
+    console.log(error);
+  }
+}
+
+export function* setAlwaysOpenSaga(): Generator<
+  any,
+  void,
+  AxiosResponse<string>
+> {
+  try {
+    yield call(() => apiClient.post(`opening-hours/always-open`));
+
+    yield put(setAlwaysOpenSuccess());
+
+    toast({
+      title: "Horário de funcionamento editado com sucesso",
+      status: "success",
+    });
+  } catch (error) {
+    toast({
+      title: "Erro, tente novamente",
+      status: "error",
+    });
+    console.log(error);
+  }
+}
+
+export function* setEditCompanySaga(
+  action: PayloadAction<SetEditCompanyRequest>
+): Generator<any, void, AxiosResponse<SetEditCompanyResponse>> {
+  const { company, id } = action.payload;
+  try {
+    const formData = new FormData();
+    company?.name && formData.append("name", company.name);
+    company?.phone && formData.append("phone", company.phone);
+    company?.logoFile && formData.append("image", company.logoFile);
+    company?.city && formData.append("city", company.city);
+    company?.state && formData.append("state", company.state);
+    company?.zipCode && formData.append("zipCode", company.zipCode);
+    company?.address && formData.append("address", company.address);
+    company?.document && formData.append("document", company.document);
+    company?.legalName && formData.append("legalName", company.legalName);
+    company?.email && formData.append("email", company.email);
+
+    const { data } = yield call(() =>
+      apiClient.patch(`/company/${id}`, formData)
+    );
+
+    yield put(
+      setEditCompanySuccess({
+        company: data.company,
+      })
+    );
+
+    toast({
+      title: "Loja editada com sucesso",
+      status: "success",
+    });
+  } catch (error) {
+    yield put(setEditCompanyError());
+    toast({
+      title: "Erro ao editar loja, tente novamente",
+      status: "error",
+    });
+    console.log(error);
+  }
+}
+
 export default function* authSaga() {
   yield takeLatest(setLoginRequest.type, setLoginSaga);
   yield takeLatest(setAuthValidRequest.type, setAuthValidSaga);
   yield takeLatest(setEditUserRequest.type, setEditUserSaga);
+  yield takeLatest(setTemporaryClosedRequest.type, setTemporaryClosedSaga);
+  yield takeLatest(setEditOpeningHoursRequest.type, setEditOpeningHoursSaga);
+  yield takeLatest(setAlwaysOpenRequest.type, setAlwaysOpenSaga);
+  yield takeLatest(setEditCompanyRequest.type, setEditCompanySaga);
 }

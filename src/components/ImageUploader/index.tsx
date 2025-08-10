@@ -1,6 +1,7 @@
 import {
   Box,
   Avatar,
+  Image,
   Input,
   Stack,
   Button,
@@ -10,13 +11,19 @@ import {
 import { useRef, useState, type ChangeEvent } from "react";
 import { FiUpload, FiTrash2 } from "react-icons/fi";
 
+type ImageUploaderProps = {
+  previewUrl?: string;
+  onChange?: (file: File | null) => void;
+  shape?: "circle" | "square";
+  showRemoveButton?: boolean;
+};
+
 export default function ImageUploader({
   previewUrl,
   onChange,
-}: {
-  previewUrl?: string;
-  onChange?: (file: File | null) => void;
-}) {
+  shape = "circle",
+  showRemoveButton = true,
+}: ImageUploaderProps) {
   const [preview, setPreview] = useState<string | null>(previewUrl ?? null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -54,18 +61,29 @@ export default function ImageUploader({
       justifyContent="center"
     >
       <Stack spacing={4} align="center">
-        <Avatar size="2xl" src={preview ?? undefined} />
+        {shape === "circle" ? (
+          <Avatar size="2xl" src={preview ?? undefined} />
+        ) : (
+          <Image
+            src={preview ?? undefined}
+            boxSize="112px"
+            objectFit="cover"
+            borderRadius="md"
+            bg="gray.100"
+          />
+        )}
+
         <HStack spacing={3}>
           <Button
             onClick={triggerFileInput}
             leftIcon={<Icon as={FiUpload} />}
-            colorScheme="blue"
+            colorScheme="primary"
             variant="solid"
             size="sm"
           >
             {preview ? "Alterar" : "Adicionar"}
           </Button>
-          {preview && (
+          {preview && showRemoveButton && (
             <Button
               onClick={handleRemoveImage}
               leftIcon={<Icon as={FiTrash2} />}
@@ -77,6 +95,7 @@ export default function ImageUploader({
             </Button>
           )}
         </HStack>
+
         <Input
           ref={inputRef}
           id="file-input"

@@ -8,3 +8,8 @@ export const isValidPassword = (password: string): boolean => {
   if (!password) return false;
   return password.length < 6;
 };
+
+export function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}

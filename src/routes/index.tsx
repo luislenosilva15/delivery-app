@@ -8,7 +8,10 @@ import LoginPage from "@/pages/Login";
 import DashboardPage from "@/pages/Dashboard";
 import SettingsPage from "@/pages/Settings";
 import SellsPage from "@/pages/Sells";
-import Profile from "@/pages/Profile";
+import ProfilePage from "@/pages/Profile";
+import OpeningHourPage from "@/pages/OpeningHour";
+import AboutPage from "@/pages/About";
+import TeamPage from "@/pages/Team";
 
 export const router = createBrowserRouter([
   {
@@ -32,7 +35,19 @@ export const router = createBrowserRouter([
       },
       {
         element: <PrivateLayout />,
-        children: [{ path: "/profile", element: <Profile /> }],
+        children: [{ path: "/profile", element: <ProfilePage /> }],
+      },
+      {
+        element: <PrivateLayout />,
+        children: [{ path: "/opening-hour", element: <OpeningHourPage /> }],
+      },
+      {
+        element: <PrivateLayout />,
+        children: [{ path: "/about", element: <AboutPage /> }],
+      },
+      {
+        element: <PrivateLayout />,
+        children: [{ path: "/team", element: <TeamPage /> }],
       },
     ],
   },

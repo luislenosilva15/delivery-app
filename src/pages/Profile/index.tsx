@@ -19,8 +19,9 @@ import FormErrorInfo from "@/components/FormErrorInfo";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { useDispatch } from "react-redux";
 import { setEditUserRequest } from "@/store/features/auth/authSlice";
+import Breadcrumb from "@/components/Breadcrumb";
 
-const Profile = () => {
+const ProfilePage = () => {
   const { user, isSubmitEditForm } = useAuth();
   const dispatch = useDispatch();
 
@@ -66,7 +67,7 @@ const Profile = () => {
     dispatch(
       setEditUserRequest({
         user: {
-          imageFile: formData.imageFile,
+          imageFile: formData.imageFile as File | null,
           name: formData.name,
           phone: formData.phone,
           password: formData.password,
@@ -76,10 +77,16 @@ const Profile = () => {
     );
   };
 
+  const breadcrumbLinks = [
+    { label: "Home", href: "/" },
+    { label: "Perfil", isCurrent: true },
+  ];
+
   return (
     <Box mx="auto" p={6}>
+      <Breadcrumb links={breadcrumbLinks} />
       <Stack spacing={4}>
-        <Heading size="lg">Editar Perfil</Heading>
+        <Heading size="md">Perfil</Heading>
 
         <form onSubmit={handleSubmit}>
           <ImageUploader
@@ -96,6 +103,7 @@ const Profile = () => {
             <FormControl isRequired>
               <FormLabel>Nome</FormLabel>
               <Input
+                focusBorderColor="primary.500"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
@@ -118,6 +126,7 @@ const Profile = () => {
                 </Tooltip>
               </Flex>
               <Input
+                focusBorderColor="primary.500"
                 disabled
                 name="email"
                 type="email"
@@ -129,6 +138,7 @@ const Profile = () => {
             <FormControl>
               <FormLabel>Telefone</FormLabel>
               <Input
+                focusBorderColor="primary.500"
                 name="phone"
                 value={formData.phone || ""}
                 onChange={handleChange}
@@ -141,6 +151,7 @@ const Profile = () => {
             <FormControl>
               <FormLabel>Nova senha</FormLabel>
               <Input
+                focusBorderColor="primary.500"
                 name="password"
                 type="password"
                 value={formData.password}
@@ -166,4 +177,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfilePage;
