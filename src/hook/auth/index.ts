@@ -1,5 +1,5 @@
 // src/hooks/useAuth.ts
-import { daysOfWeek } from "@/contants";
+import { daysOfWeek } from "@/constants";
 import type { Day } from "@/helpers/normalizeOpeningHour/types";
 import type { AuthState } from "@/store/features/auth/authSlice";
 import type { TCompany } from "@/store/features/auth/types/models";

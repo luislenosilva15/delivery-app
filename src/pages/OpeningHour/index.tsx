@@ -18,7 +18,7 @@ import { TimeIcon, AddIcon, CloseIcon } from "@chakra-ui/icons";
 import Breadcrumb from "@/components/Breadcrumb";
 import { useAuth, useScheduleFromOpeningHours } from "@/hook/auth";
 import { useDispatch } from "react-redux";
-import { daysOfWeek } from "@/contants";
+import { daysOfWeek } from "@/constants";
 import {
   setAlwaysOpenRequest,
   setEditOpeningHoursRequest,

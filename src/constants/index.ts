@@ -38,3 +38,13 @@ export const profiles: {
     description: "Acesso total à seção Cardápio e Design.",
   },
 ];
+
+export const productStepsModal = [
+  { title: "Informações", description: "Dados do produto" },
+  { title: "Horários", description: "Configuração de atendimento" },
+];
+
+export const groupStepsModal = [
+  { title: "Informações", description: "Dados do grupo" },
+  { title: "Horários", description: "Configuração de atendimento" },
+];

@@ -12,6 +12,7 @@ import ProfilePage from "@/pages/Profile";
 import OpeningHourPage from "@/pages/OpeningHour";
 import AboutPage from "@/pages/About";
 import TeamPage from "@/pages/Team";
+import MenuPage from "@/pages/Menu";
 
 export const router = createBrowserRouter([
   {
@@ -48,6 +49,10 @@ export const router = createBrowserRouter([
       {
         element: <PrivateLayout />,
         children: [{ path: "/team", element: <TeamPage /> }],
+      },
+      {
+        element: <PrivateLayout />,
+        children: [{ path: "/menu", element: <MenuPage /> }],
       },
     ],
   },

@@ -1,4 +1,4 @@
-import { daysOfWeek } from "@/contants";
+import { daysOfWeek } from "@/constants";
 import type { Day } from "@/helpers/normalizeOpeningHour/types";
 import type { SetEditOpeningHoursRequest } from "@/store/features/auth/types/request";
 

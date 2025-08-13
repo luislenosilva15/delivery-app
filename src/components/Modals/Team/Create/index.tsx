@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import type { Props } from "./types";
-import { profiles } from "@/contants";
+import { profiles } from "@/constants";
 import FormErrorInfo from "@/components/FormErrorInfo";
 import { isValidEmail } from "@/utils/validations";
 import type { TTeamRole } from "@/store/features/team/types/models";

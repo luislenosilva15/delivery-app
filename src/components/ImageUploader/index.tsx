@@ -11,6 +11,8 @@ import {
 import { useRef, useState, type ChangeEvent } from "react";
 import { FiUpload, FiTrash2 } from "react-icons/fi";
 
+import addImage from "../../assets/addImage.jpg";
+
 type ImageUploaderProps = {
   previewUrl?: string;
   onChange?: (file: File | null) => void;
@@ -65,7 +67,7 @@ export default function ImageUploader({
           <Avatar size="2xl" src={preview ?? undefined} />
         ) : (
           <Image
-            src={preview ?? undefined}
+            src={preview || addImage}
             boxSize="112px"
             objectFit="cover"
             borderRadius="md"
