@@ -5,6 +5,9 @@ import apiClient from "@/api";
 import type { AxiosResponse } from "axios";
 import { toast } from "@/utils/toast";
 import {
+  fetchCurrentProductError,
+  fetchCurrentProductRequest,
+  fetchCurrentProductSuccess,
   fetchGroupsError,
   fetchGroupsRequest,
   fetchGroupsSuccess,
@@ -17,10 +20,18 @@ import {
   setCreateNewProductSuccess,
   setDeleteGroupRequest,
   setDeleteGroupSuccess,
+  setDeleteProductRequest,
+  setDeleteProductSuccess,
+  setEditProductRequest,
+  setEditProductSuccess,
   setToggleDisableGroupRequest,
   setToggleDisableGroupSuccess,
+  setToggleDisableProductRequest,
+  setToggleDisableProductSuccess,
 } from "./menuSlice";
 import type {
+  FetchCurrentProductRequest,
+  FetchCurrentProductResponse,
   FetchGroupsResponse,
   FetchProductsRequest,
   FetchProductsResponse,
@@ -30,13 +41,20 @@ import type {
   SetCreateNewProductSuccess,
   SetDeleteGroupRequest,
   SetDeleteGroupResponse,
+  SetDeleteProductRequest,
+  SetDeleteProductResponse,
+  SetEditProductRequest,
+  SetEditProductSuccess,
   SetToggleDisableGroupRequest,
   SetToggleDisableGroupResponse,
+  SetToggleDisableProductRequest,
+  SetToggleDisableProductResponse,
 } from "./types/request";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import {
   normalizeSchedule,
   normalizeSetCreateNewProductRequest,
+  normalizeSetEditProductRequest,
 } from "./normalize";
 import type { ErrorResponse } from "../team/types/request";
 
@@ -115,6 +133,35 @@ function* setCreateNewProductSaga(
   }
 }
 
+function* setEditProductSaga(
+  action: PayloadAction<SetEditProductRequest>
+): Generator<any, void, AxiosResponse<SetEditProductSuccess>> {
+  try {
+    const { payload } = action;
+
+    const formData = normalizeSetEditProductRequest(payload.product);
+
+    const response = yield call(
+      apiClient.patch,
+      `/product/${payload.productId}`,
+      formData
+    );
+
+    yield put(setEditProductSuccess({ product: response.data.product }));
+
+    toast({
+      title: "Produto editado com sucesso",
+      status: "success",
+    });
+  } catch (error) {
+    const err = error as ErrorResponse;
+    toast({
+      title: err.response.data.message,
+      status: "error",
+    });
+  }
+}
+
 function* setToggleDisableGroupSaga(
   action: PayloadAction<SetToggleDisableGroupRequest>
 ): Generator<any, void, AxiosResponse<SetToggleDisableGroupResponse>> {
@@ -136,6 +183,29 @@ function* setToggleDisableGroupSaga(
       title: payload.disabled
         ? "Grupo ativado com sucesso"
         : "Grupo desativado com sucesso",
+      status: "success",
+    });
+  } catch (error) {
+    const err = error as ErrorResponse;
+    toast({
+      title: err.response.data.message,
+      status: "error",
+    });
+  }
+}
+
+function* setDeleteProductSaga(
+  action: PayloadAction<SetDeleteProductRequest>
+): Generator<any, void, AxiosResponse<SetDeleteProductResponse>> {
+  try {
+    const { payload } = action;
+
+    yield call(apiClient.delete, `/product/${payload.productId}`);
+
+    yield put(setDeleteProductSuccess({ productId: payload.productId }));
+
+    toast({
+      title: "Produto excluído com sucesso",
       status: "success",
     });
   } catch (error) {
@@ -199,6 +269,56 @@ function* setCreateNewGroupSaga(
   }
 }
 
+function* fetchCurrentProductSaga(
+  action: PayloadAction<FetchCurrentProductRequest>
+): Generator<any, void, AxiosResponse<FetchCurrentProductResponse>> {
+  try {
+    const { payload } = action;
+
+    const response = yield call(apiClient.get, `/product/${payload.productId}`);
+
+    yield put(fetchCurrentProductSuccess({ product: response.data.product }));
+  } catch {
+    yield put(fetchCurrentProductError());
+    toast({
+      title: "Erro ao buscar produto, tente novamente",
+      status: "error",
+    });
+  }
+}
+
+function* setToggleDisableProductSaga(
+  action: PayloadAction<SetToggleDisableProductRequest>
+): Generator<any, void, AxiosResponse<SetToggleDisableProductResponse>> {
+  try {
+    const { payload } = action;
+
+    yield call(apiClient.patch, `/product/disable/${payload.productId}`, {
+      disabled: !payload.disabled,
+    });
+
+    yield put(
+      setToggleDisableProductSuccess({
+        productId: payload.productId,
+        disabled: !payload.disabled,
+      })
+    );
+
+    toast({
+      title: payload.disabled
+        ? "Produto ativado com sucesso"
+        : "Produto desativado com sucesso",
+      status: "success",
+    });
+  } catch (error) {
+    const err = error as ErrorResponse;
+    toast({
+      title: err.response.data.message,
+      status: "error",
+    });
+  }
+}
+
 export default function* MenuSaga() {
   yield takeLatest(fetchGroupsRequest.type, fetchGroupsSaga);
   yield takeLatest(fetchProductsRequest.type, fetchProductsSaga);
@@ -209,4 +329,11 @@ export default function* MenuSaga() {
   );
   yield takeLatest(setDeleteGroupRequest.type, setDeleteGroupSaga);
   yield takeLatest(setCreateNewGroupRequest.type, setCreateNewGroupSaga);
+  yield takeLatest(fetchCurrentProductRequest.type, fetchCurrentProductSaga);
+  yield takeLatest(setEditProductRequest.type, setEditProductSaga);
+  yield takeLatest(setDeleteProductRequest.type, setDeleteProductSaga);
+  yield takeLatest(
+    setToggleDisableProductRequest.type,
+    setToggleDisableProductSaga
+  );
 }

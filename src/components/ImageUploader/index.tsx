@@ -8,7 +8,7 @@ import {
   HStack,
   Icon,
 } from "@chakra-ui/react";
-import { useRef, useState, type ChangeEvent } from "react";
+import { useRef, useState, useEffect, type ChangeEvent } from "react";
 import { FiUpload, FiTrash2 } from "react-icons/fi";
 
 import addImage from "../../assets/addImage.jpg";
@@ -28,6 +28,10 @@ export default function ImageUploader({
 }: ImageUploaderProps) {
   const [preview, setPreview] = useState<string | null>(previewUrl ?? null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setPreview(previewUrl ?? null);
+  }, [previewUrl]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -67,7 +71,7 @@ export default function ImageUploader({
           <Avatar size="2xl" src={preview ?? undefined} />
         ) : (
           <Image
-            src={preview || addImage}
+            src={preview ? preview : addImage}
             boxSize="112px"
             objectFit="cover"
             borderRadius="md"

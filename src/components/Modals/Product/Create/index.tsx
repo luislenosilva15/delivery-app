@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { Spinner, Center } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -11,11 +12,7 @@ import {
   FormControl,
   FormLabel,
   Input,
-  HStack,
   VStack,
-  IconButton,
-  Checkbox,
-  Text,
   useSteps,
   Stepper,
   Step,
@@ -32,15 +29,29 @@ import {
   Stack,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import ImageUploader from "@/components/ImageUploader";
 import type { FormData, Props } from "./types";
 import type { TProductAvailabilityBy } from "@/store/features/menu/types/models";
 import { daysOfWeek, productStepsModal } from "@/constants";
+import { fetchCurrentProductRequest } from "@/store/features/menu/menuSlice";
+import { useDispatch } from "react-redux";
+import { useMenu } from "@/hook/menu";
+import { formatToBRL } from "@/utils/validations";
+import { formDataProductEditData } from "@/store/features/menu/normalize";
+import ScheduleForm from "@/components/Shedule";
 
-export default function ProductModal({ isOpen, onClose, onSubmit }: Props) {
+export default function ProductModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  productId,
+}: Props) {
   const [errors, setErrors] = useState<{ name?: string; price?: string }>({});
   const [scheduleErrors, setScheduleErrors] = useState<string>("");
+
+  const { loadingCurrentProduct, currentProduct } = useMenu();
+
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState<FormData>({
     imageFile: null as File | null,
@@ -59,49 +70,11 @@ export default function ProductModal({ isOpen, onClose, onSubmit }: Props) {
     count: productStepsModal.length,
   });
 
-  const addInterval = (day: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      schedule: {
-        ...prev.schedule,
-        [day]: [...(prev.schedule[day] || []), { start: "", end: "" }],
-      },
-    }));
-  };
-
-  const removeInterval = (day: string, index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      schedule: {
-        ...prev.schedule,
-        [day]: prev.schedule[day]?.filter((_, i) => i !== index) || [],
-      },
-    }));
-  };
-
-  const updateSchedule = (
-    day: string,
-    index: number,
-    field: keyof FormData["schedule"][string][number],
-    value: string
-  ) => {
-    setFormData((prev) => {
-      const updated = [...(prev.schedule[day] || [])];
-      updated[index][field] = value;
-      return {
-        ...prev,
-        schedule: {
-          ...prev.schedule,
-          [day]: updated,
-        },
-      };
-    });
-  };
-
   const handleOnCloseModal = () => {
+    console.log("close");
     setFormData({
-      imageFile: null as File | null,
-      image: null as string | null,
+      imageFile: "",
+      image: null,
       name: "",
       description: "",
       price: 0,
@@ -114,33 +87,6 @@ export default function ProductModal({ isOpen, onClose, onSubmit }: Props) {
     onClose();
     setErrors({});
     setScheduleErrors("");
-  };
-
-  const toggleDayOff = (day: string) => {
-    setFormData((prev) => {
-      const isOff = prev.daysOff.includes(day);
-      const newDaysOff = isOff
-        ? prev.daysOff.filter((d) => d !== day)
-        : [...prev.daysOff, day];
-      const newSchedule = isOff
-        ? prev.schedule
-        : { ...prev.schedule, [day]: [] };
-
-      return {
-        ...prev,
-        daysOff: newDaysOff,
-        schedule: newSchedule,
-      };
-    });
-  };
-
-  const handleAlwaysAvailableChange = (checked: boolean) => {
-    setFormData((prev) => ({
-      ...prev,
-      alwaysAvailable: checked,
-      daysOff: checked ? [] : [...daysOfWeek],
-      schedule: {},
-    }));
   };
 
   const validateSchedule = (): boolean => {
@@ -211,14 +157,23 @@ export default function ProductModal({ isOpen, onClose, onSubmit }: Props) {
     onSubmit(formData);
   };
 
-  const formatToBRL = (value: number) =>
-    value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/\D/g, "");
     const numericValue = rawValue ? Number(rawValue) / 100 : 0;
     setFormData({ ...formData, price: numericValue });
   };
+
+  useEffect(() => {
+    if (productId && isOpen) {
+      dispatch(fetchCurrentProductRequest({ productId }));
+    }
+  }, [productId, isOpen]);
+
+  useEffect(() => {
+    if (currentProduct && isOpen && productId) {
+      setFormData(formDataProductEditData(currentProduct));
+    }
+  }, [currentProduct, isOpen, productId]);
 
   return (
     <Modal
@@ -229,226 +184,173 @@ export default function ProductModal({ isOpen, onClose, onSubmit }: Props) {
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Novo Produto</ModalHeader>
+        <ModalHeader>
+          {productId ? "Editar Produto" : "Novo Produto"}
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Stepper index={activeStep} size="sm" mb={6} colorScheme="primary">
-            {productStepsModal.map((step, index) => (
-              <Step
-                key={index}
-                onClick={() => setActiveStep(index)}
-                cursor="pointer"
-              >
-                <StepIndicator>
-                  <StepStatus
-                    complete={<StepIcon color="primary.500" />}
-                    incomplete={<StepNumber />}
-                    active={<StepNumber color="primary.500" />}
-                  />
-                </StepIndicator>
-                <div>
-                  <StepTitle
-                    style={{ color: "var(--chakra-colors-primary-500)" }}
-                  >
-                    {step.title}
-                  </StepTitle>
-                  <StepDescription>{step.description}</StepDescription>
-                </div>
-                <StepSeparator />
-              </Step>
-            ))}
-          </Stepper>
-
-          {activeStep === 0 && (
-            <VStack spacing={4} align="stretch">
-              <ImageUploader
-                previewUrl={formData?.image as string}
-                shape="square"
-                onChange={(file: File | null) => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    imageFile: file,
-                  }));
-                }}
-              />
-
-              <FormControl isRequired isInvalid={!!errors.name}>
-                <FormLabel>Nome</FormLabel>
-                <Input
-                  focusBorderColor="primary.500"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  placeholder="Digite o nome do produto"
-                />
-                {errors.name && (
-                  <FormErrorMessage>{errors.name}</FormErrorMessage>
-                )}
-              </FormControl>
-
-              <FormControl isRequired isInvalid={!!errors.price}>
-                <FormLabel>Preço</FormLabel>
-                <Input
-                  focusBorderColor="primary.500"
-                  type="text"
-                  value={formData.price > 0 ? formatToBRL(formData.price) : ""}
-                  onChange={handlePriceChange}
-                  placeholder="Digite o preço do produto"
-                />
-                {errors.price && (
-                  <FormErrorMessage>{errors.price}</FormErrorMessage>
-                )}
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>Descrição</FormLabel>
-                <Textarea
-                  focusBorderColor="primary.500"
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  placeholder="Digite a descrição do produto"
-                />
-              </FormControl>
-
-              <FormControl isRequired>
-                <FormLabel>Disponibilidade</FormLabel>
-                <RadioGroup
-                  onChange={(value: TProductAvailabilityBy) => {
-                    setFormData({
-                      ...formData,
-                      availability: value,
-                    });
-                  }}
-                  value={formData.availability}
-                  colorScheme="primary"
-                >
-                  <Stack direction="row" spacing={4} mb={4}>
-                    <Radio value="DELIVERY">Delivery</Radio>
-                    <Radio value="LOCAL">Retirada</Radio>
-                    <Radio value="BOTH">Ambos</Radio>
-                  </Stack>
-                </RadioGroup>
-              </FormControl>
-            </VStack>
-          )}
-
-          {activeStep === 1 && (
-            <VStack spacing={4} align="stretch">
-              <Checkbox
-                isChecked={formData.alwaysAvailable}
-                onChange={(e) => handleAlwaysAvailableChange(e.target.checked)}
+          {loadingCurrentProduct ? (
+            <Center py={10}>
+              <Spinner size="xl" color="primary.500" />
+            </Center>
+          ) : (
+            <>
+              <Stepper
+                index={activeStep}
+                size="sm"
+                mb={6}
                 colorScheme="primary"
               >
-                Disponibilidade de acordo com grupo
-              </Checkbox>
+                {productStepsModal.map((step, index) => (
+                  <Step
+                    key={index}
+                    onClick={() => setActiveStep(index)}
+                    cursor="pointer"
+                  >
+                    <StepIndicator>
+                      <StepStatus
+                        complete={<StepIcon color="primary.500" />}
+                        incomplete={<StepNumber />}
+                        active={<StepNumber color="primary.500" />}
+                      />
+                    </StepIndicator>
+                    <div>
+                      <StepTitle
+                        style={{ color: "var(--chakra-colors-primary-500)" }}
+                      >
+                        {step.title}
+                      </StepTitle>
+                      <StepDescription>{step.description}</StepDescription>
+                    </div>
+                    <StepSeparator />
+                  </Step>
+                ))}
+              </Stepper>
 
-              {!formData.alwaysAvailable && (
-                <>
-                  {scheduleErrors && (
-                    <Text color="red.500" fontSize="sm" mt={2}>
-                      {scheduleErrors}
-                    </Text>
-                  )}
+              {activeStep === 0 && (
+                <VStack spacing={4} align="stretch">
+                  <ImageUploader
+                    previewUrl={formData.image as string}
+                    shape="square"
+                    onChange={(file: File | null) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        imageFile: file,
+                      }));
+                    }}
+                  />
 
-                  {daysOfWeek.map((day) => (
-                    <VStack
-                      key={day}
-                      align="stretch"
-                      border="1px solid"
-                      borderColor="gray.600"
-                      p={3}
-                      borderRadius="md"
+                  <FormControl isRequired isInvalid={!!errors.name}>
+                    <FormLabel>Nome</FormLabel>
+                    <Input
+                      focusBorderColor="primary.500"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      placeholder="Digite o nome do produto"
+                    />
+                    {errors.name && (
+                      <FormErrorMessage>{errors.name}</FormErrorMessage>
+                    )}
+                  </FormControl>
+
+                  <FormControl isRequired isInvalid={!!errors.price}>
+                    <FormLabel>Preço</FormLabel>
+                    <Input
+                      focusBorderColor="primary.500"
+                      type="text"
+                      value={
+                        formData.price > 0 ? formatToBRL(formData.price) : ""
+                      }
+                      onChange={handlePriceChange}
+                      placeholder="Digite o preço do produto"
+                    />
+                    {errors.price && (
+                      <FormErrorMessage>{errors.price}</FormErrorMessage>
+                    )}
+                  </FormControl>
+
+                  <FormControl>
+                    <FormLabel>Descrição</FormLabel>
+                    <Textarea
+                      focusBorderColor="primary.500"
+                      value={formData.description}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
+                      placeholder="Digite a descrição do produto"
+                    />
+                  </FormControl>
+
+                  <FormControl isRequired>
+                    <FormLabel>Disponibilidade</FormLabel>
+                    <RadioGroup
+                      onChange={(value: TProductAvailabilityBy) => {
+                        setFormData({
+                          ...formData,
+                          availability: value,
+                        });
+                      }}
+                      value={formData.availability}
+                      colorScheme="primary"
                     >
-                      <HStack justify="space-between">
-                        <Text fontWeight="medium">{day}</Text>
-                        <Checkbox
-                          isChecked={formData.daysOff.includes(day)}
-                          onChange={() => toggleDayOff(day)}
-                          colorScheme="primary"
-                        >
-                          Dia sem disponibilidade
-                        </Checkbox>
-                      </HStack>
-
-                      {!formData.daysOff.includes(day) && (
-                        <>
-                          {(formData.schedule[day] || []).map(
-                            (interval, index) => (
-                              <HStack key={index}>
-                                <Input
-                                  focusBorderColor="primary.500"
-                                  type="time"
-                                  value={interval.start}
-                                  onChange={(e) =>
-                                    updateSchedule(
-                                      day,
-                                      index,
-                                      "start",
-                                      e.target.value
-                                    )
-                                  }
-                                />
-                                <Input
-                                  focusBorderColor="primary.500"
-                                  type="time"
-                                  value={interval.end}
-                                  onChange={(e) =>
-                                    updateSchedule(
-                                      day,
-                                      index,
-                                      "end",
-                                      e.target.value
-                                    )
-                                  }
-                                />
-                                <IconButton
-                                  aria-label="Remove"
-                                  icon={<DeleteIcon />}
-                                  size="sm"
-                                  onClick={() => removeInterval(day, index)}
-                                />
-                              </HStack>
-                            )
-                          )}
-                          <Button
-                            size="sm"
-                            leftIcon={<AddIcon />}
-                            onClick={() => addInterval(day)}
-                          >
-                            Adicionar intervalo
-                          </Button>
-                        </>
-                      )}
-                    </VStack>
-                  ))}
-                </>
+                      <Stack direction="row" spacing={4} mb={4}>
+                        <Radio value="DELIVERY">Delivery</Radio>
+                        <Radio value="LOCAL">Retirada</Radio>
+                        <Radio value="BOTH">Ambos</Radio>
+                      </Stack>
+                    </RadioGroup>
+                  </FormControl>
+                </VStack>
               )}
-            </VStack>
+
+              {activeStep === 1 && (
+                <ScheduleForm
+                  alwaysAvailable={formData.alwaysAvailable}
+                  daysOff={formData.daysOff}
+                  schedule={formData.schedule}
+                  errors={scheduleErrors}
+                  onChange={({ alwaysAvailable, daysOff, schedule }) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      alwaysAvailable,
+                      daysOff,
+                      schedule,
+                    }));
+                  }}
+                />
+              )}
+            </>
           )}
         </ModalBody>
 
         <ModalFooter>
-          {activeStep > 0 && (
-            <Button
-              variant="ghost"
-              mr={3}
-              onClick={() => setActiveStep(activeStep - 1)}
-              colorScheme="primary"
-            >
-              Voltar
-            </Button>
-          )}
-          {activeStep < productStepsModal.length - 1 ? (
-            <Button colorScheme="primary" onClick={handleNextStep}>
-              Próximo
-            </Button>
-          ) : (
-            <Button colorScheme="primary" onClick={save}>
-              Salvar
-            </Button>
+          {!loadingCurrentProduct && (
+            <>
+              {activeStep > 0 && (
+                <Button
+                  variant="ghost"
+                  mr={3}
+                  onClick={() => setActiveStep(activeStep - 1)}
+                  colorScheme="primary"
+                >
+                  Voltar
+                </Button>
+              )}
+              {activeStep < productStepsModal.length - 1 ? (
+                <Button colorScheme="primary" onClick={handleNextStep}>
+                  Próximo
+                </Button>
+              ) : (
+                <Button colorScheme="primary" onClick={save}>
+                  Salvar
+                </Button>
+              )}
+            </>
           )}
         </ModalFooter>
       </ModalContent>

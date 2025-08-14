@@ -2,6 +2,8 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { TGroup, TProduct } from "./types/models";
 import type {
+  FetchCurrentProductRequest,
+  FetchCurrentProductSuccess,
   FetchGroupsSuccess,
   FetchProductsRequest,
   FetchProductsSuccess,
@@ -11,7 +13,13 @@ import type {
   SetCreateNewProductSuccess,
   SetDeleteGroupRequest,
   SetDeleteGroupSuccess,
+  SetDeleteProductRequest,
+  SetDeleteProductSuccess,
+  SetEditProductRequest,
+  SetEditProductSuccess,
   SetToggleDisableGroupSuccess,
+  SetToggleDisableProductRequest,
+  SetToggleDisableProductSuccess,
 } from "./types/request";
 
 export interface MenuState {
@@ -19,6 +27,8 @@ export interface MenuState {
   loadingProducts: boolean;
   groups: TGroup[];
   products: TProduct[];
+  currentProduct: TProduct | null;
+  loadingCurrentProduct: boolean;
 }
 
 const initialState: MenuState = {
@@ -26,6 +36,8 @@ const initialState: MenuState = {
   loadingProducts: true,
   groups: [],
   products: [],
+  currentProduct: null,
+  loadingCurrentProduct: false,
 };
 
 const menuSlice = createSlice({
@@ -108,6 +120,69 @@ const menuSlice = createSlice({
     ) {
       state.groups.push(action.payload.group);
     },
+
+    fetchCurrentProductRequest(
+      state,
+      _action: PayloadAction<FetchCurrentProductRequest>
+    ) {
+      state.loadingCurrentProduct = true;
+      state.currentProduct = null;
+    },
+
+    fetchCurrentProductSuccess(
+      state,
+      action: PayloadAction<FetchCurrentProductSuccess>
+    ) {
+      state.currentProduct = action.payload.product;
+      state.loadingCurrentProduct = false;
+    },
+
+    fetchCurrentProductError(state) {
+      state.loadingCurrentProduct = false;
+    },
+
+    setEditProductRequest(
+      _state,
+      _action: PayloadAction<SetEditProductRequest>
+    ) {},
+
+    setEditProductSuccess(state, action: PayloadAction<SetEditProductSuccess>) {
+      state.products = state.products.map((product) =>
+        product.id === action.payload.product.id
+          ? { ...product, ...action.payload.product }
+          : product
+      );
+    },
+
+    setDeleteProductRequest(
+      _state,
+      _action: PayloadAction<SetDeleteProductRequest>
+    ) {},
+
+    setDeleteProductSuccess(
+      state,
+      action: PayloadAction<SetDeleteProductSuccess>
+    ) {
+      state.products = state.products.filter(
+        (product) => product.id !== action.payload.productId
+      );
+    },
+
+    setToggleDisableProductRequest(
+      _state,
+      _action: PayloadAction<SetToggleDisableProductRequest>
+    ) {},
+
+    setToggleDisableProductSuccess(
+      state,
+      action: PayloadAction<SetToggleDisableProductSuccess>
+    ) {
+      state.products = state.products.map((product) =>
+        product.id === action.payload.productId
+          ? { ...product, disabled: action.payload.disabled }
+          : product
+      );
+    },
   },
 });
 
@@ -126,6 +201,15 @@ export const {
   setDeleteGroupSuccess,
   setCreateNewGroupRequest,
   setCreateNewGroupSuccess,
+  fetchCurrentProductRequest,
+  fetchCurrentProductSuccess,
+  fetchCurrentProductError,
+  setEditProductRequest,
+  setEditProductSuccess,
+  setDeleteProductRequest,
+  setDeleteProductSuccess,
+  setToggleDisableProductRequest,
+  setToggleDisableProductSuccess,
 } = menuSlice.actions;
 
 export default menuSlice.reducer;

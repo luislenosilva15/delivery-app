@@ -6,7 +6,7 @@ export type FormData = {
   price: number;
   availability: TProductAvailabilityBy;
   image: string | null;
-  imageFile: File | null;
+  imageFile: File | null | string;
   alwaysAvailable: boolean;
   schedule: Record<
     string,
@@ -22,4 +22,5 @@ export interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (product: FormData) => void;
+  productId?: number | null;
 }

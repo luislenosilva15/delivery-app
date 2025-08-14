@@ -73,3 +73,50 @@ export interface SetCreateNewGroupResponse {
 export interface SetCreateNewGroupSuccess {
   group: TGroup;
 }
+
+export interface FetchCurrentProductRequest {
+  productId: number;
+}
+
+export interface FetchCurrentProductResponse {
+  product: TProduct;
+}
+
+export interface FetchCurrentProductSuccess {
+  product: TProduct;
+}
+
+export interface SetEditProductRequest {
+  product: FormData;
+  productId: number;
+}
+export interface SetEditProductResponse {
+  product: TProduct;
+}
+export interface SetEditProductSuccess {
+  product: TProduct;
+}
+
+export interface SetDeleteProductRequest {
+  productId: number;
+}
+
+export interface SetDeleteProductResponse {
+  product: TProduct;
+}
+export interface SetDeleteProductSuccess {
+  productId: number;
+}
+
+export interface SetToggleDisableProductRequest {
+  productId: number;
+  disabled: boolean;
+}
+
+export interface SetToggleDisableProductResponse {
+  product: TProduct;
+}
+export interface SetToggleDisableProductSuccess {
+  productId: number;
+  disabled: boolean;
+}

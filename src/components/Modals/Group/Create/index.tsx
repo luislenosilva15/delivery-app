@@ -11,11 +11,7 @@ import {
   FormControl,
   FormLabel,
   Input,
-  HStack,
   VStack,
-  IconButton,
-  Checkbox,
-  Text,
   useSteps,
   Stepper,
   Step,
@@ -28,9 +24,9 @@ import {
   StepSeparator,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import type { FormData, Props } from "./types";
 import { daysOfWeek, groupStepsModal } from "@/constants";
+import ScheduleForm from "@/components/Shedule";
 
 export default function NewGroupModal({ isOpen, onClose, onSubmit }: Props) {
   const [errors, setErrors] = useState<{ name?: string }>({});
@@ -48,45 +44,6 @@ export default function NewGroupModal({ isOpen, onClose, onSubmit }: Props) {
     count: groupStepsModal.length,
   });
 
-  const addInterval = (day: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      schedule: {
-        ...prev.schedule,
-        [day]: [...(prev.schedule[day] || []), { start: "", end: "" }],
-      },
-    }));
-  };
-
-  const removeInterval = (day: string, index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      schedule: {
-        ...prev.schedule,
-        [day]: prev.schedule[day]?.filter((_, i) => i !== index) || [],
-      },
-    }));
-  };
-
-  const updateSchedule = (
-    day: string,
-    index: number,
-    field: "start" | "end",
-    value: string
-  ) => {
-    setFormData((prev) => {
-      const updated = [...(prev.schedule[day] || [])];
-      updated[index][field] = value;
-      return {
-        ...prev,
-        schedule: {
-          ...prev.schedule,
-          [day]: updated,
-        },
-      };
-    });
-  };
-
   const handleOnCloseModal = () => {
     setFormData({
       name: "",
@@ -98,33 +55,6 @@ export default function NewGroupModal({ isOpen, onClose, onSubmit }: Props) {
     setErrors({});
     setScheduleErrors("");
     onClose();
-  };
-
-  const toggleDayOff = (day: string) => {
-    setFormData((prev) => {
-      const isOff = prev.daysOff.includes(day);
-      const newDaysOff = isOff
-        ? prev.daysOff.filter((d) => d !== day)
-        : [...prev.daysOff, day];
-      const newSchedule = isOff
-        ? prev.schedule
-        : { ...prev.schedule, [day]: [] };
-
-      return {
-        ...prev,
-        daysOff: newDaysOff,
-        schedule: newSchedule,
-      };
-    });
-  };
-
-  const handleAlwaysAvailableChange = (checked: boolean) => {
-    setFormData((prev) => ({
-      ...prev,
-      alwaysAvailable: checked,
-      daysOff: checked ? [] : [...daysOfWeek],
-      schedule: {},
-    }));
   };
 
   const validateSchedule = (): boolean => {
@@ -246,97 +176,20 @@ export default function NewGroupModal({ isOpen, onClose, onSubmit }: Props) {
           )}
 
           {activeStep === 1 && (
-            <VStack spacing={4} align="stretch">
-              <Checkbox
-                isChecked={formData.alwaysAvailable}
-                onChange={(e) => handleAlwaysAvailableChange(e.target.checked)}
-                colorScheme="primary"
-              >
-                Sempre disponível
-              </Checkbox>
-
-              {!formData.alwaysAvailable && (
-                <>
-                  {scheduleErrors && (
-                    <Text color="red.500" fontSize="sm" mt={2}>
-                      {scheduleErrors}
-                    </Text>
-                  )}
-
-                  {daysOfWeek.map((day) => (
-                    <VStack
-                      key={day}
-                      align="stretch"
-                      border="1px solid"
-                      borderColor="gray.600"
-                      p={3}
-                      borderRadius="md"
-                    >
-                      <HStack justify="space-between">
-                        <Text fontWeight="medium">{day}</Text>
-                        <Checkbox
-                          isChecked={formData.daysOff.includes(day)}
-                          onChange={() => toggleDayOff(day)}
-                          colorScheme="primary"
-                        >
-                          Dia sem disponibilidade
-                        </Checkbox>
-                      </HStack>
-
-                      {!formData.daysOff.includes(day) && (
-                        <>
-                          {(formData.schedule[day] || []).map(
-                            (interval, index) => (
-                              <HStack key={index}>
-                                <Input
-                                  focusBorderColor="primary.500"
-                                  type="time"
-                                  value={interval.start}
-                                  onChange={(e) =>
-                                    updateSchedule(
-                                      day,
-                                      index,
-                                      "start",
-                                      e.target.value
-                                    )
-                                  }
-                                />
-                                <Input
-                                  focusBorderColor="primary.500"
-                                  type="time"
-                                  value={interval.end}
-                                  onChange={(e) =>
-                                    updateSchedule(
-                                      day,
-                                      index,
-                                      "end",
-                                      e.target.value
-                                    )
-                                  }
-                                />
-                                <IconButton
-                                  aria-label="Remover"
-                                  icon={<DeleteIcon />}
-                                  size="sm"
-                                  onClick={() => removeInterval(day, index)}
-                                />
-                              </HStack>
-                            )
-                          )}
-                          <Button
-                            size="sm"
-                            leftIcon={<AddIcon />}
-                            onClick={() => addInterval(day)}
-                          >
-                            Adicionar intervalo
-                          </Button>
-                        </>
-                      )}
-                    </VStack>
-                  ))}
-                </>
-              )}
-            </VStack>
+            <ScheduleForm
+              alwaysAvailable={formData.alwaysAvailable}
+              daysOff={formData.daysOff}
+              schedule={formData.schedule}
+              errors={scheduleErrors}
+              onChange={({ alwaysAvailable, daysOff, schedule }) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  alwaysAvailable,
+                  daysOff,
+                  schedule,
+                }))
+              }
+            />
           )}
         </ModalBody>
 

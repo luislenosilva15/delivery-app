@@ -25,6 +25,7 @@ export type TGroup = {
 
 export type TProduct = {
   id: number;
+  alwaysAvailable: boolean;
   createdAt: string;
   updatedAt: string;
   code: string;
@@ -37,4 +38,5 @@ export type TProduct = {
   productAvailabilityBy: TProductAvailabilityBy;
   disabled: boolean;
   imageUrl: string | null;
+  productHours?: TProductHours[];
 };

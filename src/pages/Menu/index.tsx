@@ -5,9 +5,7 @@ import {
   Button,
   Flex,
   Heading,
-  HStack,
   IconButton,
-  Image,
   Stack,
   TabPanel,
   TabPanels,
@@ -36,7 +34,10 @@ import {
   setCreateNewGroupRequest,
   setCreateNewProductRequest,
   setDeleteGroupRequest,
+  setDeleteProductRequest,
+  setEditProductRequest,
   setToggleDisableGroupRequest,
+  setToggleDisableProductRequest,
 } from "@/store/features/menu/menuSlice";
 import { useMenu } from "@/hook/menu";
 import NewProductModal from "@/components/Modals/Product/Create";
@@ -45,6 +46,8 @@ import type { FormData as GroupFormData } from "@/components/Modals/Group/Create
 import ConfirmModal from "@/components/Modals/ConfirmModal";
 import type { TGroup } from "@/store/features/menu/types/models";
 import NewGroupModal from "@/components/Modals/Group/Create";
+import ProductCard from "@/components/Card/Product";
+import { GroupEmptyState } from "./emptyState";
 
 export default function MenuPage() {
   const dispatch = useDispatch();
@@ -67,16 +70,20 @@ export default function MenuPage() {
     onOpen: onOpenGroupModal,
   } = useDisclosure();
 
+  const {
+    isOpen: isOpenDeleteProductModal,
+    onClose: onCloseDeleteProductModal,
+    onOpen: onOpenDeleteProductModal,
+  } = useDisclosure();
+
   const { groups, products, loading, loadingProducts } = useMenu();
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   const [currentGroup, setCurrentGroup] = useState<TGroup | null>(null);
 
+  const [currentProductId, setCurrentProductId] = useState<number | null>(null);
+
   const tabBorderColor = useColorModeValue("gray.200", "gray.700");
-  const itemBgColor = useColorModeValue("white", "gray.700");
-  const itemBorderColor = useColorModeValue("gray.200", "gray.600");
-  const itemImageBgColor = useColorModeValue("gray.100", "gray.600");
-  const itemDescriptionColor = useColorModeValue("gray.500", "gray.400");
 
   const onDragEndItems = (result, groupId) => {
     const { source, destination } = result;
@@ -116,13 +123,22 @@ export default function MenuPage() {
     );
   }
 
-  const handleCreateNewProduct = (product: FormData): void => {
-    dispatch(
-      setCreateNewProductRequest({
-        product,
-        menuGroupId: groups[activeTabIndex].id,
-      })
-    );
+  const handleSubmitProductModal = (product: FormData): void => {
+    if (currentProductId) {
+      dispatch(
+        setEditProductRequest({
+          product,
+          productId: currentProductId,
+        })
+      );
+    } else {
+      dispatch(
+        setCreateNewProductRequest({
+          product,
+          menuGroupId: groups[activeTabIndex].id,
+        })
+      );
+    }
   };
 
   const handleDisableGroup = (groupId: number, disabled: boolean) => {
@@ -145,35 +161,23 @@ export default function MenuPage() {
     onCloseGroupModal();
   };
 
-  if (!groups?.length && !loading) {
-    return (
-      <Center
-        minHeight="300px"
-        flexDirection="column"
-        color="gray.500"
-        px={6}
-        textAlign="center"
-      >
-        <Box fontSize="6xl" mb={4} opacity={0.3} userSelect="none">
-          📭
-        </Box>
-        <Text fontSize="xl" fontWeight="semibold" mb={2}>
-          Nenhum grupo encontrado
-        </Text>
-        <Text maxW="md" mb={4}>
-          Parece que ainda não há grupos cadastrados. Clique em "Novo Grupo"
-          para começar a criar seu cardápio.
-        </Text>
-        <Button
-          colorScheme="primary"
-          leftIcon={<AddIcon />}
-          onClick={onOpenGroupModal}
-        >
-          Novo Grupo
-        </Button>
-      </Center>
+  const handleDeleteProduct = () => {
+    if (!currentProductId) return;
+    dispatch(
+      setDeleteProductRequest({
+        productId: currentProductId,
+      })
     );
-  }
+    setCurrentProductId(null);
+    onCloseDeleteProductModal();
+  };
+
+  const handleToggleDisableProduct = (productId: number, disabled: boolean) => {
+    dispatch(setToggleDisableProductRequest({ productId, disabled }));
+  };
+
+  if (!groups?.length && !loading)
+    <GroupEmptyState onOpenGroupModal={onOpenGroupModal} />;
 
   return (
     <>
@@ -408,67 +412,29 @@ export default function MenuPage() {
                                     key={item.id}
                                   >
                                     {(provided) => (
-                                      <Flex
+                                      <div
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
-                                        p={3}
-                                        borderWidth="1px"
-                                        borderRadius="md"
-                                        align="center"
-                                        justify="space-between"
-                                        _hover={{ cursor: "grab" }}
-                                        bg={itemBgColor}
-                                        borderColor={itemBorderColor}
                                       >
-                                        <HStack>
-                                          <Image
-                                            boxSize="50px"
-                                            borderRadius="md"
-                                            bg={itemImageBgColor}
-                                            alt={item.name}
-                                            src={item?.image}
-                                          />
-                                          <Box>
-                                            <Text fontWeight="bold">
-                                              {item.name}
-                                            </Text>
-                                            <Text
-                                              fontSize="sm"
-                                              color={itemDescriptionColor}
-                                            >
-                                              {item.description}
-                                            </Text>
-                                            <Badge colorScheme="green">
-                                              R$ {item.price}
-                                            </Badge>
-                                          </Box>
-                                        </HStack>
-                                        <HStack marginRight={4}>
-                                          <Menu>
-                                            <MenuButton
-                                              as={IconButton}
-                                              aria-label="Mais opções"
-                                              icon={
-                                                <Text fontSize="xl">⋮</Text>
-                                              }
-                                              size="sm"
-                                              variant="ghost"
-                                            />
-                                            <MenuList>
-                                              <MenuItem onClick={() => {}}>
-                                                Desabilitar
-                                              </MenuItem>
-                                              <MenuItem onClick={() => {}}>
-                                                Editar
-                                              </MenuItem>
-                                              <MenuItem onClick={() => {}}>
-                                                Excluir
-                                              </MenuItem>
-                                            </MenuList>
-                                          </Menu>
-                                        </HStack>
-                                      </Flex>
+                                        <ProductCard
+                                          item={item}
+                                          onEdit={(id) => {
+                                            setCurrentProductId(id);
+                                            onOpenProductModal();
+                                          }}
+                                          onDisable={(id) => {
+                                            handleToggleDisableProduct(
+                                              id,
+                                              item.disabled
+                                            );
+                                          }}
+                                          onDelete={(id) => {
+                                            setCurrentProductId(id);
+                                            onOpenDeleteProductModal();
+                                          }}
+                                        />
+                                      </div>
                                     )}
                                   </Draggable>
                                 ))}
@@ -488,8 +454,12 @@ export default function MenuPage() {
 
       <NewProductModal
         isOpen={isOpenProductModal}
-        onClose={onCloseProductModal}
-        onSubmit={handleCreateNewProduct}
+        onClose={() => {
+          setCurrentProductId(null);
+          onCloseProductModal();
+        }}
+        onSubmit={handleSubmitProductModal}
+        productId={currentProductId}
       />
       <ConfirmModal
         isOpen={isOpenDeleteGroupModal}
@@ -501,8 +471,19 @@ export default function MenuPage() {
 
       <NewGroupModal
         isOpen={isOpenGroupModal}
-        onClose={onCloseGroupModal}
+        onClose={() => {
+          setCurrentGroup(null);
+          onCloseGroupModal();
+        }}
         onSubmit={handleCreateNewGroup}
+      />
+
+      <ConfirmModal
+        isOpen={isOpenDeleteProductModal}
+        onClose={onCloseDeleteProductModal}
+        onSave={handleDeleteProduct}
+        title="Excluir Produto"
+        description="Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita."
       />
     </>
   );
