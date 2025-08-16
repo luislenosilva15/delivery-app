@@ -1,4 +1,4 @@
-import { Spinner, Center } from "@chakra-ui/react";
+import { Spinner, Center, Checkbox } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import {
   Modal,
@@ -63,6 +63,8 @@ export default function ProductModal({
     alwaysAvailable: true,
     schedule: {},
     daysOff: [],
+    isAdultOnly: false,
+    code: "",
   });
 
   const { activeStep, setActiveStep } = useSteps({
@@ -71,9 +73,8 @@ export default function ProductModal({
   });
 
   const handleOnCloseModal = () => {
-    console.log("close");
     setFormData({
-      imageFile: "",
+      imageFile: null,
       image: null,
       name: "",
       description: "",
@@ -82,6 +83,8 @@ export default function ProductModal({
       alwaysAvailable: true,
       schedule: {},
       daysOff: [],
+      isAdultOnly: false,
+      code: "",
     });
     setActiveStep(0);
     onClose();
@@ -112,7 +115,7 @@ export default function ProductModal({
                 interval.start >= interval.end
             )
           ) {
-            setScheduleErrors(`informe ao menos um intervalo válido`);
+            setScheduleErrors(`Informe ao menos um intervalo válido`);
             return false;
           }
         }
@@ -286,8 +289,35 @@ export default function ProductModal({
                     />
                   </FormControl>
 
+                  <FormControl>
+                    <FormLabel>Código do produto</FormLabel>
+                    <Input
+                      focusBorderColor="primary.500"
+                      value={formData.code}
+                      onChange={(e) =>
+                        setFormData({ ...formData, code: e.target.value })
+                      }
+                      placeholder="Digite o código do produto"
+                    />
+                  </FormControl>
+
+                  <FormControl>
+                    <Checkbox
+                      isChecked={formData.isAdultOnly}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          isAdultOnly: e.target.checked,
+                        })
+                      }
+                      colorScheme="primary"
+                    >
+                      Produto para adultos
+                    </Checkbox>
+                  </FormControl>
+
                   <FormControl isRequired>
-                    <FormLabel>Disponibilidade</FormLabel>
+                    <FormLabel>Disponibilidade de entrega</FormLabel>
                     <RadioGroup
                       onChange={(value: TProductAvailabilityBy) => {
                         setFormData({
@@ -300,7 +330,7 @@ export default function ProductModal({
                     >
                       <Stack direction="row" spacing={4} mb={4}>
                         <Radio value="DELIVERY">Delivery</Radio>
-                        <Radio value="LOCAL">Retirada</Radio>
+                        <Radio value="LOCAL">Local</Radio>
                         <Radio value="BOTH">Ambos</Radio>
                       </Stack>
                     </RadioGroup>

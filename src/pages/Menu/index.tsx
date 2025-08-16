@@ -48,6 +48,7 @@ import type { TGroup } from "@/store/features/menu/types/models";
 import NewGroupModal from "@/components/Modals/Group/Create";
 import ProductCard from "@/components/Card/Product";
 import { GroupEmptyState } from "./emptyState";
+import { ProductModalDetails } from "@/components/Modals/Product/Details";
 
 export default function MenuPage() {
   const dispatch = useDispatch();
@@ -76,7 +77,13 @@ export default function MenuPage() {
     onOpen: onOpenDeleteProductModal,
   } = useDisclosure();
 
-  const { groups, products, loading, loadingProducts } = useMenu();
+  const {
+    isOpen: isOpenProductDetailsModal,
+    onClose: onCloseProductDetailsModal,
+    onOpen: onOpenProductDetailsModal,
+  } = useDisclosure();
+
+  const { groups, products, loading, loadingProducts, currentMenu } = useMenu();
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   const [currentGroup, setCurrentGroup] = useState<TGroup | null>(null);
@@ -153,9 +160,12 @@ export default function MenuPage() {
   };
 
   const handleCreateNewGroup = (group: GroupFormData): void => {
+    if (!currentMenu || !group) return;
+
     dispatch(
       setCreateNewGroupRequest({
         group,
+        menuId: currentMenu.id,
       })
     );
     onCloseGroupModal();
@@ -433,6 +443,10 @@ export default function MenuPage() {
                                             setCurrentProductId(id);
                                             onOpenDeleteProductModal();
                                           }}
+                                          onClickCard={(id) => {
+                                            setCurrentProductId(id);
+                                            onOpenProductDetailsModal();
+                                          }}
                                         />
                                       </div>
                                     )}
@@ -484,6 +498,12 @@ export default function MenuPage() {
         onSave={handleDeleteProduct}
         title="Excluir Produto"
         description="Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita."
+      />
+
+      <ProductModalDetails
+        isOpen={isOpenProductDetailsModal}
+        onClose={onCloseProductDetailsModal}
+        productId={currentProductId}
       />
     </>
   );

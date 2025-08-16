@@ -5,6 +5,8 @@ import apiClient from "@/api";
 import type { AxiosResponse } from "axios";
 import { toast } from "@/utils/toast";
 import {
+  fetchCurrentMenuRequest,
+  fetchCurrentMenuSuccess,
   fetchCurrentProductError,
   fetchCurrentProductRequest,
   fetchCurrentProductSuccess,
@@ -30,6 +32,7 @@ import {
   setToggleDisableProductSuccess,
 } from "./menuSlice";
 import type {
+  FetchCurrentMenuResponse,
   FetchCurrentProductRequest,
   FetchCurrentProductResponse,
   FetchGroupsResponse,
@@ -248,6 +251,7 @@ function* setCreateNewGroupSaga(
 
     const response = yield call(apiClient.post, `/menu-group`, {
       ...payload.group,
+      menuId: payload.menuId,
       productHours: normalizeSchedule(
         payload.group.schedule,
         payload.group.daysOff
@@ -319,6 +323,23 @@ function* setToggleDisableProductSaga(
   }
 }
 
+function* fetchCurrentMenuSaga(): Generator<
+  any,
+  void,
+  AxiosResponse<FetchCurrentMenuResponse>
+> {
+  try {
+    const response = yield call(apiClient.get, `/menu`);
+
+    yield put(fetchCurrentMenuSuccess({ menu: response.data.menus[0] }));
+  } catch {
+    toast({
+      title: "Erro ao buscar menu, tente novamente",
+      status: "error",
+    });
+  }
+}
+
 export default function* MenuSaga() {
   yield takeLatest(fetchGroupsRequest.type, fetchGroupsSaga);
   yield takeLatest(fetchProductsRequest.type, fetchProductsSaga);
@@ -336,4 +357,5 @@ export default function* MenuSaga() {
     setToggleDisableProductRequest.type,
     setToggleDisableProductSaga
   );
+  yield takeLatest(fetchCurrentMenuRequest.type, fetchCurrentMenuSaga);
 }

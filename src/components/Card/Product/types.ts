@@ -5,4 +5,5 @@ export type Props = {
   onEdit: (id: number) => void;
   onDisable: (id: number) => void;
   onDelete: (id: number) => void;
+  onClickCard?: (id: number) => void;
 };

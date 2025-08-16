@@ -14,19 +14,32 @@ import {
   Tag,
 } from "@chakra-ui/react";
 import type { Props } from "./types";
-
 import emptyImage from "../../../assets/emptyImage.png";
+import { useMemo } from "react";
 
 export default function ProductCard({
   item,
   onEdit,
   onDisable,
   onDelete,
+  onClickCard,
 }: Props) {
   const itemBgColor = useColorModeValue("white", "gray.700");
   const itemBorderColor = useColorModeValue("gray.200", "gray.600");
   const itemImageBgColor = useColorModeValue("gray.100", "gray.600");
-  const itemDescriptionColor = useColorModeValue("gray.500", "gray.400");
+
+  const renderDisponibilityTag = useMemo(() => {
+    const availability = {
+      DELIVERY: <Tag colorScheme="yellow">Delivery</Tag>,
+      LOCAL: <Tag colorScheme="gray">Local</Tag>,
+      BOTH: <Tag colorScheme="blue">Delivery e Local</Tag>,
+    };
+    return [availability[item.productAvailabilityBy]];
+  }, [item.productAvailabilityBy]);
+
+  const handleCardClick = () => {
+    if (onClickCard) onClickCard(item.id);
+  };
 
   return (
     <Flex
@@ -35,11 +48,15 @@ export default function ProductCard({
       borderRadius="md"
       align="center"
       justify="space-between"
-      _hover={{ cursor: "grab" }}
+      _hover={{
+        cursor: "pointer",
+        bg: useColorModeValue("gray.50", "gray.600"),
+      }}
       bg={itemBgColor}
       borderColor={itemBorderColor}
+      onClick={handleCardClick} // clique no card dispara a função
     >
-      <HStack>
+      <HStack spacing={4}>
         <Image
           boxSize="50px"
           borderRadius="md"
@@ -48,20 +65,18 @@ export default function ProductCard({
           src={item?.image || emptyImage}
         />
         <Box>
-          {item.disabled && (
-            <Tag size="sm" colorScheme="red" mb={1}>
-              Desabilitado
-            </Tag>
-          )}
           <Text fontWeight="bold">{item.name}</Text>
-          <Text fontSize="sm" color={itemDescriptionColor}>
-            {item.description}
-          </Text>
           <Badge colorScheme="green">R$ {item.price}</Badge>
+
+          <HStack spacing={2} mt={2}>
+            {renderDisponibilityTag}
+            {item.disabled && <Tag colorScheme="red">Indisponível</Tag>}
+          </HStack>
         </Box>
       </HStack>
 
-      <HStack marginRight={4}>
+      <HStack marginRight={4} onClick={(e) => e.stopPropagation()}>
+        {/* Evita disparar onClick do card ao clicar no menu */}
         <Menu>
           <MenuButton
             as={IconButton}
@@ -72,7 +87,7 @@ export default function ProductCard({
           />
           <MenuList>
             <MenuItem onClick={() => onDisable(item.id)}>
-              {item.disabled ? "Habilitar" : "Desabilitar"}
+              {item.disabled ? "Tornar disponível" : "Tornar indisponível"}
             </MenuItem>
             <MenuItem onClick={() => onEdit(item.id)}>Editar</MenuItem>
             <MenuItem onClick={() => onDelete(item.id)}>Excluir</MenuItem>

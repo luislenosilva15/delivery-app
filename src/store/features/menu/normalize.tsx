@@ -9,6 +9,8 @@ export function normalizeSetCreateNewProductRequest(
   const newFormData = new FormData();
 
   if (product.name) newFormData.append("name", product.name);
+  if (product.code) newFormData.append("code", product.code);
+  newFormData.append("isAdultOnly", String(product.isAdultOnly));
   if (product.name) newFormData.append("menuGroupId", String(groupId));
   if (product.description)
     newFormData.append("description", product.description);
@@ -31,6 +33,9 @@ export function normalizeSetEditProductRequest(product: FormData) {
   const newFormData = new FormData();
 
   if (product.name) newFormData.append("name", product.name);
+  newFormData.append("code", product.code || "");
+  newFormData.append("isAdultOnly", String(product.isAdultOnly));
+
   if (product.description)
     newFormData.append("description", product.description);
   if (product.price) newFormData.append("price", String(product.price));
@@ -148,5 +153,7 @@ export const formDataProductEditData = (product: TProduct) => {
     alwaysAvailable: product.alwaysAvailable,
     schedule,
     daysOff,
+    code: product.code,
+    isAdultOnly: product.isAdultOnly,
   };
 };

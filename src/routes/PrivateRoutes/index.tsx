@@ -4,6 +4,7 @@ import {
   setAuthValidRequest,
   type AuthState,
 } from "@/store/features/auth/authSlice";
+import { fetchCurrentMenuRequest } from "@/store/features/menu/menuSlice";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
@@ -17,6 +18,7 @@ export const PrivateRoutes = () => {
 
   useEffect(() => {
     dispatch(setAuthValidRequest());
+    dispatch(fetchCurrentMenuRequest());
   }, [dispatch]);
 
   if (loading) return <PageLoading />;

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { TGroup, TProduct } from "./types/models";
+import type { TGroup, TMenu, TProduct } from "./types/models";
 import type {
+  FetchCurrentMenuSuccess,
   FetchCurrentProductRequest,
   FetchCurrentProductSuccess,
   FetchGroupsSuccess,
@@ -25,6 +26,7 @@ import type {
 export interface MenuState {
   loading: boolean;
   loadingProducts: boolean;
+  currentMenu: TMenu | null;
   groups: TGroup[];
   products: TProduct[];
   currentProduct: TProduct | null;
@@ -34,6 +36,7 @@ export interface MenuState {
 const initialState: MenuState = {
   loading: true,
   loadingProducts: true,
+  currentMenu: null,
   groups: [],
   products: [],
   currentProduct: null,
@@ -118,7 +121,7 @@ const menuSlice = createSlice({
       state,
       action: PayloadAction<SetCreateNewGroupSuccess>
     ) {
-      state.groups.push(action.payload.group);
+      state.groups = [...state.groups, action.payload.group];
     },
 
     fetchCurrentProductRequest(
@@ -183,6 +186,15 @@ const menuSlice = createSlice({
           : product
       );
     },
+
+    fetchCurrentMenuRequest(_state) {},
+
+    fetchCurrentMenuSuccess(
+      state,
+      action: PayloadAction<FetchCurrentMenuSuccess>
+    ) {
+      state.currentMenu = action.payload.menu;
+    },
   },
 });
 
@@ -210,6 +222,8 @@ export const {
   setDeleteProductSuccess,
   setToggleDisableProductRequest,
   setToggleDisableProductSuccess,
+  fetchCurrentMenuRequest,
+  fetchCurrentMenuSuccess,
 } = menuSlice.actions;
 
 export default menuSlice.reducer;

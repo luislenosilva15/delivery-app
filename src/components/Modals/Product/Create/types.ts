@@ -8,6 +8,8 @@ export type FormData = {
   image: string | null;
   imageFile: File | null | string;
   alwaysAvailable: boolean;
+  isAdultOnly: boolean;
+  code?: string;
   schedule: Record<
     string,
     {

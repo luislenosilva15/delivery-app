@@ -1,5 +1,5 @@
 import type { FormData } from "@/components/Modals/Product/Create/types";
-import type { TGroup, TProduct } from "../models";
+import type { TGroup, TMenu, TProduct } from "../models";
 
 import type { FormData as GroupFormData } from "@/components/Modals/Group/Create/types";
 
@@ -119,4 +119,12 @@ export interface SetToggleDisableProductResponse {
 export interface SetToggleDisableProductSuccess {
   productId: number;
   disabled: boolean;
+}
+
+export interface FetchCurrentMenuSuccess {
+  menu: TMenu;
+}
+
+export interface FetchCurrentMenuResponse {
+  menus: TMenu[];
 }

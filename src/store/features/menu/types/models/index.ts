@@ -7,6 +7,13 @@ export type TProductHours = {
   closed: boolean;
 };
 
+export type TMenu = {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  companyId: number;
+};
+
 export type TGroupHours = {
   dayOfWeek: number;
   startTime: null | string;
