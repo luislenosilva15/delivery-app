@@ -1,0 +1,25 @@
+import type { TCuisineType } from "@/store/features/auth/types/models";
+
+export const cuisineLabel: Record<TCuisineType, string> = {
+  PIZZERIA: "Pizzaria",
+  PASTA: "Massas",
+  JAPANESE: "Japonesa",
+  BURGER: "Hambúrguer",
+  VEGAN: "Vegana",
+  BBQ: "Churrasco",
+  SEAFOOD: "Frutos do Mar",
+  SUSHI: "Sushi",
+  CHINESE: "Chinesa",
+  INDIAN: "Indiana",
+  MEXICAN: "Mexicana",
+  THAI: "Tailandesa",
+  ARABIC: "Árabe",
+  BAKERY: "Padaria",
+  CAFE: "Cafeteria",
+  FASTFOOD: "Fast Food",
+  HEALTHY: "Saudável",
+  DESSERT: "Sobremesas",
+  STEAKHOUSE: "Churrascaria / Steakhouse",
+  BRAZILIAN: "Brasileira",
+  OTHERS: "Outros",
+};

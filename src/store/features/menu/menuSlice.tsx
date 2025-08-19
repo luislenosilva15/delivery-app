@@ -2,6 +2,8 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { TGroup, TMenu, TProduct } from "./types/models";
 import type {
+  FetchCurrentGroupRequest,
+  FetchCurrentGroupSuccess,
   FetchCurrentMenuSuccess,
   FetchCurrentProductRequest,
   FetchCurrentProductSuccess,
@@ -16,6 +18,8 @@ import type {
   SetDeleteGroupSuccess,
   SetDeleteProductRequest,
   SetDeleteProductSuccess,
+  SetEditGroupRequest,
+  SetEditGroupSuccess,
   SetEditProductRequest,
   SetEditProductSuccess,
   SetToggleDisableGroupSuccess,
@@ -26,20 +30,24 @@ import type {
 export interface MenuState {
   loading: boolean;
   loadingProducts: boolean;
+  loadingCurrentGroup: boolean;
+  loadingCurrentProduct: boolean;
   currentMenu: TMenu | null;
   groups: TGroup[];
   products: TProduct[];
   currentProduct: TProduct | null;
-  loadingCurrentProduct: boolean;
+  currentGroup: TGroup | null;
 }
 
 const initialState: MenuState = {
   loading: true,
   loadingProducts: true,
-  currentMenu: null,
+  loadingCurrentGroup: true,
   groups: [],
   products: [],
+  currentMenu: null,
   currentProduct: null,
+  currentGroup: null,
   loadingCurrentProduct: false,
 };
 
@@ -195,6 +203,32 @@ const menuSlice = createSlice({
     ) {
       state.currentMenu = action.payload.menu;
     },
+
+    fetchCurrentGroupRequest(
+      state,
+      _action: PayloadAction<FetchCurrentGroupRequest>
+    ) {
+      state.loadingCurrentGroup = true;
+      state.currentGroup = null;
+    },
+
+    fetchCurrentGroupSuccess(
+      state,
+      action: PayloadAction<FetchCurrentGroupSuccess>
+    ) {
+      state.currentGroup = action.payload.menuGroup;
+      state.loadingCurrentGroup = false;
+    },
+
+    setEditGroupRequest(_state, _action: PayloadAction<SetEditGroupRequest>) {},
+
+    setEditGroupSuccess(state, action: PayloadAction<SetEditGroupSuccess>) {
+      state.groups = state.groups.map((group) =>
+        group.id === action.payload.group.id
+          ? { ...group, ...action.payload.group }
+          : group
+      );
+    },
   },
 });
 
@@ -224,6 +258,10 @@ export const {
   setToggleDisableProductSuccess,
   fetchCurrentMenuRequest,
   fetchCurrentMenuSuccess,
+  fetchCurrentGroupRequest,
+  fetchCurrentGroupSuccess,
+  setEditGroupRequest,
+  setEditGroupSuccess,
 } = menuSlice.actions;
 
 export default menuSlice.reducer;

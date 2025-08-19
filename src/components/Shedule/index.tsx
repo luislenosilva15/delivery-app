@@ -18,6 +18,7 @@ export default function ScheduleForm({
   schedule,
   onChange,
   errors,
+  avaliableText,
 }: Props) {
   const [localSchedule, setLocalSchedule] = useState(schedule);
   const [localDaysOff, setLocalDaysOff] = useState(daysOff);
@@ -94,7 +95,7 @@ export default function ScheduleForm({
         onChange={(e) => handleAlwaysAvailableChange(e.target.checked)}
         colorScheme="primary"
       >
-        Disponibilidade de acordo com grupo
+        {avaliableText}
       </Checkbox>
 
       {!localAlways && (

@@ -344,6 +344,7 @@ export default function ProductModal({
                   daysOff={formData.daysOff}
                   schedule={formData.schedule}
                   errors={scheduleErrors}
+                  avaliableText="Disponibilidade de acordo com grupo"
                   onChange={({ alwaysAvailable, daysOff, schedule }) => {
                     setFormData((prev) => ({
                       ...prev,

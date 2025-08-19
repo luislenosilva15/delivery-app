@@ -128,3 +128,28 @@ export interface FetchCurrentMenuSuccess {
 export interface FetchCurrentMenuResponse {
   menus: TMenu[];
 }
+
+export interface FetchCurrentGroupRequest {
+  groupId: number;
+}
+
+export interface FetchCurrentGroupResponse {
+  menuGroup: TGroup;
+}
+
+export interface FetchCurrentGroupSuccess {
+  menuGroup: TGroup;
+}
+
+export interface SetEditGroupRequest {
+  group: GroupFormData;
+  groupId: number;
+}
+
+export interface SetEditGroupResponse {
+  group: TGroup;
+}
+
+export interface SetEditGroupSuccess {
+  group: TGroup;
+}

@@ -1,3 +1,26 @@
+export type TCuisineType =
+  | "PIZZERIA"
+  | "PASTA"
+  | "JAPANESE"
+  | "BURGER"
+  | "VEGAN"
+  | "BBQ"
+  | "SEAFOOD"
+  | "SUSHI"
+  | "CHINESE"
+  | "INDIAN"
+  | "MEXICAN"
+  | "THAI"
+  | "ARABIC"
+  | "BAKERY"
+  | "CAFE"
+  | "FASTFOOD"
+  | "HEALTHY"
+  | "DESSERT"
+  | "STEAKHOUSE"
+  | "BRAZILIAN"
+  | "OTHERS";
+
 export type TCompany = {
   id: 1;
   name: string;
@@ -15,6 +38,9 @@ export type TCompany = {
   zipCode?: string;
   createdAt: string;
   updatedAt: string;
+  isOpen?: boolean;
+  cuisineType: TCuisineType;
+  menuId?: number;
 };
 
 export type TOpeningHours = {

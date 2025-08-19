@@ -5,6 +5,8 @@ import apiClient from "@/api";
 import type { AxiosResponse } from "axios";
 import { toast } from "@/utils/toast";
 import {
+  fetchCurrentGroupRequest,
+  fetchCurrentGroupSuccess,
   fetchCurrentMenuRequest,
   fetchCurrentMenuSuccess,
   fetchCurrentProductError,
@@ -24,6 +26,8 @@ import {
   setDeleteGroupSuccess,
   setDeleteProductRequest,
   setDeleteProductSuccess,
+  setEditGroupRequest,
+  setEditGroupSuccess,
   setEditProductRequest,
   setEditProductSuccess,
   setToggleDisableGroupRequest,
@@ -32,6 +36,8 @@ import {
   setToggleDisableProductSuccess,
 } from "./menuSlice";
 import type {
+  FetchCurrentGroupRequest,
+  FetchCurrentGroupResponse,
   FetchCurrentMenuResponse,
   FetchCurrentProductRequest,
   FetchCurrentProductResponse,
@@ -46,6 +52,8 @@ import type {
   SetDeleteGroupResponse,
   SetDeleteProductRequest,
   SetDeleteProductResponse,
+  SetEditGroupRequest,
+  SetEditGroupSuccess,
   SetEditProductRequest,
   SetEditProductSuccess,
   SetToggleDisableGroupRequest,
@@ -55,8 +63,9 @@ import type {
 } from "./types/request";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import {
-  normalizeSchedule,
+  normalizeSetCreateNewGroup,
   normalizeSetCreateNewProductRequest,
+  normalizeSetEditGroup,
   normalizeSetEditProductRequest,
 } from "./normalize";
 import type { ErrorResponse } from "../team/types/request";
@@ -165,6 +174,35 @@ function* setEditProductSaga(
   }
 }
 
+function* setEditGroupSaga(
+  action: PayloadAction<SetEditGroupRequest>
+): Generator<any, void, AxiosResponse<SetEditGroupSuccess>> {
+  try {
+    const { payload } = action;
+
+    const formData = normalizeSetEditGroup(payload.group);
+
+    const response = yield call(
+      apiClient.patch,
+      `/menu-group/${payload.groupId}`,
+      formData
+    );
+
+    yield put(setEditGroupSuccess({ group: response.data.group }));
+
+    toast({
+      title: "Grupo editado com sucesso",
+      status: "success",
+    });
+  } catch (error) {
+    const err = error as ErrorResponse;
+    toast({
+      title: err.response.data.message,
+      status: "error",
+    });
+  }
+}
+
 function* setToggleDisableGroupSaga(
   action: PayloadAction<SetToggleDisableGroupRequest>
 ): Generator<any, void, AxiosResponse<SetToggleDisableGroupResponse>> {
@@ -249,13 +287,11 @@ function* setCreateNewGroupSaga(
   try {
     const { payload } = action;
 
+    const data = normalizeSetCreateNewGroup(payload.group);
+
     const response = yield call(apiClient.post, `/menu-group`, {
-      ...payload.group,
+      ...data,
       menuId: payload.menuId,
-      productHours: normalizeSchedule(
-        payload.group.schedule,
-        payload.group.daysOff
-      ),
     });
 
     yield put(setCreateNewGroupSuccess({ group: response.data.group }));
@@ -286,6 +322,26 @@ function* fetchCurrentProductSaga(
     yield put(fetchCurrentProductError());
     toast({
       title: "Erro ao buscar produto, tente novamente",
+      status: "error",
+    });
+  }
+}
+
+function* fetchCurrentGroupSaga(
+  action: PayloadAction<FetchCurrentGroupRequest>
+): Generator<any, void, AxiosResponse<FetchCurrentGroupResponse>> {
+  try {
+    const { payload } = action;
+
+    const response = yield call(
+      apiClient.get,
+      `/menu-group/${payload.groupId}`
+    );
+
+    yield put(fetchCurrentGroupSuccess({ menuGroup: response.data.menuGroup }));
+  } catch {
+    toast({
+      title: "Erro ao buscar grupo, tente novamente",
       status: "error",
     });
   }
@@ -358,4 +414,6 @@ export default function* MenuSaga() {
     setToggleDisableProductSaga
   );
   yield takeLatest(fetchCurrentMenuRequest.type, fetchCurrentMenuSaga);
+  yield takeLatest(fetchCurrentGroupRequest.type, fetchCurrentGroupSaga);
+  yield takeLatest(setEditGroupRequest.type, setEditGroupSaga);
 }

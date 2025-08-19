@@ -13,6 +13,8 @@ import OpeningHourPage from "@/pages/OpeningHour";
 import AboutPage from "@/pages/About";
 import TeamPage from "@/pages/Team";
 import MenuPage from "@/pages/Menu";
+import ClientHomePage from "@/pages/Client/Home";
+import ClientMenuPage from "@/pages/Client/Menu";
 
 export const router = createBrowserRouter([
   {
@@ -53,6 +55,15 @@ export const router = createBrowserRouter([
       {
         element: <PrivateLayout />,
         children: [{ path: "/menu", element: <MenuPage /> }],
+      },
+    ],
+  },
+  {
+    children: [
+      { path: "/client/:id", element: <ClientHomePage /> },
+      {
+        path: "/client/:id/menu",
+        element: <ClientMenuPage />,
       },
     ],
   },

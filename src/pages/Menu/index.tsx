@@ -35,6 +35,7 @@ import {
   setCreateNewProductRequest,
   setDeleteGroupRequest,
   setDeleteProductRequest,
+  setEditGroupRequest,
   setEditProductRequest,
   setToggleDisableGroupRequest,
   setToggleDisableProductRequest,
@@ -49,6 +50,7 @@ import NewGroupModal from "@/components/Modals/Group/Create";
 import ProductCard from "@/components/Card/Product";
 import { GroupEmptyState } from "./emptyState";
 import { ProductModalDetails } from "@/components/Modals/Product/Details";
+import { GroupModalDetails } from "@/components/Modals/Group/Details";
 
 export default function MenuPage() {
   const dispatch = useDispatch();
@@ -81,6 +83,12 @@ export default function MenuPage() {
     isOpen: isOpenProductDetailsModal,
     onClose: onCloseProductDetailsModal,
     onOpen: onOpenProductDetailsModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenGroupDetailsModal,
+    onClose: onCloseGroupDetailsModal,
+    onOpen: onOpenGroupDetailsModal,
   } = useDisclosure();
 
   const { groups, products, loading, loadingProducts, currentMenu } = useMenu();
@@ -162,12 +170,22 @@ export default function MenuPage() {
   const handleCreateNewGroup = (group: GroupFormData): void => {
     if (!currentMenu || !group) return;
 
-    dispatch(
-      setCreateNewGroupRequest({
-        group,
-        menuId: currentMenu.id,
-      })
-    );
+    if (currentGroup) {
+      dispatch(
+        setEditGroupRequest({
+          group,
+          groupId: currentGroup.id,
+        })
+      );
+    } else {
+      dispatch(
+        setCreateNewGroupRequest({
+          group,
+          menuId: currentMenu.id,
+        })
+      );
+    }
+
     onCloseGroupModal();
   };
 
@@ -204,7 +222,10 @@ export default function MenuPage() {
               <Button
                 colorScheme="primary"
                 leftIcon={<AddIcon />}
-                onClick={onOpenGroupModal}
+                onClick={() => {
+                  setCurrentGroup(null);
+                  onOpenGroupModal();
+                }}
               >
                 Novo Grupo
               </Button>
@@ -329,21 +350,38 @@ export default function MenuPage() {
                               size="sm"
                             />
                             <MenuList>
-                              <MenuItem>Editar</MenuItem>
+                              <MenuItem
+                                onClick={() => {
+                                  setCurrentGroup(group);
+                                  onOpenGroupDetailsModal();
+                                }}
+                              >
+                                Visualizar grupo
+                              </MenuItem>
+                              <MenuItem
+                                onClick={() => {
+                                  setCurrentGroup(group);
+                                  onOpenGroupModal();
+                                }}
+                              >
+                                Editar grupo
+                              </MenuItem>
                               <MenuItem
                                 onClick={() => {
                                   setCurrentGroup(group);
                                   onOpenDeleteGroupModal();
                                 }}
                               >
-                                Excluir
+                                Excluir grupo
                               </MenuItem>
                               <MenuItem
                                 onClick={() => {
                                   handleDisableGroup(group.id, group.disabled);
                                 }}
                               >
-                                {!group.disabled ? "Desabilitar" : "Habilitar"}
+                                {!group.disabled
+                                  ? "Desabilitar grupo"
+                                  : "Habilitar grupo"}
                               </MenuItem>
                             </MenuList>
                           </Menu>
@@ -490,6 +528,7 @@ export default function MenuPage() {
           onCloseGroupModal();
         }}
         onSubmit={handleCreateNewGroup}
+        groupId={currentGroup?.id}
       />
 
       <ConfirmModal
@@ -504,6 +543,12 @@ export default function MenuPage() {
         isOpen={isOpenProductDetailsModal}
         onClose={onCloseProductDetailsModal}
         productId={currentProductId}
+      />
+
+      <GroupModalDetails
+        isOpen={isOpenGroupDetailsModal}
+        onClose={onCloseGroupDetailsModal}
+        groupId={currentGroup?.id as number}
       />
     </>
   );

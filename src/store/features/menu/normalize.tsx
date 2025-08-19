@@ -1,6 +1,13 @@
 import type { FormData } from "@/components/Modals/Product/Create/types";
-import type { TGroupHours, TProduct, TProductHours } from "./types/models";
+import type {
+  TGroup,
+  TGroupHours,
+  TProduct,
+  TProductHours,
+} from "./types/models";
 import { daysOfWeek } from "@/constants";
+
+import type { FormData as GroupFormData } from "@/components/Modals/Group/Create/types";
 
 export function normalizeSetCreateNewProductRequest(
   product: FormData,
@@ -155,5 +162,41 @@ export const formDataProductEditData = (product: TProduct) => {
     daysOff,
     code: product.code,
     isAdultOnly: product.isAdultOnly,
+  };
+};
+
+export const normalizeSetCreateNewGroup = (group: GroupFormData) => {
+  const menuHours = normalizeSchedule(group.schedule, group.daysOff);
+
+  const alwaysAvailable = group.alwaysAvailable;
+
+  return {
+    name: group.name,
+    alwaysAvailable: group.alwaysAvailable,
+    menuHours: alwaysAvailable ? [] : menuHours,
+  };
+};
+
+export const formDataGroupEditData = (group: TGroup) => {
+  const { schedule, daysOff } = denormalizeSchedule(
+    group.menuHours as TGroupHours[]
+  );
+  return {
+    name: group.name,
+    alwaysAvailable: group.alwaysAvailable,
+    schedule,
+    daysOff,
+  };
+};
+
+export const normalizeSetEditGroup = (group: GroupFormData) => {
+  const menuHours = normalizeSchedule(group.schedule, group.daysOff);
+
+  const alwaysAvailable = group.alwaysAvailable;
+
+  return {
+    name: group.name,
+    alwaysAvailable: group.alwaysAvailable,
+    menuHours: alwaysAvailable ? [] : menuHours,
   };
 };

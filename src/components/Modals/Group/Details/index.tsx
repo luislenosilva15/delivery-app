@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -9,40 +9,29 @@ import {
   ModalFooter,
   Button,
   Text,
-  Image,
   Badge,
   VStack,
   HStack,
   Divider,
   Box,
   Spinner,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import type { Props } from "./types";
 import { useMenu } from "@/hook/menu";
 import { useDispatch } from "react-redux";
-import { fetchCurrentProductRequest } from "@/store/features/menu/menuSlice";
-
-import emptyImage from "../../../../assets/emptyImage.png";
+import { fetchCurrentGroupRequest } from "@/store/features/menu/menuSlice";
 import { formatDate } from "@/utils/data";
 import { daysOfWeek } from "@/constants";
 
-export const ProductModalDetails = ({ isOpen, onClose, productId }: Props) => {
+export const GroupModalDetails = ({ isOpen, onClose, groupId }: Props) => {
   const dispatch = useDispatch();
 
-  const { currentProduct: product, loadingCurrentProduct: loading } = useMenu();
+  const { currentGroup: group, loadingCurrentGroup: loading } = useMenu();
 
   useEffect(() => {
-    if (!productId) return;
-
-    dispatch(fetchCurrentProductRequest({ productId }));
-  }, [dispatch, isOpen, productId]);
-
-  const availability = {
-    DELIVERY: "Delivery",
-    LOCAL: "Local",
-    BOTH: "Delivery e Local",
-  };
+    if (!groupId) return;
+    dispatch(fetchCurrentGroupRequest({ groupId }));
+  }, [dispatch, isOpen, groupId]);
 
   const getDayName = (dayOfWeek: number) => {
     return daysOfWeek[dayOfWeek] || "";
@@ -58,67 +47,47 @@ export const ProductModalDetails = ({ isOpen, onClose, productId }: Props) => {
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{product?.name || "Carregando..."}</ModalHeader>
+        <ModalHeader>{group?.name || "Carregando..."}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           {loading ? (
             <Box display="flex" justifyContent="center" py={10}>
               <Spinner size="xl" />
             </Box>
-          ) : product ? (
+          ) : group ? (
             <VStack spacing={4} align="stretch">
-              <Image
-                src={product.image || emptyImage}
-                alt={product.name}
-                borderRadius="md"
-                maxH="200px"
-                objectFit="contain"
-                mb={2}
-              />
-
               <HStack spacing={2} wrap="wrap">
-                <Badge colorScheme={product.disabled ? "red" : "green"}>
-                  {product.disabled ? "Indisponível" : "Ativo"}
+                <Badge colorScheme={group.disabled ? "red" : "green"}>
+                  {group.disabled ? "Indisponível" : "Ativo"}
                 </Badge>
-
-                {product.isAdultOnly && (
-                  <Badge colorScheme="purple">Apenas para +18 anos</Badge>
-                )}
               </HStack>
 
               <Divider />
 
-              {product.code && (
-                <Box>
-                  <Text fontWeight="bold">Código:</Text>
-                  <Text>{product.code}</Text>
-                </Box>
-              )}
-
               <Box>
-                <Text fontWeight="bold">Descrição:</Text>
-                <Text>{product.description || "Sem descrição"}</Text>
+                <Text fontWeight="bold">Nome:</Text>
+                <Text>{group.name}</Text>
               </Box>
 
               <Box>
-                <Text fontWeight="bold">Preço:</Text>
-                <Text>R$ {product.price.toFixed(2)}</Text>
+                <Text fontWeight="bold">Disponibilidade:</Text>
+                <Text>
+                  {group.alwaysAvailable
+                    ? "Sempre disponível"
+                    : "Disponível em horários específicos"}
+                </Text>
               </Box>
 
-              <Box>
-                <Text fontWeight="bold">Disponível por:</Text>
-                <Text>{availability[product.productAvailabilityBy]}</Text>
-              </Box>
-
-              {product.productHours && product.productHours.length > 0 && (
+              {/* Horários no mesmo padrão do produto */}
+              {!group.alwaysAvailable && group.menuHours.length > 0 && (
                 <Box>
                   <Text fontWeight="bold" mb={2}>
                     Horários:
                   </Text>
                   <VStack align="start" spacing={1}>
                     {Object.values(
-                      product.productHours.reduce<
-                        Record<number, typeof product.productHours>
+                      group.menuHours.reduce<
+                        Record<number, typeof group.menuHours>
                       >((acc, hour) => {
                         if (!acc[hour.dayOfWeek]) acc[hour.dayOfWeek] = [];
                         acc[hour.dayOfWeek].push(hour);
@@ -153,28 +122,32 @@ export const ProductModalDetails = ({ isOpen, onClose, productId }: Props) => {
                 gap={2}
                 alignItems="flex-start"
               >
-                <HStack
-                  alignItems={"flex-start"}
-                  spacing={1}
-                  flexDirection="column"
-                  display="flex"
-                >
-                  <Text fontWeight="bold">Criado em:</Text>
-                  <Text>{formatDate(product.createdAt)}</Text>
-                </HStack>
-                <HStack
-                  alignItems={"flex-start"}
-                  spacing={1}
-                  flexDirection="column"
-                  display="flex"
-                >
-                  <Text fontWeight="bold">Atualizado em:</Text>
-                  <Text>{formatDate(product.updatedAt)}</Text>
-                </HStack>
+                {group.createdAt && (
+                  <HStack
+                    alignItems={"flex-start"}
+                    spacing={1}
+                    flexDirection="column"
+                    display="flex"
+                  >
+                    <Text fontWeight="bold">Criado em:</Text>
+                    <Text>{formatDate(group.createdAt)}</Text>
+                  </HStack>
+                )}
+                {group.updatedAt && (
+                  <HStack
+                    alignItems={"flex-start"}
+                    spacing={1}
+                    flexDirection="column"
+                    display="flex"
+                  >
+                    <Text fontWeight="bold">Atualizado em:</Text>
+                    <Text>{formatDate(group.updatedAt)}</Text>
+                  </HStack>
+                )}
               </Box>
             </VStack>
           ) : (
-            <Text>Produto não encontrado.</Text>
+            <Text>Grupo não encontrado.</Text>
           )}
         </ModalBody>
 

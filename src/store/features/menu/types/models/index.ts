@@ -28,6 +28,9 @@ export type TGroup = {
   name: string;
   menuId: number;
   disabled: boolean;
+  alwaysAvailable: boolean;
+  menuHours: TGroupHours[];
+  products: TProduct[];
 };
 
 export type TProduct = {

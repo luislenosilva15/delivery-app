@@ -5,6 +5,7 @@ export interface Props {
   alwaysAvailable: boolean;
   daysOff: string[];
   schedule: Schedule;
+  avaliableText: string;
   onChange: (data: {
     alwaysAvailable: boolean;
     daysOff: string[];
