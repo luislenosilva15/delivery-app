@@ -1,8 +1,11 @@
 import ProductCard from "@/components/Card/Client/Product";
 import { useClient } from "@/hook/client";
 import {
+  fetchCartRequest,
   fetchCompanyRequest,
   fetchGroupsRequest,
+  setAddToCartRequest,
+  setChangeQuantityRequest,
 } from "@/store/features/client/clientSlice";
 import { cuisineLabel } from "@/utils/typeNormalize";
 import {
@@ -24,11 +27,13 @@ import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import type { TGroup, TProduct } from "@/store/features/menu/types/models";
 import ProductModal from "@/components/Modals/Client/Product/Details";
+import CheckoutBar from "@/components/CheckoutBar";
+import { CartModal } from "@/components/Modals/Client/Product/Cart";
 
 const ClientMenuPage = () => {
   const dispatch = useDispatch();
   const { id: clientId } = useParams<{ id: string }>();
-  const { company, loading, groups } = useClient();
+  const { company, loading, groups, loadingCart, cart } = useClient();
 
   const {
     isOpen: isProductModalOpen,
@@ -44,11 +49,21 @@ const ClientMenuPage = () => {
   const buttonRefs = useRef<Record<number, HTMLButtonElement | null>>({});
   const observerRef = useRef<IntersectionObserver | null>(null);
 
+  const {
+    isOpen: isOpenCart,
+    onOpen: onOpenCart,
+    onClose: onCloseCart,
+  } = useDisclosure();
+
+  const cartEmpty: boolean =
+    cart.items.map((item) => item.quantity).reduce((a, b) => a + b, 0) === 0;
+
   useEffect(() => {
     if (company) return;
 
     if (clientId) {
       dispatch(fetchCompanyRequest({ id: Number(clientId) }));
+      dispatch(fetchCartRequest());
     }
   }, [clientId, company, dispatch]);
 
@@ -94,12 +109,46 @@ const ClientMenuPage = () => {
     return () => observer.disconnect();
   }, [groups]);
 
+  useEffect(() => {
+    if (cartEmpty) {
+      onCloseCart();
+    }
+  }, [cartEmpty, onCloseCart]);
+
+  const handleAddProductCart = (
+    product: TProduct,
+    quantity: number,
+    observation?: string
+  ) => {
+    dispatch(
+      setAddToCartRequest({
+        item: {
+          id: product.id,
+          quantity,
+          imageUrl: product.image as string,
+          name: product.name as string,
+          price: product.price as number,
+          observation,
+        },
+      })
+    );
+  };
+
   const handleGroupClick = (groupId: number) => {
     const section = groupsRef.current[groupId];
     if (section) {
       section.scrollIntoView({ behavior: "smooth" });
       setActiveGroup(groupId);
     }
+  };
+
+  const handleUpdateCartItemQuantity = (uniqueId: string, quantity: number) => {
+    dispatch(
+      setChangeQuantityRequest({
+        uniqueId,
+        quantity,
+      })
+    );
   };
 
   const renderedGroups = useMemo(
@@ -134,7 +183,7 @@ const ClientMenuPage = () => {
 
   const categoryBg = useColorModeValue("white", "gray.800");
 
-  if (!groups || !company || loading) {
+  if (!groups || !company || loading || loadingCart) {
     return (
       <VStack spacing={8} py={10} align="center" justifyContent="center">
         <Spinner size="xl" />
@@ -143,7 +192,7 @@ const ClientMenuPage = () => {
   }
 
   return (
-    <>
+    <Box>
       <Box maxW="900px" mx="auto" py={6} px={4}>
         <VStack spacing={3} textAlign="center">
           <Image
@@ -213,8 +262,18 @@ const ClientMenuPage = () => {
         isOpen={isProductModalOpen}
         onClose={onProductModalClose}
         product={currentProduct}
+        addProduct={handleAddProductCart}
       />
-    </>
+
+      <CartModal
+        isOpen={isOpenCart && !cartEmpty}
+        onClose={onCloseCart}
+        items={cart.items}
+        onSubmit={() => {}}
+        onUpdateQuantity={handleUpdateCartItemQuantity}
+      />
+      {!cartEmpty && <CheckoutBar onClick={onOpenCart} />}
+    </Box>
   );
 };
 

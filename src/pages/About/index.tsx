@@ -6,6 +6,7 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Select,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useAuth } from "@/hook/auth";
@@ -17,6 +18,7 @@ import FormErrorInfo from "@/components/FormErrorInfo";
 import { isValidPhone } from "@/utils/validations";
 import { maskPhone } from "@/utils/mask";
 import { setEditCompanyRequest } from "@/store/features/auth/authSlice";
+import { cuisineTypes } from "@/constants";
 
 const AboutPage = () => {
   const { company, isSubmitEditCompanyForm } = useAuth();
@@ -34,6 +36,7 @@ const AboutPage = () => {
     state: company?.state || "",
     zipCode: company?.zipCode || "",
     logoFile: null,
+    cuisineType: company?.cuisineType || "",
   });
 
   const [phoneError, setPhoneError] = useState<string | null>(null);
@@ -130,6 +133,27 @@ const AboutPage = () => {
                 value={formData.legalName}
                 onChange={handleChange}
               />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Tipo de Cozinha</FormLabel>
+
+              <Select
+                value={formData.cuisineType}
+                placeholder="Selecione o tipo de cozinha"
+                onChange={(e) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    cuisineType: e.target.value,
+                  }));
+                }}
+              >
+                {cuisineTypes.map((cuisine) => (
+                  <option key={cuisine.value} value={cuisine.value}>
+                    {cuisine.label}
+                  </option>
+                ))}
+              </Select>
             </FormControl>
 
             <Stack direction={{ base: "column", md: "row" }} spacing={4}>

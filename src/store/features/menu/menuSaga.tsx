@@ -388,11 +388,8 @@ function* fetchCurrentMenuSaga(): Generator<
     const response = yield call(apiClient.get, `/menu`);
 
     yield put(fetchCurrentMenuSuccess({ menu: response.data.menus[0] }));
-  } catch {
-    toast({
-      title: "Erro ao buscar menu, tente novamente",
-      status: "error",
-    });
+  } catch (error) {
+    console.log(error);
   }
 }
 

@@ -217,6 +217,7 @@ export function* setEditCompanySaga(
     company?.document && formData.append("document", company.document);
     company?.legalName && formData.append("legalName", company.legalName);
     company?.email && formData.append("email", company.email);
+    company?.cuisineType && formData.append("cuisineType", company.cuisineType);
 
     const { data } = yield call(() =>
       apiClient.patch(`/company/${id}`, formData)

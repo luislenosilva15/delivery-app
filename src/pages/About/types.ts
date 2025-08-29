@@ -10,4 +10,5 @@ export type CompanyAboutData = {
   city?: string;
   state?: string;
   zipCode?: string;
+  cuisineType: string;
 };

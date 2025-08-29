@@ -14,7 +14,6 @@ import {
   HStack,
   Button,
   IconButton,
-  Center,
   Flex,
   useColorModeValue,
 } from "@chakra-ui/react";
@@ -22,7 +21,12 @@ import { AddIcon, MinusIcon, ArrowBackIcon } from "@chakra-ui/icons";
 import type { Props } from "./types";
 import ProductCardEmptyState from "@/components/Card/Client/Product/emptyState";
 
-const ProductModal: React.FC<Props> = ({ isOpen, onClose, product }) => {
+const ProductModal: React.FC<Props> = ({
+  isOpen,
+  onClose,
+  product,
+  addProduct,
+}) => {
   const [quantity, setQuantity] = useState(1);
   const [observations, setObservations] = useState("");
 
@@ -41,7 +45,7 @@ const ProductModal: React.FC<Props> = ({ isOpen, onClose, product }) => {
   if (!product) return null;
 
   const handleAdd = () => {
-    console.log("Adicionar ao carrinho:", { product, quantity, observations });
+    addProduct(product, quantity, observations);
     onClose();
   };
 

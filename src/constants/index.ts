@@ -48,3 +48,27 @@ export const groupStepsModal = [
   { title: "Informações", description: "Dados do grupo" },
   { title: "Horários", description: "Configuração de atendimento" },
 ];
+
+export const cuisineTypes = [
+  { value: "PIZZERIA", label: "Pizzaria" },
+  { value: "PASTA", label: "Massas" },
+  { value: "JAPANESE", label: "Japonesa" },
+  { value: "BURGER", label: "Hambúrguer" },
+  { value: "VEGAN", label: "Vegana" },
+  { value: "BBQ", label: "Churrasco" },
+  { value: "SEAFOOD", label: "Frutos do Mar" },
+  { value: "SUSHI", label: "Sushi" },
+  { value: "CHINESE", label: "Chinesa" },
+  { value: "INDIAN", label: "Indiana" },
+  { value: "MEXICAN", label: "Mexicana" },
+  { value: "THAI", label: "Tailandesa" },
+  { value: "ARABIC", label: "Árabe" },
+  { value: "BAKERY", label: "Padaria" },
+  { value: "CAFE", label: "Cafeteria" },
+  { value: "FASTFOOD", label: "Fast Food" },
+  { value: "HEALTHY", label: "Saudável" },
+  { value: "DESSERT", label: "Sobremesas" },
+  { value: "STEAKHOUSE", label: "Churrascaria / Steakhouse" },
+  { value: "BRAZILIAN", label: "Brasileira" },
+  { value: "OTHERS", label: "Outros" },
+];

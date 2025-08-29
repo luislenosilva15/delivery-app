@@ -21,8 +21,11 @@ export type TCuisineType =
   | "BRAZILIAN"
   | "OTHERS";
 
+export type TAvailability = ["DELIVERY", "LOCAL"];
+
 export type TCompany = {
   id: 1;
+  availability: TAvailability;
   name: string;
   logoUrl: string;
   openingHours: TOpeningHours[];
