@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -8,20 +8,15 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-  Box,
   Flex,
   Text,
-  RadioGroup,
-  Stack,
-  Radio,
-  FormControl,
-  FormLabel,
-  Input,
 } from "@chakra-ui/react";
-import type { CartModalProps } from "./types";
+import type { CartModalProps, Payment, SubPayment } from "./types";
 import CartCard from "@/components/Card/Client/Cart";
-import { useClient } from "@/hook/client";
 import { maskPhone } from "@/utils/mask";
+import CartPayment from "./Payment";
+import UserDetails from "./UserDetails";
+import Delivery from "./Delivery";
 
 export const CartModal: React.FC<CartModalProps> = ({
   isOpen,
@@ -31,18 +26,17 @@ export const CartModal: React.FC<CartModalProps> = ({
   onSubmit,
 }) => {
   const [option, setOption] = useState<string | null>(null);
+  const [payment, setPayment] = useState<Payment>(null);
+  const [subPayment, setSubPayment] = useState<SubPayment>(null);
+
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState({
     option: "",
+    payment: "",
     name: "",
     phone: "",
   });
-
-  const { company } = useClient();
-
-  const hasDelivery = company?.availability.includes("DELIVERY");
-  const hasLocal = company?.availability.includes("LOCAL");
 
   const total = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -50,7 +44,7 @@ export const CartModal: React.FC<CartModalProps> = ({
   );
 
   const handleSubmit = () => {
-    const newError = { option: "", name: "", phone: "" };
+    const newError = { option: "", payment: "", name: "", phone: "" };
     let hasError = false;
 
     if (!option) {
@@ -58,41 +52,39 @@ export const CartModal: React.FC<CartModalProps> = ({
       hasError = true;
     }
 
-    if (option === "delivery") {
-      if (!name.trim()) {
-        newError.name = "Nome é obrigatório";
+    if (!payment) {
+      newError.payment = "Escolha um método de pagamento";
+      hasError = true;
+    }
+
+    if (
+      payment === "CREDIT_CARD" ||
+      payment === "DEBIT_CARD" ||
+      payment === "VOUCHER"
+    ) {
+      if (!subPayment) {
+        newError.payment = "Escolha a bandeira do cartão";
         hasError = true;
       }
-      if (!phone.trim()) {
-        newError.phone = "Telefone é obrigatório";
-        hasError = true;
-      }
+    }
+    if (!name.trim()) {
+      newError.name = "Nome é obrigatório";
+      hasError = true;
+    }
+    if (!phone.trim()) {
+      newError.phone = "Telefone é obrigatório";
+      hasError = true;
     }
 
     setError(newError);
 
     if (!hasError) {
-      // onSubmit({ option, name, phone });
+      // onSubmit({ option, payment, subPayment, name, phone });
     }
   };
 
-  useEffect(() => {
-    if (option) setError((prev) => ({ ...prev, option: "" }));
-  }, [option]);
-
-  useEffect(() => {
-    if (name) setError((prev) => ({ ...prev, name: "" }));
-  }, [name]);
-
-  useEffect(() => {
-    if (phone) setError((prev) => ({ ...prev, phone: "" }));
-  }, [phone]);
-
-  const handleChangePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-
+  const handleChangePhone = (value: string) => {
     const maskedValue = maskPhone(value);
-
     setPhone(maskedValue);
   };
 
@@ -117,78 +109,41 @@ export const CartModal: React.FC<CartModalProps> = ({
             <Text fontWeight="bold">R$ {total.toFixed(2)}</Text>
           </Flex>
 
-          <Box
-            borderWidth="1px"
-            borderColor={error.option ? "red.400" : "gray.600"}
-            rounded="md"
-            p={4}
-            mt={2}
-          >
-            <Text mb={3} fontWeight="semibold" fontSize="lg">
-              Escolha uma opção
-            </Text>
-            <RadioGroup onChange={setOption} value={option as string}>
-              <Stack direction="column" spacing={3}>
-                {hasDelivery && (
-                  <Radio colorScheme="primary" value="delivery">
-                    Entrega
-                  </Radio>
-                )}
-                {hasLocal && (
-                  <Radio colorScheme="primary" value="pickup">
-                    Retirada no local
-                  </Radio>
-                )}
-              </Stack>
-            </RadioGroup>
-            {error.option && (
-              <Text color="red.500" fontSize="sm" mt={2}>
-                {error.option}
-              </Text>
-            )}
-          </Box>
+          <Delivery
+            error={error}
+            handleChangeOption={setOption}
+            option={option}
+          />
 
-          <Box
-            borderWidth="1px"
-            borderColor="gray.600"
-            rounded="md"
-            p={4}
-            mt={4}
-          >
-            <Text mb={3} fontWeight="semibold" fontSize="lg">
-              Dados pessoais
-            </Text>
+          <CartPayment
+            payment={payment}
+            subPayment={subPayment}
+            onChangePayment={(payment) => {
+              setPayment(payment);
+            }}
+            onChangeSubPayment={(subPayment) => {
+              setSubPayment(subPayment);
+            }}
+            error={{
+              payment: error.payment,
+            }}
+          />
 
-            <FormControl isInvalid={!!error.name} mb={4} isRequired>
-              <FormLabel>Nome</FormLabel>
-              <Input
-                placeholder="Seu nome"
-                value={name}
-                focusBorderColor="primary.500"
-                onChange={(e) => setName(e.target.value)}
-              />
-              {error.name && (
-                <Text color="red.500" fontSize="sm" mt={1}>
-                  {error.name}
-                </Text>
-              )}
-            </FormControl>
-
-            <FormControl isInvalid={!!error.phone} mb={4} isRequired>
-              <FormLabel>Telefone</FormLabel>
-              <Input
-                focusBorderColor="primary.500"
-                placeholder="(00) 00000-0000"
-                value={phone}
-                onChange={handleChangePhone}
-              />
-              {error.phone && (
-                <Text color="red.500" fontSize="sm" mt={1}>
-                  {error.phone}
-                </Text>
-              )}
-            </FormControl>
-          </Box>
+          <UserDetails
+            error={{
+              name: error.name,
+              phone: error.phone,
+            }}
+            phone={phone}
+            name={name}
+            onChange={(field, value) => {
+              if (field === "name") {
+                setName(value);
+              } else if (field === "phone") {
+                handleChangePhone(value);
+              }
+            }}
+          />
         </ModalBody>
 
         <ModalFooter position="sticky" bottom={0} p={4}>

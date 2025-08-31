@@ -22,18 +22,21 @@ import {
 } from "react-icons/fi";
 
 import { BiStore } from "react-icons/bi";
-
-import { MdOutlineLocalGroceryStore } from "react-icons/md";
+import {
+  MdOutlineLocalGroceryStore,
+  MdOutlineRestaurant,
+  MdDeliveryDining,
+} from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hook/auth";
+import { SettingsIcon } from "@chakra-ui/icons";
 
 function SidebarContent() {
-  const [docOpen, setDocOpen] = useState(false);
+  const [storeOpen, setStoreOpen] = useState(false);
+  const [deliveryOpen, setDeliveryOpen] = useState(false);
 
   const navigate = useNavigate();
-
   const { pathname } = useLocation();
-
   const { company } = useAuth();
 
   const hoverBg = useColorModeValue("gray.100", "gray.700");
@@ -67,13 +70,19 @@ function SidebarContent() {
           isActive={optionIsActive("/")}
           onClick={() => navigate("/")}
         />
-        <SidebarItem icon={FiFileText} label="Analysis" />
+        <SidebarItem
+          icon={MdOutlineRestaurant}
+          label="Cardápio"
+          isActive={optionIsActive("/menu")}
+          onClick={() => navigate("/menu")}
+        />
 
+        {/* LOJA */}
         <Box w="full">
           <Flex
             align="center"
             cursor="pointer"
-            onClick={() => setDocOpen(!docOpen)}
+            onClick={() => setStoreOpen(!storeOpen)}
             bg="transparent"
             p={2}
             borderRadius="md"
@@ -85,11 +94,11 @@ function SidebarContent() {
               <Text color={textColor}>Loja</Text>
             </Flex>
             <Icon
-              as={docOpen ? FiChevronUp : FiChevronDown}
+              as={storeOpen ? FiChevronUp : FiChevronDown}
               color={textColor}
             />
           </Flex>
-          <Collapse in={docOpen} animateOpacity>
+          <Collapse in={storeOpen} animateOpacity>
             <VStack pl={6} align="start" mt={2} spacing={2}>
               <SidebarItem
                 isActive={optionIsActive("/sells")}
@@ -114,6 +123,50 @@ function SidebarContent() {
                 onClick={() => navigate("/about")}
                 icon={MdOutlineLocalGroceryStore}
                 label="Sobre a loja"
+              />
+            </VStack>
+          </Collapse>
+        </Box>
+
+        {/* DELIVERY */}
+        <Box w="full">
+          <Flex
+            align="center"
+            cursor="pointer"
+            onClick={() => setDeliveryOpen(!deliveryOpen)}
+            bg="transparent"
+            p={2}
+            borderRadius="md"
+            justify="space-between"
+            _hover={{ bg: hoverBg }}
+          >
+            <Flex align="center">
+              <Icon
+                as={MdDeliveryDining}
+                mr={2}
+                color={textColor}
+                fontSize="18px"
+              />
+              <Text color={textColor}>Delivery</Text>
+            </Flex>
+            <Icon
+              as={deliveryOpen ? FiChevronUp : FiChevronDown}
+              color={textColor}
+            />
+          </Flex>
+          <Collapse in={deliveryOpen} animateOpacity>
+            <VStack pl={6} align="start" mt={2} spacing={2}>
+              <SidebarItem
+                isActive={optionIsActive("/delivery/settings")}
+                onClick={() => navigate("/delivery/settings")}
+                icon={SettingsIcon}
+                label="Configurações"
+              />
+              <SidebarItem
+                isActive={optionIsActive("/delivery/fees")}
+                onClick={() => navigate("/delivery/fees")}
+                icon={FiFileText}
+                label="Taxas"
               />
             </VStack>
           </Collapse>

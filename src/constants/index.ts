@@ -72,3 +72,39 @@ export const cuisineTypes = [
   { value: "BRAZILIAN", label: "Brasileira" },
   { value: "OTHERS", label: "Outros" },
 ];
+
+export const paymentCardBrandTypes = {
+  VISA: "Visa",
+  MASTERCARD: "Mastercard",
+  AMEX: "American Express",
+  ELO: "Elo",
+  HIPERCARD: "Hipercard",
+  OTHER: "Outros",
+};
+
+export const paymentVoucherBrandTypes = {
+  ALELO: "Alelo",
+  SODEXO: "Sodexo",
+  BEN: "Ben",
+  OTHER: "Outros",
+  VEROCHEQUE: "Verocheque",
+  VR: "VR",
+};
+
+export const PAYMENT_VOUCHER = [
+  "ALELO",
+  "SODEXO",
+  "BEN",
+  "VEROCHEQUE",
+  "VR",
+  "OTHER",
+];
+
+export const PAYMENT_CARD = [
+  "VISA",
+  "MASTERCARD",
+  "AMEX",
+  "ELO",
+  "HIPERCARD",
+  "OTHER",
+];

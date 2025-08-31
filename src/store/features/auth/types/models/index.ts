@@ -23,6 +23,32 @@ export type TCuisineType =
 
 export type TAvailability = ["DELIVERY", "LOCAL"];
 
+export type PaymentMethods = [
+  "CREDIT_CARD",
+  "DEBIT_CARD",
+  "PIX",
+  "CASH",
+  "VOUCHER"
+];
+
+export type PaymentCardBrand = [
+  "VISA",
+  "MASTERCARD",
+  "AMEX",
+  "ELO",
+  "HIPERCARD",
+  "OTHER"
+];
+
+export type PaymentVoucherBrand = [
+  "ALELO",
+  "SODEXO",
+  "VR",
+  "BEN",
+  "VEROCHEQUE",
+  "OTHER"
+];
+
 export type TCompany = {
   id: 1;
   availability: TAvailability;
@@ -44,6 +70,9 @@ export type TCompany = {
   isOpen?: boolean;
   cuisineType: TCuisineType;
   menuId?: number;
+  paymentMethodAvailable: PaymentMethods;
+  paymentCardBrand: PaymentCardBrand;
+  paymentVoucherBrand: PaymentVoucherBrand;
 };
 
 export type TOpeningHours = {
