@@ -17,18 +17,21 @@ export const useDeliverySettingsValidation = (data: DeliverySettingsData) => {
     }
 
     if (
-      data.paymentMethods.includes("credit") &&
+      data.paymentMethods.includes("CREDIT_CARD") &&
       data.creditFlags.length === 0
     ) {
       newErrors.credit = "Selecione pelo menos uma bandeira de crédito.";
     }
 
-    if (data.paymentMethods.includes("debit") && data.debitFlags.length === 0) {
+    if (
+      data.paymentMethods.includes("DEBIT_CARD") &&
+      data.debitFlags.length === 0
+    ) {
       newErrors.debit = "Selecione pelo menos uma bandeira de débito.";
     }
 
     if (
-      data.paymentMethods.includes("voucher") &&
+      data.paymentMethods.includes("VOUCHER") &&
       data.voucherFlags.length === 0
     ) {
       newErrors.voucher = "Selecione pelo menos uma bandeira de voucher.";

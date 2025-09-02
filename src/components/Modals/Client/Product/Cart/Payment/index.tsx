@@ -6,6 +6,7 @@ import {
   RadioGroup,
   Stack,
   Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import {
   FaCreditCard,
@@ -27,8 +28,10 @@ const CartPayment = ({
   error,
 }: CartPaymentProps) => {
   const { company } = useClient();
+  const borderColor = useColorModeValue("gray.200", "gray.600");
+
   return (
-    <Box borderWidth="1px" rounded="md" p={4} mt={4}>
+    <Box borderWidth="1px" rounded="md" p={4} mt={4} borderColor={borderColor}>
       <Text mb={3} fontWeight="semibold" fontSize="lg">
         Método de pagamento
       </Text>
@@ -40,7 +43,7 @@ const CartPayment = ({
         value={payment as string}
       >
         <Stack direction="column" spacing={3}>
-          {company?.paymentMethodAvailable?.includes("CREDIT_CARD") && (
+          {company?.companyPayment?.method?.includes("CREDIT_CARD") && (
             <Box>
               <Radio value="CREDIT_CARD" colorScheme="primary">
                 <HStack spacing={2}>
@@ -54,8 +57,8 @@ const CartPayment = ({
                     value={subPayment as string}
                   >
                     <Stack direction="column" spacing={2}>
-                      {company?.paymentCardBrand.map((brand) => (
-                        <Radio key={brand} value={brand}>
+                      {company?.companyPayment?.cardBrand.map((brand) => (
+                        <Radio key={brand} value={brand} colorScheme="primary">
                           {paymentCardBrandTypes[brand]}
                         </Radio>
                       ))}
@@ -66,7 +69,7 @@ const CartPayment = ({
             </Box>
           )}
 
-          {company?.paymentMethodAvailable?.includes("DEBIT_CARD") && (
+          {company?.companyPayment?.method?.includes("DEBIT_CARD") && (
             <Box>
               <Radio value="DEBIT_CARD" colorScheme="primary">
                 <HStack spacing={2}>
@@ -80,8 +83,8 @@ const CartPayment = ({
                     value={subPayment as string}
                   >
                     <Stack direction="column" spacing={2}>
-                      {company?.paymentCardBrand.map((brand) => (
-                        <Radio key={brand} value={brand}>
+                      {company?.companyPayment?.cardBrand.map((brand) => (
+                        <Radio key={brand} value={brand} colorScheme="primary">
                           {paymentCardBrandTypes[brand]}
                         </Radio>
                       ))}
@@ -92,7 +95,7 @@ const CartPayment = ({
             </Box>
           )}
 
-          {company?.paymentMethodAvailable?.includes("VOUCHER") && (
+          {company?.companyPayment?.method?.includes("VOUCHER") && (
             <Box>
               <Radio value="VOUCHER" colorScheme="primary">
                 <HStack spacing={2}>
@@ -106,8 +109,8 @@ const CartPayment = ({
                     value={subPayment as string}
                   >
                     <Stack direction="column" spacing={2}>
-                      {company?.paymentVoucherBrand.map((brand) => (
-                        <Radio key={brand} value={brand}>
+                      {company?.companyPayment?.voucherBrand.map((brand) => (
+                        <Radio key={brand} value={brand} colorScheme="primary">
                           {paymentVoucherBrandTypes[brand]}
                         </Radio>
                       ))}
@@ -118,7 +121,7 @@ const CartPayment = ({
             </Box>
           )}
 
-          {company?.paymentMethodAvailable?.includes("CASH") && (
+          {company?.companyPayment?.method?.includes("CASH") && (
             <Box>
               <Radio value="CASH" colorScheme="primary">
                 <HStack spacing={2}>
@@ -128,7 +131,7 @@ const CartPayment = ({
             </Box>
           )}
 
-          {company?.paymentMethodAvailable?.includes("PIX") && (
+          {company?.companyPayment?.method?.includes("PIX") && (
             <Box>
               <Radio value="PIX" colorScheme="primary">
                 <HStack spacing={2}>

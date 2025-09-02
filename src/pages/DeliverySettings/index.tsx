@@ -25,11 +25,15 @@ import {
   paymentCardBrandTypes,
   paymentVoucherBrandTypes,
 } from "@/constants";
+import { useDispatch } from "react-redux";
+import { setEditDeliverySettingsRequest } from "@/store/features/auth/authSlice";
 
 const DeliverySettingsPage = () => {
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState<FormData>({
     requireCpfCnpj: false,
-    invoiceDocType: "cpf",
+    invoiceDocType: false,
     serviceOptions: [],
     paymentMethods: [],
     creditFlags: [],
@@ -49,9 +53,23 @@ const DeliverySettingsPage = () => {
   };
 
   const handleSubmit = (e: React.FormEvent) => {
+    if (!company) return null;
     e.preventDefault();
     if (validate()) {
-      alert("Configurações salvas com sucesso!");
+      dispatch(
+        setEditDeliverySettingsRequest({
+          availability: formData.serviceOptions,
+          companyPayment: {
+            method: formData.paymentMethods,
+            cardBrand: formData.creditFlags,
+            debitCardBrand: formData.debitFlags,
+            voucherBrand: formData.voucherFlags,
+            requiredDocument: formData.requireCpfCnpj,
+            documentInTicket: formData.invoiceDocType,
+          },
+          companyId: company?.id,
+        })
+      );
     }
   };
 
@@ -62,16 +80,17 @@ const DeliverySettingsPage = () => {
 
   const { company, loading } = useAuth();
 
-  // Carrega dados da empresa
   useEffect(() => {
     if (company) {
       setFormData((prev) => ({
         ...prev,
-        paymentMethods: company.paymentMethodAvailable,
-        serviceOptions: company.availability,
-        debitFlags: company.paymentCardBrand,
-        creditFlags: company.paymentCardBrand,
-        voucherFlags: company.paymentVoucherBrand,
+        paymentMethods: company?.companyPayment?.method,
+        serviceOptions: company?.availability,
+        debitFlags: company?.companyPayment?.debitCardBrand,
+        creditFlags: company?.companyPayment?.cardBrand,
+        voucherFlags: company?.companyPayment?.voucherBrand,
+        requireCpfCnpj: company?.companyPayment?.requiredDocument,
+        invoiceDocType: company?.companyPayment?.documentInTicket,
       }));
     }
   }, [company]);
@@ -119,12 +138,9 @@ const DeliverySettingsPage = () => {
                 <FormControl>
                   <Checkbox
                     colorScheme="primary"
-                    isChecked={formData.invoiceDocType === "enabled"}
+                    isChecked={formData.invoiceDocType}
                     onChange={(e) =>
-                      handleChange(
-                        "invoiceDocType",
-                        e.target.checked ? "enabled" : "disabled"
-                      )
+                      handleChange("invoiceDocType", e.target.checked)
                     }
                   >
                     Perguntar se o cliente deseja informar CPF/CNPJ na nota
@@ -147,7 +163,7 @@ const DeliverySettingsPage = () => {
               <FormControl isInvalid={!!errors.service}>
                 <CheckboxGroup
                   colorScheme="primary"
-                  value={formData.serviceOptions}
+                  value={formData.serviceOptions as string[]}
                   onChange={(val) =>
                     handleChange(
                       "serviceOptions",
@@ -178,7 +194,7 @@ const DeliverySettingsPage = () => {
               <FormControl isInvalid={!!errors.payment}>
                 <CheckboxGroup
                   colorScheme="primary"
-                  value={formData.paymentMethods}
+                  value={formData.paymentMethods as string[]}
                   onChange={(val) =>
                     handleChange(
                       "paymentMethods",
@@ -224,7 +240,7 @@ const DeliverySettingsPage = () => {
                           <FormControl isInvalid={!!errors.credit}>
                             <CheckboxGroup
                               colorScheme="primary"
-                              value={formData.creditFlags}
+                              value={formData.creditFlags as string[]}
                               onChange={(val) =>
                                 handleChange(
                                   "creditFlags",
@@ -290,7 +306,7 @@ const DeliverySettingsPage = () => {
                           <FormControl isInvalid={!!errors.debit}>
                             <CheckboxGroup
                               colorScheme="primary"
-                              value={formData.debitFlags}
+                              value={formData.debitFlags as string[]}
                               onChange={(val) =>
                                 handleChange(
                                   "debitFlags",
@@ -356,7 +372,7 @@ const DeliverySettingsPage = () => {
                           <FormControl isInvalid={!!errors.voucher}>
                             <CheckboxGroup
                               colorScheme="primary"
-                              value={formData.voucherFlags}
+                              value={formData.voucherFlags as string[]}
                               onChange={(val) =>
                                 handleChange(
                                   "voucherFlags",

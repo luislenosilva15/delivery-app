@@ -5,6 +5,8 @@ import type {
   LoginRequest,
   SetEditCompanyRequest,
   SetEditCompanyResponse,
+  SetEditDeliverySettingsRequest,
+  SetEditDeliverySettingsSuccess,
   SetEditOpeningHoursSuccess,
   SetEditUserRequest,
   SetEditUserResponse,
@@ -16,6 +18,7 @@ export interface AuthState {
   loading: boolean;
   isSubmitting: boolean;
   isSubmitEditForm: boolean;
+  isSubmitDeliverySettingsForm: boolean;
   user: TUser | null;
   company: TCompany | null;
   autenticated: boolean;
@@ -32,6 +35,7 @@ const initialState: AuthState = {
   isSubmitEditForm: false,
   isSubmitEditOpeningHoursForm: false,
   isSubmitEditCompanyForm: false,
+  isSubmitDeliverySettingsForm: false,
 };
 
 const authSlice = createSlice({
@@ -162,6 +166,28 @@ const authSlice = createSlice({
     setEditCompanyError(state) {
       state.isSubmitEditCompanyForm = false;
     },
+
+    setEditDeliverySettingsRequest(
+      state,
+      _action: PayloadAction<SetEditDeliverySettingsRequest>
+    ) {
+      state.isSubmitDeliverySettingsForm = true;
+    },
+
+    setEditDeliverySettingsSuccess(
+      state,
+      action: PayloadAction<SetEditDeliverySettingsSuccess>
+    ) {
+      state.isSubmitDeliverySettingsForm = false;
+      if (state.company) {
+        state.company.companyPayment = action.payload.companyPayment;
+        state.company.availability = action.payload.availability;
+      }
+    },
+
+    setEditDeliverySettingsError(state) {
+      state.isSubmitDeliverySettingsForm = false;
+    },
   },
 });
 
@@ -186,6 +212,9 @@ export const {
   setEditCompanyError,
   setEditCompanyRequest,
   setEditCompanySuccess,
+  setEditDeliverySettingsError,
+  setEditDeliverySettingsRequest,
+  setEditDeliverySettingsSuccess,
 } = authSlice.actions;
 
 export default authSlice.reducer;

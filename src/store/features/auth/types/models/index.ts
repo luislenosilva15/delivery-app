@@ -40,6 +40,15 @@ export type PaymentCardBrand = [
   "OTHER"
 ];
 
+export type PaymentDebitBrand = [
+  "VISA",
+  "MASTERCARD",
+  "AMEX",
+  "ELO",
+  "HIPERCARD",
+  "OTHER"
+];
+
 export type PaymentVoucherBrand = [
   "ALELO",
   "SODEXO",
@@ -48,6 +57,16 @@ export type PaymentVoucherBrand = [
   "VEROCHEQUE",
   "OTHER"
 ];
+
+export type TCompanyPayment = {
+  id?: number;
+  method: PaymentMethods;
+  cardBrand: PaymentCardBrand;
+  debitCardBrand: PaymentDebitBrand;
+  voucherBrand: PaymentVoucherBrand;
+  documentInTicket: boolean;
+  requiredDocument: boolean;
+};
 
 export type TCompany = {
   id: 1;
@@ -70,9 +89,7 @@ export type TCompany = {
   isOpen?: boolean;
   cuisineType: TCuisineType;
   menuId?: number;
-  paymentMethodAvailable: PaymentMethods;
-  paymentCardBrand: PaymentCardBrand;
-  paymentVoucherBrand: PaymentVoucherBrand;
+  companyPayment: TCompanyPayment;
 };
 
 export type TOpeningHours = {

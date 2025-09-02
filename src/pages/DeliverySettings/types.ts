@@ -1,23 +1,16 @@
+import type {
+  PaymentCardBrand,
+  PaymentMethods,
+  PaymentVoucherBrand,
+  TAvailability,
+} from "@/store/features/auth/types/models";
+
 export type FormData = {
   requireCpfCnpj: boolean;
-  invoiceDocType: string;
-  serviceOptions: ("LOCAL" | "DELIVERY")[];
-  paymentMethods: ("DEBIT_CARD" | "CREDIT_CARD" | "PIX" | "CASH" | "VOUCHER")[];
-  creditFlags: (
-    | "VISA"
-    | "MASTERCARD"
-    | "AMEX"
-    | "ELO"
-    | "HIPERCARD"
-    | "OTHER"
-  )[];
-  debitFlags: (
-    | "VISA"
-    | "MASTERCARD"
-    | "AMEX"
-    | "ELO"
-    | "HIPERCARD"
-    | "OTHER"
-  )[];
-  voucherFlags: ("ALELO" | "SODEXO" | "VR" | "BEN" | "VEROCHEQUE" | "OTHER")[];
+  invoiceDocType: boolean;
+  serviceOptions: Partial<TAvailability>;
+  paymentMethods: Partial<PaymentMethods>;
+  creditFlags: Partial<PaymentCardBrand>;
+  debitFlags: Partial<PaymentCardBrand>;
+  voucherFlags: Partial<PaymentVoucherBrand>;
 };

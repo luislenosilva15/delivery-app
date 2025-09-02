@@ -1,5 +1,5 @@
 import type { CompanyAboutData } from "@/pages/About/types";
-import type { TCompany } from "../models";
+import type { TAvailability, TCompany, TCompanyPayment } from "../models";
 import type { TUser } from "@/store/features/team/types/models";
 
 export interface LoginRequest {
@@ -75,4 +75,20 @@ export interface SetEditOpeningHoursRequest {
     endTime: string | null;
     closed?: true;
   }[];
+}
+
+export interface SetEditDeliverySettingsRequest {
+  companyId: number;
+  companyPayment: TCompanyPayment;
+  availability: TAvailability;
+}
+
+export interface SetEditDeliverySettingsSuccess {
+  companyId: number;
+  companyPayment: TCompanyPayment;
+  availability: TAvailability;
+}
+
+export interface SetEditDeliverySettingsResponse {
+  company: TCompany;
 }

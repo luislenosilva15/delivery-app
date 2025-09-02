@@ -9,6 +9,9 @@ import {
   setEditCompanyError,
   setEditCompanyRequest,
   setEditCompanySuccess,
+  setEditDeliverySettingsError,
+  setEditDeliverySettingsRequest,
+  setEditDeliverySettingsSuccess,
   setEditOpeningHoursRequest,
   setEditOpeningHoursSuccess,
   setEditUserError,
@@ -28,6 +31,8 @@ import type {
   LoginResponse,
   SetEditCompanyRequest,
   SetEditCompanyResponse,
+  SetEditDeliverySettingsRequest,
+  SetEditDeliverySettingsResponse,
   SetEditOpeningHoursRequest,
   SetEditUserRequest,
   SetEditUserResponse,
@@ -243,6 +248,87 @@ export function* setEditCompanySaga(
   }
 }
 
+export function* setEditDeliverySettingsSaga(
+  action: PayloadAction<SetEditDeliverySettingsRequest>
+): Generator<any, void, AxiosResponse<SetEditDeliverySettingsResponse>> {
+  const { companyId, companyPayment, availability } = action.payload;
+  try {
+    const formData = new FormData();
+
+    if (availability) {
+      formData.append("availability", JSON.stringify(availability));
+    }
+
+    if (companyPayment) {
+      if (companyPayment.method) {
+        formData.append(
+          "paymentMethodAvailable",
+          JSON.stringify(companyPayment.method)
+        );
+      }
+
+      if (companyPayment.cardBrand) {
+        formData.append(
+          "paymentCardBrand",
+          JSON.stringify(companyPayment.cardBrand)
+        );
+      }
+
+      if (companyPayment.debitCardBrand) {
+        formData.append(
+          "paymentDebitCardBrand",
+          JSON.stringify(companyPayment.debitCardBrand)
+        );
+      }
+
+      if (companyPayment.voucherBrand) {
+        formData.append(
+          "paymentVoucherBrand",
+          JSON.stringify(companyPayment.voucherBrand)
+        );
+      }
+
+      if (companyPayment.documentInTicket) {
+        formData.append(
+          "paymentDocumentInTicket",
+          JSON.stringify(companyPayment.documentInTicket)
+        );
+      }
+
+      if (companyPayment.requiredDocument) {
+        formData.append(
+          "paymentRequiredDocument",
+          JSON.stringify(companyPayment.requiredDocument)
+        );
+      }
+    }
+
+    const {
+      data: { company },
+    } = yield call(() => apiClient.patch(`/company/${companyId}`, formData));
+
+    yield put(
+      setEditDeliverySettingsSuccess({
+        availability: company.availability,
+        companyId: company.id,
+        companyPayment: company.companyPayment,
+      })
+    );
+
+    toast({
+      title: "Configurações do delivery editadas com sucesso",
+      status: "success",
+    });
+  } catch (error) {
+    yield put(setEditDeliverySettingsError());
+    toast({
+      title: "Erro ao editar configurações do delivery, tente novamente",
+      status: "error",
+    });
+    console.log(error);
+  }
+}
+
 export default function* authSaga() {
   yield takeLatest(setLoginRequest.type, setLoginSaga);
   yield takeLatest(setAuthValidRequest.type, setAuthValidSaga);
@@ -251,4 +337,8 @@ export default function* authSaga() {
   yield takeLatest(setEditOpeningHoursRequest.type, setEditOpeningHoursSaga);
   yield takeLatest(setAlwaysOpenRequest.type, setAlwaysOpenSaga);
   yield takeLatest(setEditCompanyRequest.type, setEditCompanySaga);
+  yield takeLatest(
+    setEditDeliverySettingsRequest.type,
+    setEditDeliverySettingsSaga
+  );
 }
