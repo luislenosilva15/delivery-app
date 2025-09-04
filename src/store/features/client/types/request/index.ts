@@ -47,3 +47,11 @@ export interface SetChangeQuantitySuccess {
   uniqueId: string;
   quantity: number;
 }
+
+export interface SetCreateNewOrderRequest {
+  items: TCartItem[];
+}
+
+export interface SetCreateNewOrderSuccess {
+  orderId: string;
+}

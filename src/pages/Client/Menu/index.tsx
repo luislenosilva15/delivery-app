@@ -6,6 +6,7 @@ import {
   fetchGroupsRequest,
   setAddToCartRequest,
   setChangeQuantityRequest,
+  setCreateNewOrderRequest,
 } from "@/store/features/client/clientSlice";
 import { cuisineLabel } from "@/utils/typeNormalize";
 import {
@@ -151,6 +152,14 @@ const ClientMenuPage = () => {
     );
   };
 
+  const handleCreateNewOrder = () => {
+    dispatch(
+      setCreateNewOrderRequest({
+        items: cart.items,
+      })
+    );
+  };
+
   const renderedGroups = useMemo(
     () =>
       groups?.map((group: TGroup) => (
@@ -269,7 +278,7 @@ const ClientMenuPage = () => {
         isOpen={isOpenCart && !cartEmpty}
         onClose={onCloseCart}
         items={cart.items}
-        onSubmit={() => {}}
+        onSubmit={handleCreateNewOrder}
         onUpdateQuantity={handleUpdateCartItemQuantity}
       />
       {!cartEmpty && <CheckoutBar onClick={onOpenCart} />}

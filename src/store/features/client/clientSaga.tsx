@@ -13,6 +13,7 @@ import type {
   FetchGroupsResponse,
   SetAddToCartRequest,
   SetChangeQuantityRequest,
+  SetCreateNewOrderRequest,
 } from "./types/request";
 import {
   fetchCartRequest,
@@ -27,8 +28,12 @@ import {
   setAddToCartSuccess,
   setChangeQuantityRequest,
   setChangeQuantitySuccess,
+  setCreateNewOrderError,
+  setCreateNewOrderRequest,
+  setCreateNewOrderSuccess,
 } from "./clientSlice";
 import type { TCartItem } from "./types/models";
+import { router } from "@/routes";
 
 function* fetchCompanySaga(
   action: PayloadAction<FetchCompanyRequest>
@@ -162,10 +167,38 @@ function* setChangeQuantitySaga(
   }
 }
 
+function* setCreateNewOrderSaga(
+  action: PayloadAction<SetCreateNewOrderRequest>
+): Generator<any, void> {
+  try {
+    localStorage.removeItem("cart");
+
+    yield put(
+      setCreateNewOrderSuccess({
+        orderId: crypto.randomUUID(),
+      })
+    );
+
+    toast({
+      title: "Pedido criado com sucesso",
+      status: "success",
+    });
+
+    router.navigate("order/1");
+  } catch {
+    toast({
+      title: "Erro ao criar o pedido",
+      status: "error",
+    });
+    yield put(setCreateNewOrderError());
+  }
+}
+
 export default function* clientSaga() {
   yield takeLatest(fetchCompanyRequest.type, fetchCompanySaga);
   yield takeLatest(fetchGroupsRequest.type, fetchGroupsSaga);
   yield takeLatest(setAddToCartRequest.type, setAddToCartSaga);
   yield takeLatest(fetchCartRequest.type, fetchCartSaga);
   yield takeLatest(setChangeQuantityRequest.type, setChangeQuantitySaga);
+  yield takeLatest(setCreateNewOrderRequest.type, setCreateNewOrderSaga);
 }

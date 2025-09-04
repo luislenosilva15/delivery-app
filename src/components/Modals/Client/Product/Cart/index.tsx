@@ -79,7 +79,7 @@ export const CartModal: React.FC<CartModalProps> = ({
     setError(newError);
 
     if (!hasError) {
-      // onSubmit({ option, payment, subPayment, name, phone });
+      onSubmit();
     }
   };
 

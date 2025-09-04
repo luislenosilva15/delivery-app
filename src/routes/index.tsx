@@ -16,6 +16,7 @@ import MenuPage from "@/pages/Menu";
 import ClientHomePage from "@/pages/Client/Home";
 import ClientMenuPage from "@/pages/Client/Menu";
 import DeliverySettings from "@/pages/DeliverySettings";
+import OrderTrackingPage from "@/pages/Client/OrderTracking";
 
 export const router = createBrowserRouter([
   {
@@ -71,6 +72,10 @@ export const router = createBrowserRouter([
       {
         path: "/client/:id/menu",
         element: <ClientMenuPage />,
+      },
+      {
+        path: "/client/:id/menu/order/:orderId",
+        element: <OrderTrackingPage />,
       },
     ],
   },

@@ -11,12 +11,15 @@ import type {
   SetAddToCartSuccess,
   SetChangeQuantityRequest,
   SetChangeQuantitySuccess,
+  SetCreateNewOrderRequest,
+  SetCreateNewOrderSuccess,
 } from "./types/request";
 import type { TGroup } from "../menu/types/models";
 import type { TCartItem } from "./types/models";
 
 export interface ClientState {
   loading: boolean;
+  submittingNewOrder: boolean;
   company: TCompany | null;
   groups: TGroup[] | null;
   loadingCart: boolean;
@@ -27,6 +30,7 @@ export interface ClientState {
 
 const initialState: ClientState = {
   loading: true,
+  submittingNewOrder: false,
   company: null,
   groups: null,
   loadingCart: true,
@@ -105,6 +109,25 @@ const clientSlice = createSlice({
         }
       }
     },
+
+    setCreateNewOrderRequest(
+      state,
+      _action: PayloadAction<SetCreateNewOrderRequest>
+    ) {
+      state.submittingNewOrder = true;
+    },
+
+    setCreateNewOrderSuccess(
+      state,
+      action: PayloadAction<SetCreateNewOrderSuccess>
+    ) {
+      state.submittingNewOrder = false;
+      state.cart.items = [];
+    },
+
+    setCreateNewOrderError(state) {
+      state.submittingNewOrder = false;
+    },
   },
 });
 
@@ -121,6 +144,9 @@ export const {
   fetchCartSuccess,
   setChangeQuantityRequest,
   setChangeQuantitySuccess,
+  setCreateNewOrderRequest,
+  setCreateNewOrderSuccess,
+  setCreateNewOrderError,
 } = clientSlice.actions;
 
 export default clientSlice.reducer;
