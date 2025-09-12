@@ -8,6 +8,8 @@ import {
   setChangeQuantityRequest,
   setCreateNewOrderRequest,
 } from "@/store/features/client/clientSlice";
+import { LuCookingPot } from "react-icons/lu";
+
 import { cuisineLabel } from "@/utils/typeNormalize";
 import {
   Box,
@@ -19,9 +21,9 @@ import {
   Divider,
   Button,
   SimpleGrid,
-  Spinner,
   useColorModeValue,
   useDisclosure,
+  IconButton,
 } from "@chakra-ui/react";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
@@ -30,6 +32,9 @@ import type { TGroup, TProduct } from "@/store/features/menu/types/models";
 import ProductModal from "@/components/Modals/Client/Product/Details";
 import CheckoutBar from "@/components/CheckoutBar";
 import { CartModal } from "@/components/Modals/Client/Product/Cart";
+import type { FormData } from "@/components/Modals/Client/Product/Cart/types";
+import type { SetCreateNewOrderRequest } from "@/store/features/client/types/request";
+import Loading from "@/components/Loading";
 
 const ClientMenuPage = () => {
   const dispatch = useDispatch();
@@ -152,11 +157,33 @@ const ClientMenuPage = () => {
     );
   };
 
-  const handleCreateNewOrder = () => {
+  const handleCreateNewOrder = (formData: FormData) => {
+    if (!company) return;
+
+    if (!formData.option || !formData.payment) return;
+
+    const paymentMethod = formData.payment;
+
     dispatch(
       setCreateNewOrderRequest({
         items: cart.items,
-      })
+        name: formData.name,
+        phone: formData.phone,
+        deliveryMethod: formData.option,
+        payment: {
+          method: paymentMethod,
+          cardBrand:
+            paymentMethod === "CREDIT_CARD" ? formData.subPayment : null,
+          debitCardBrand:
+            paymentMethod === "DEBIT_CARD" ? formData.subPayment : null,
+          voucherBrand:
+            paymentMethod === "VOUCHER" ? formData.subPayment : null,
+          totalPrice: cart.items
+            .map((item) => item.price * item.quantity)
+            .reduce((a, b) => a + b, 0),
+        },
+        companyId: company?.id,
+      } as SetCreateNewOrderRequest)
     );
   };
 
@@ -193,11 +220,7 @@ const ClientMenuPage = () => {
   const categoryBg = useColorModeValue("white", "gray.800");
 
   if (!groups || !company || loading || loadingCart) {
-    return (
-      <VStack spacing={8} py={10} align="center" justifyContent="center">
-        <Spinner size="xl" />
-      </VStack>
-    );
+    return <Loading />;
   }
 
   return (
@@ -282,6 +305,31 @@ const ClientMenuPage = () => {
         onUpdateQuantity={handleUpdateCartItemQuantity}
       />
       {!cartEmpty && <CheckoutBar onClick={onOpenCart} />}
+
+      <Box position="fixed" bottom="20px" right="20px" zIndex={20}>
+        <IconButton
+          aria-label="Ver pedidos"
+          icon={<LuCookingPot />}
+          colorScheme="primary"
+          size="lg"
+          rounded="full"
+          shadow="lg"
+          onClick={onOpenCart}
+        />
+        {!cartEmpty && (
+          <Badge
+            colorScheme="red"
+            borderRadius="full"
+            px={2}
+            position="absolute"
+            top="-5px"
+            right="-5px"
+            fontSize="0.8em"
+          >
+            {cart.items.reduce((acc, item) => acc + item.quantity, 0)}
+          </Badge>
+        )}
+      </Box>
     </Box>
   );
 };

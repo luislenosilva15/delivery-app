@@ -11,13 +11,14 @@ import {
   Flex,
   Text,
 } from "@chakra-ui/react";
-import type { CartModalProps, Payment, SubPayment } from "./types";
+import type { CartModalProps, FormData } from "./types";
 import CartCard from "@/components/Card/Client/Cart";
 import { maskPhone } from "@/utils/mask";
 import CartPayment from "./Payment";
 import UserDetails from "./UserDetails";
 import Delivery from "./Delivery";
-
+import { useClient } from "@/hook/client";
+import { moneyFormat } from "@/helpers/shared";
 export const CartModal: React.FC<CartModalProps> = ({
   isOpen,
   onClose,
@@ -25,12 +26,16 @@ export const CartModal: React.FC<CartModalProps> = ({
   onUpdateQuantity,
   onSubmit,
 }) => {
-  const [option, setOption] = useState<string | null>(null);
-  const [payment, setPayment] = useState<Payment>(null);
-  const [subPayment, setSubPayment] = useState<SubPayment>(null);
+  const [formData, setFormData] = useState<FormData>({
+    option: null,
+    payment: null,
+    subPayment: null,
+    name: "",
+    phone: "",
+  });
 
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  const { submittingNewOrder } = useClient();
+
   const [error, setError] = useState({
     option: "",
     payment: "",
@@ -47,31 +52,32 @@ export const CartModal: React.FC<CartModalProps> = ({
     const newError = { option: "", payment: "", name: "", phone: "" };
     let hasError = false;
 
-    if (!option) {
+    if (!formData.option) {
       newError.option = "Escolha pelo menos uma opção";
       hasError = true;
     }
 
-    if (!payment) {
+    if (!formData.payment) {
       newError.payment = "Escolha um método de pagamento";
       hasError = true;
     }
 
     if (
-      payment === "CREDIT_CARD" ||
-      payment === "DEBIT_CARD" ||
-      payment === "VOUCHER"
+      formData.payment === "CREDIT_CARD" ||
+      formData.payment === "DEBIT_CARD" ||
+      formData.payment === "VOUCHER"
     ) {
-      if (!subPayment) {
+      if (!formData.subPayment) {
         newError.payment = "Escolha a bandeira do cartão";
         hasError = true;
       }
     }
-    if (!name.trim()) {
+
+    if (!formData.name.trim()) {
       newError.name = "Nome é obrigatório";
       hasError = true;
     }
-    if (!phone.trim()) {
+    if (!formData.phone.trim()) {
       newError.phone = "Telefone é obrigatório";
       hasError = true;
     }
@@ -79,13 +85,13 @@ export const CartModal: React.FC<CartModalProps> = ({
     setError(newError);
 
     if (!hasError) {
-      onSubmit();
+      onSubmit(formData);
     }
   };
 
   const handleChangePhone = (value: string) => {
     const maskedValue = maskPhone(value);
-    setPhone(maskedValue);
+    setFormData((prev) => ({ ...prev, phone: maskedValue }));
   };
 
   return (
@@ -106,24 +112,26 @@ export const CartModal: React.FC<CartModalProps> = ({
 
           <Flex justify="space-between" mb={8}>
             <Text fontWeight="bold">Total</Text>
-            <Text fontWeight="bold">R$ {total.toFixed(2)}</Text>
+            <Text fontWeight="bold">{moneyFormat(total)}</Text>
           </Flex>
 
           <Delivery
             error={error}
-            handleChangeOption={setOption}
-            option={option}
+            handleChangeOption={(option) =>
+              setFormData((prev) => ({ ...prev, option }))
+            }
+            option={formData.option}
           />
 
           <CartPayment
-            payment={payment}
-            subPayment={subPayment}
-            onChangePayment={(payment) => {
-              setPayment(payment);
-            }}
-            onChangeSubPayment={(subPayment) => {
-              setSubPayment(subPayment);
-            }}
+            payment={formData.payment}
+            subPayment={formData.subPayment}
+            onChangePayment={(payment) =>
+              setFormData((prev) => ({ ...prev, payment }))
+            }
+            onChangeSubPayment={(subPayment) =>
+              setFormData((prev) => ({ ...prev, subPayment }))
+            }
             error={{
               payment: error.payment,
             }}
@@ -134,11 +142,11 @@ export const CartModal: React.FC<CartModalProps> = ({
               name: error.name,
               phone: error.phone,
             }}
-            phone={phone}
-            name={name}
+            phone={formData.phone}
+            name={formData.name}
             onChange={(field, value) => {
               if (field === "name") {
-                setName(value);
+                setFormData((prev) => ({ ...prev, name: value }));
               } else if (field === "phone") {
                 handleChangePhone(value);
               }
@@ -147,7 +155,13 @@ export const CartModal: React.FC<CartModalProps> = ({
         </ModalBody>
 
         <ModalFooter position="sticky" bottom={0} p={4}>
-          <Button colorScheme="primary" w="full" onClick={handleSubmit}>
+          <Button
+            colorScheme="primary"
+            w="full"
+            onClick={handleSubmit}
+            isLoading={submittingNewOrder}
+            disabled={submittingNewOrder}
+          >
             Fazer pedido
           </Button>
         </ModalFooter>

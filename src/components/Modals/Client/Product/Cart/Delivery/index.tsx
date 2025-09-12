@@ -19,12 +19,12 @@ const Delivery = ({ error, handleChangeOption, option }: DeliveryProps) => {
       >
         <Stack direction="column" spacing={3}>
           {hasDelivery && (
-            <Radio colorScheme="primary" value="delivery">
+            <Radio colorScheme="primary" value="DELIVERY">
               Entrega
             </Radio>
           )}
           {hasLocal && (
-            <Radio colorScheme="primary" value="pickup">
+            <Radio colorScheme="primary" value="LOCAL">
               Retirada no local
             </Radio>
           )}

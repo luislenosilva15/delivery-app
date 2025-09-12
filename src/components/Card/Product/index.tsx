@@ -16,6 +16,7 @@ import {
 import type { Props } from "./types";
 import emptyImage from "../../../assets/emptyImage.png";
 import { useMemo } from "react";
+import { moneyFormat } from "@/helpers/shared";
 
 export default function ProductCard({
   item,
@@ -66,7 +67,7 @@ export default function ProductCard({
         />
         <Box>
           <Text fontWeight="bold">{item.name}</Text>
-          <Badge colorScheme="green">R$ {item.price}</Badge>
+          <Badge colorScheme="green">{moneyFormat(item.price)}</Badge>
 
           <HStack spacing={2} mt={2}>
             {renderDisponibilityTag}

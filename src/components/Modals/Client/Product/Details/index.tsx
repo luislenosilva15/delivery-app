@@ -20,6 +20,7 @@ import {
 import { AddIcon, MinusIcon, ArrowBackIcon } from "@chakra-ui/icons";
 import type { Props } from "./types";
 import ProductCardEmptyState from "@/components/Card/Client/Product/emptyState";
+import { moneyFormat } from "@/helpers/shared";
 
 const ProductModal: React.FC<Props> = ({
   isOpen,
@@ -104,7 +105,7 @@ const ProductModal: React.FC<Props> = ({
           )}
 
           <Text fontWeight="semibold" fontSize="xl" mb={4} color="green">
-            R$ {product.price.toFixed(2).replace(".", ",")}
+            {moneyFormat(product.price)}
           </Text>
 
           <VStack align="stretch" spacing={4}>
@@ -191,8 +192,7 @@ const ProductModal: React.FC<Props> = ({
             px={4}
             onClick={handleAdd}
           >
-            Adicionar R${" "}
-            {(product.price * quantity).toFixed(2).replace(".", ",")}
+            Adicionar {moneyFormat(product.price * quantity)}
           </Button>
         </ModalFooter>
       </ModalContent>

@@ -191,9 +191,7 @@ export default function OpeningHoursPage() {
     );
   };
 
-  const handleOpen24h = () => {
-    dispatch(setAlwaysOpenRequest());
-  };
+  const handleOpen24h = () => dispatch(setAlwaysOpenRequest());
 
   const breadcrumbLinks = [
     { label: "Home", href: "/" },

@@ -23,6 +23,39 @@ export type TCuisineType =
 
 export type TAvailability = ["DELIVERY", "LOCAL"];
 
+export type TPaymentMethod =
+  | "CREDIT_CARD"
+  | "DEBIT_CARD"
+  | "PIX"
+  | "CASH"
+  | "VOUCHER";
+
+export type TPaymentCardBrand =
+  | "VISA"
+  | "MASTERCARD"
+  | "AMEX"
+  | "ELO"
+  | "HIPERCARD"
+  | "OTHER";
+
+export type TPaymentDebitBrand =
+  | "VISA"
+  | "MASTERCARD"
+  | "AMEX"
+  | "ELO"
+  | "HIPERCARD"
+  | "OTHER";
+
+export type TPaymentVoucherBrand =
+  | "ALELO"
+  | "SODEXO"
+  | "VR"
+  | "BEN"
+  | "VEROCHEQUE"
+  | "OTHER";
+
+export type TDelilveryMethod = "LOCAL" | "DELIVERY";
+
 export type PaymentMethods = [
   "CREDIT_CARD",
   "DEBIT_CARD",

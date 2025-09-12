@@ -2,6 +2,7 @@ import type { TProduct } from "@/store/features/menu/types/models";
 import { Box, Text, Image } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import ProductCardEmptyState from "./emptyState";
+import { moneyFormat } from "@/helpers/shared";
 
 const MotionBox = motion(Box);
 
@@ -54,7 +55,7 @@ const ProductCard = ({
         </Text>
       </Box>
       <Text fontWeight="bold" fontSize="md" color="green.500">
-        R$ {product.price.toFixed(2).replace(".", ",")}
+        {moneyFormat(product.price)}
       </Text>
     </MotionBox>
   );

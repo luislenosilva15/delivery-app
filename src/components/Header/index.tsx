@@ -55,7 +55,7 @@ const Header = () => {
 
         <UserProfile
           name={user.name}
-          avatarUrl={user.imageUrl}
+          avatarUrl={user.imageUrl || ""}
           onProfileClick={() => navigate("/profile")}
           onSettingsClick={() => {}}
           onLogoutClick={() => {

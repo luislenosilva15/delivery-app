@@ -26,6 +26,7 @@ import { fetchCurrentProductRequest } from "@/store/features/menu/menuSlice";
 import emptyImage from "../../../../assets/emptyImage.png";
 import { formatDate } from "@/utils/data";
 import { daysOfWeek } from "@/constants";
+import { moneyFormat } from "@/helpers/shared";
 
 export const ProductModalDetails = ({ isOpen, onClose, productId }: Props) => {
   const dispatch = useDispatch();
@@ -102,7 +103,7 @@ export const ProductModalDetails = ({ isOpen, onClose, productId }: Props) => {
 
               <Box>
                 <Text fontWeight="bold">Preço:</Text>
-                <Text>R$ {product.price.toFixed(2)}</Text>
+                <Text>{moneyFormat(product.price)}</Text>
               </Box>
 
               <Box>

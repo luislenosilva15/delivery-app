@@ -1,3 +1,4 @@
+import { moneyFormat } from "@/helpers/shared";
 import { useClient } from "@/hook/client";
 import { Box, HStack, Text } from "@chakra-ui/react";
 import { FaShoppingCart } from "react-icons/fa";
@@ -59,7 +60,7 @@ const CheckoutBar = ({ onClick }: { onClick: () => void }) => {
           </Box>
           <Text fontWeight="bold">Meu pedido</Text>
         </HStack>
-        <Text fontWeight="bold">R$ {cartTotal.toFixed(2)}</Text>
+        <Text fontWeight="bold">{moneyFormat(cartTotal)}</Text>
       </Box>
     </Box>
   );

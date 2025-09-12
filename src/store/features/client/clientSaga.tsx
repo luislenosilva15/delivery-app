@@ -9,11 +9,14 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import type {
   FetchCompanyRequest,
   FetchCompanyResponse,
+  FetchCurrentOrderRequest,
+  FetchCurrentOrderResponse,
   FetchGroupsRequest,
   FetchGroupsResponse,
   SetAddToCartRequest,
   SetChangeQuantityRequest,
   SetCreateNewOrderRequest,
+  SetCreateNewOrderResponse,
 } from "./types/request";
 import {
   fetchCartRequest,
@@ -21,6 +24,9 @@ import {
   fetchCompanyFailure,
   fetchCompanyRequest,
   fetchCompanySuccess,
+  fetchCurrentOrderFailure,
+  fetchCurrentOrderRequest,
+  fetchCurrentOrderSuccess,
   fetchGroupsFailure,
   fetchGroupsRequest,
   fetchGroupsSuccess,
@@ -169,13 +175,35 @@ function* setChangeQuantitySaga(
 
 function* setCreateNewOrderSaga(
   action: PayloadAction<SetCreateNewOrderRequest>
-): Generator<any, void> {
+): Generator<any, void, AxiosResponse<SetCreateNewOrderResponse>> {
   try {
     localStorage.removeItem("cart");
 
+    const response = yield apiClient.post("/client/order", {
+      products: action.payload.items.map((item) => ({
+        productId: item.id,
+        quantity: item.quantity,
+        price: item.price,
+        observation: item.observation,
+      })),
+      deliveryMethod: action.payload.deliveryMethod,
+      paymentMethod: action.payload.payment.method,
+      paymentCardBrand: action.payload.payment.cardBrand,
+      paymentDebitCardBrand: action.payload.payment.debitCardBrand,
+      paymentVoucherBrand: action.payload.payment.voucherBrand,
+      totalPrice: action.payload.payment.totalPrice,
+      client: {
+        name: action.payload.name,
+        phone: action.payload.phone,
+      },
+      companyId: action.payload.companyId,
+    });
+
+    const orderId = response.data.order.id;
+
     yield put(
       setCreateNewOrderSuccess({
-        orderId: crypto.randomUUID(),
+        order: response.data.order,
       })
     );
 
@@ -184,13 +212,31 @@ function* setCreateNewOrderSaga(
       status: "success",
     });
 
-    router.navigate("order/1");
+    router.navigate(`order/${orderId}`);
   } catch {
     toast({
       title: "Erro ao criar o pedido",
       status: "error",
     });
     yield put(setCreateNewOrderError());
+  }
+}
+
+function* fetchCurrentOrderSaga(
+  action: PayloadAction<FetchCurrentOrderRequest>
+): Generator<any, void, AxiosResponse<FetchCurrentOrderResponse>> {
+  try {
+    const response = yield apiClient.get(
+      `/client/order/${action.payload.orderId}`
+    );
+
+    yield put(
+      fetchCurrentOrderSuccess({
+        order: response.data.order,
+      })
+    );
+  } catch {
+    yield put(fetchCurrentOrderFailure());
   }
 }
 
@@ -201,4 +247,5 @@ export default function* clientSaga() {
   yield takeLatest(fetchCartRequest.type, fetchCartSaga);
   yield takeLatest(setChangeQuantityRequest.type, setChangeQuantitySaga);
   yield takeLatest(setCreateNewOrderRequest.type, setCreateNewOrderSaga);
+  yield takeLatest(fetchCurrentOrderRequest.type, fetchCurrentOrderSaga);
 }

@@ -16,9 +16,14 @@ import {
   FaUtensils,
 } from "react-icons/fa";
 import type { CartPaymentProps } from "./types";
-import type { Payment, SubPayment } from "../types";
 import { useClient } from "@/hook/client";
 import { paymentCardBrandTypes, paymentVoucherBrandTypes } from "@/constants";
+import type {
+  TPaymentCardBrand,
+  TPaymentDebitBrand,
+  TPaymentMethod,
+  TPaymentVoucherBrand,
+} from "@/store/features/auth/types/models";
 
 const CartPayment = ({
   payment,
@@ -37,7 +42,7 @@ const CartPayment = ({
       </Text>
       <RadioGroup
         onChange={(v) => {
-          onChangePayment(v as Payment);
+          onChangePayment(v as TPaymentMethod);
           onChangeSubPayment(null);
         }}
         value={payment as string}
@@ -53,7 +58,9 @@ const CartPayment = ({
               <Collapse in={payment === "CREDIT_CARD"} animateOpacity>
                 <Box pl={8} pt={2}>
                   <RadioGroup
-                    onChange={(e) => onChangeSubPayment(e as SubPayment)}
+                    onChange={(e) =>
+                      onChangeSubPayment(e as TPaymentCardBrand | null)
+                    }
                     value={subPayment as string}
                   >
                     <Stack direction="column" spacing={2}>
@@ -79,7 +86,9 @@ const CartPayment = ({
               <Collapse in={payment === "DEBIT_CARD"} animateOpacity>
                 <Box pl={8} pt={2}>
                   <RadioGroup
-                    onChange={(e) => onChangeSubPayment(e as SubPayment)}
+                    onChange={(e) =>
+                      onChangeSubPayment(e as TPaymentDebitBrand | null)
+                    }
                     value={subPayment as string}
                   >
                     <Stack direction="column" spacing={2}>
@@ -105,7 +114,9 @@ const CartPayment = ({
               <Collapse in={payment === "VOUCHER"} animateOpacity>
                 <Box pl={8} pt={2}>
                   <RadioGroup
-                    onChange={(e) => onChangeSubPayment(e as SubPayment)}
+                    onChange={(e) =>
+                      onChangeSubPayment(e as TPaymentVoucherBrand | null)
+                    }
                     value={subPayment as string}
                   >
                     <Stack direction="column" spacing={2}>

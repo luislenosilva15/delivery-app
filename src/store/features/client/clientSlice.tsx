@@ -5,6 +5,8 @@ import type {
   FetchCartSuccess,
   FetchCompanyRequest,
   FetchCompanySuccess,
+  FetchCurrentOrderRequest,
+  FetchCurrentOrderSuccess,
   FetchGroupsRequest,
   FetchGroupsSuccess,
   SetAddToCartRequest,
@@ -15,7 +17,7 @@ import type {
   SetCreateNewOrderSuccess,
 } from "./types/request";
 import type { TGroup } from "../menu/types/models";
-import type { TCartItem } from "./types/models";
+import type { TCartItem, TOrder } from "./types/models";
 
 export interface ClientState {
   loading: boolean;
@@ -23,13 +25,16 @@ export interface ClientState {
   company: TCompany | null;
   groups: TGroup[] | null;
   loadingCart: boolean;
+  loadingOrder: boolean;
   cart: {
     items: TCartItem[];
   };
+  currentOrder?: TOrder | null;
 }
 
 const initialState: ClientState = {
   loading: true,
+  loadingOrder: false,
   submittingNewOrder: false,
   company: null,
   groups: null,
@@ -123,10 +128,31 @@ const clientSlice = createSlice({
     ) {
       state.submittingNewOrder = false;
       state.cart.items = [];
+      state.currentOrder = action.payload.order;
     },
 
     setCreateNewOrderError(state) {
       state.submittingNewOrder = false;
+    },
+
+    fetchCurrentOrderRequest(
+      state,
+      _action: PayloadAction<FetchCurrentOrderRequest>
+    ) {
+      state.loadingOrder = true;
+    },
+
+    fetchCurrentOrderSuccess(
+      state,
+      action: PayloadAction<FetchCurrentOrderSuccess>
+    ) {
+      state.loadingOrder = false;
+      state.currentOrder = action.payload.order;
+    },
+
+    fetchCurrentOrderFailure(state) {
+      state.loadingOrder = false;
+      state.currentOrder = null;
     },
   },
 });
@@ -147,6 +173,9 @@ export const {
   setCreateNewOrderRequest,
   setCreateNewOrderSuccess,
   setCreateNewOrderError,
+  fetchCurrentOrderRequest,
+  fetchCurrentOrderSuccess,
+  fetchCurrentOrderFailure,
 } = clientSlice.actions;
 
 export default clientSlice.reducer;

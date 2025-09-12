@@ -108,3 +108,11 @@ export const PAYMENT_CARD = [
   "HIPERCARD",
   "OTHER",
 ];
+
+export const paymentMethodsTraslations = {
+  CREDIT_CARD: "Cartão de Crédito",
+  DEBIT_CARD: "Cartão de Débito",
+  VOUCHER: "Vale Refeição",
+  CASH: "Dinheiro",
+  PIX: "PIX",
+};

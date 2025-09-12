@@ -3,6 +3,7 @@ import { Box, Flex, IconButton, Image, Text } from "@chakra-ui/react";
 import type { CartProps } from "./types";
 
 import emptyImage from "../../../../assets/emptyImage.png";
+import { moneyFormat } from "@/helpers/shared";
 
 const CartCard = ({ item, onUpdateQuantity }: CartProps) => {
   return (
@@ -18,7 +19,7 @@ const CartCard = ({ item, onUpdateQuantity }: CartProps) => {
           />
           <Box>
             <Text fontWeight="bold">{item.name}</Text>
-            <Text color="gray.300">R$ {item.price.toFixed(2)}</Text>
+            <Text color="gray.300">{moneyFormat(item.price)}</Text>
             {item.observation && (
               <Text fontSize="sm" color="gray.300">
                 {item.observation}

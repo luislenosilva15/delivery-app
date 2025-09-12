@@ -26,7 +26,7 @@ import { useNavigate } from "react-router-dom";
 function OpeningHourButton() {
   const { company } = useAuth();
 
-  const isClosed = !!company?.temporaryClosed;
+  const isClosed = !company?.isOpen || company?.temporaryClosed;
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -38,7 +38,6 @@ function OpeningHourButton() {
   const textColor = useColorModeValue("gray.800", "gray.100");
 
   const openingHours = useMemo((): NormalizedDay[] => {
-    console.log(company?.openingHours);
     if (company?.openingHours) {
       return normalizeOpeningHours(company.openingHours);
     }
@@ -77,20 +76,22 @@ function OpeningHourButton() {
           </Text>
 
           <VStack align="stretch" spacing={4}>
-            <HStack justify="space-between">
-              <Box>
-                <Text fontWeight="medium">Fechar Temporariamente</Text>
-                <Text fontSize="xs" color="gray.500">
-                  Essa opção fechará o estabelecimento temporariamente
-                </Text>
-              </Box>
-              <Switch
-                ml={1}
-                colorScheme="red"
-                isChecked={isClosed}
-                onChange={toggleTemporaryClosed}
-              />
-            </HStack>
+            {company?.isOpen && (
+              <HStack justify="space-between">
+                <Box>
+                  <Text fontWeight="medium">Fechar Temporariamente</Text>
+                  <Text fontSize="xs" color="gray.500">
+                    Essa opção fechará o estabelecimento temporariamente
+                  </Text>
+                </Box>
+                <Switch
+                  ml={1}
+                  colorScheme="red"
+                  isChecked={isClosed}
+                  onChange={toggleTemporaryClosed}
+                />
+              </HStack>
+            )}
 
             <Divider />
 

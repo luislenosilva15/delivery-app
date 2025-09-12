@@ -1,6 +1,13 @@
-import type { TCompany } from "@/store/features/auth/types/models";
+import type {
+  TCompany,
+  TDelilveryMethod,
+  TPaymentCardBrand,
+  TPaymentDebitBrand,
+  TPaymentMethod,
+  TPaymentVoucherBrand,
+} from "@/store/features/auth/types/models";
 import type { TGroup } from "@/store/features/menu/types/models";
-import type { TCartItem } from "../models";
+import type { TCartItem, TOrder } from "../models";
 
 export interface FetchCompanyRequest {
   id: number;
@@ -50,8 +57,35 @@ export interface SetChangeQuantitySuccess {
 
 export interface SetCreateNewOrderRequest {
   items: TCartItem[];
+  phone: string;
+  name: string;
+  deliveryMethod: TDelilveryMethod;
+  payment: {
+    method: TPaymentMethod;
+    cardBrand?: TPaymentCardBrand | null;
+    debitCardBrand?: TPaymentDebitBrand | null;
+    voucherBrand?: TPaymentVoucherBrand | null;
+    totalPrice: number;
+  };
+  companyId: number;
 }
 
 export interface SetCreateNewOrderSuccess {
-  orderId: string;
+  order: TOrder;
+}
+
+export interface SetCreateNewOrderResponse {
+  order: TOrder;
+}
+
+export interface FetchCurrentOrderRequest {
+  orderId: number;
+}
+
+export interface FetchCurrentOrderResponse {
+  order: TOrder;
+}
+
+export interface FetchCurrentOrderSuccess {
+  order: TOrder;
 }
