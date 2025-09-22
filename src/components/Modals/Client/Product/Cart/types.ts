@@ -16,7 +16,7 @@ export type CartModalProps = {
 };
 
 export type FormData = {
-  option: TDelilveryMethod;
+  option: TDelilveryMethod | null;
   payment: TPaymentMethod | null;
   subPayment:
     | TPaymentVoucherBrand
@@ -25,4 +25,11 @@ export type FormData = {
     | null;
   name: string;
   phone: string;
+  delivery: {
+    cep?: string;
+    street?: string;
+    number?: string;
+    complement?: string;
+    reference?: string;
+  };
 };

@@ -67,6 +67,13 @@ export interface SetCreateNewOrderRequest {
     voucherBrand?: TPaymentVoucherBrand | null;
     totalPrice: number;
   };
+  delivery: {
+    cep?: string;
+    street?: string;
+    number?: string;
+    complement?: string;
+    reference?: string;
+  };
   companyId: number;
 }
 

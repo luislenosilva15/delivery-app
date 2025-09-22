@@ -4,6 +4,7 @@ import authReducer from "./features/auth/authSlice";
 import teamReducer from "./features/team/teamSlice";
 import menuReducer from "./features/menu/menuSlice";
 import ClientReducer from "./features/client/clientSlice";
+import OrderManagerReducer from "./features/orderManager/orderManagerSlice";
 import rootSaga from "./rootSaga";
 
 const sagaMiddleware = createSagaMiddleware();
@@ -14,6 +15,7 @@ export const store = configureStore({
     team: teamReducer,
     menu: menuReducer,
     client: ClientReducer,
+    orderManager: OrderManagerReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: false }).concat(sagaMiddleware),

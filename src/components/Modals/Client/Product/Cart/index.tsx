@@ -32,6 +32,13 @@ export const CartModal: React.FC<CartModalProps> = ({
     subPayment: null,
     name: "",
     phone: "",
+    delivery: {
+      cep: "",
+      street: "",
+      number: "",
+      complement: "",
+      reference: "",
+    },
   });
 
   const { submittingNewOrder } = useClient();
@@ -82,6 +89,21 @@ export const CartModal: React.FC<CartModalProps> = ({
       hasError = true;
     }
 
+    if (formData.option === "DELIVERY") {
+      if (!formData.delivery.cep || formData.delivery.cep.trim().length < 8) {
+        newError.option = "CEP é obrigatório e deve ter 8 dígitos";
+        hasError = true;
+      }
+      if (!formData.delivery.street || !formData.delivery.street.trim()) {
+        newError.option = "Rua é obrigatória";
+        hasError = true;
+      }
+      if (!formData.delivery.number || !formData.delivery.number.trim()) {
+        newError.option = "Número é obrigatório";
+        hasError = true;
+      }
+    }
+
     setError(newError);
 
     if (!hasError) {
@@ -92,6 +114,19 @@ export const CartModal: React.FC<CartModalProps> = ({
   const handleChangePhone = (value: string) => {
     const maskedValue = maskPhone(value);
     setFormData((prev) => ({ ...prev, phone: maskedValue }));
+  };
+
+  const handleChangeFormDelivery = (
+    field: keyof FormData["delivery"],
+    value: string
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      delivery: {
+        ...prev.delivery,
+        [field]: value,
+      },
+    }));
   };
 
   return (
@@ -116,11 +151,16 @@ export const CartModal: React.FC<CartModalProps> = ({
           </Flex>
 
           <Delivery
+            deliveryFormData={formData.delivery}
             error={error}
             handleChangeOption={(option) =>
-              setFormData((prev) => ({ ...prev, option }))
+              setFormData((prev) => ({
+                ...prev,
+                option: option as FormData["option"],
+              }))
             }
             option={formData.option}
+            handleChangeForm={handleChangeFormDelivery}
           />
 
           <CartPayment

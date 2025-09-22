@@ -17,6 +17,7 @@ import ClientHomePage from "@/pages/Client/Home";
 import ClientMenuPage from "@/pages/Client/Menu";
 import DeliverySettings from "@/pages/DeliverySettings";
 import OrderTrackingPage from "@/pages/Client/OrderTracking";
+import OrderManagerPage from "@/pages/OrderManager";
 
 export const router = createBrowserRouter([
   {
@@ -63,6 +64,10 @@ export const router = createBrowserRouter([
         children: [
           { path: "/delivery/settings", element: <DeliverySettings /> },
         ],
+      },
+      {
+        element: <PrivateLayout />,
+        children: [{ path: "/order-manager", element: <OrderManagerPage /> }],
       },
     ],
   },

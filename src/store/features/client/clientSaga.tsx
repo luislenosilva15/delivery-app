@@ -197,6 +197,16 @@ function* setCreateNewOrderSaga(
         phone: action.payload.phone,
       },
       companyId: action.payload.companyId,
+      deliveryAddress:
+        action.payload.deliveryMethod === "DELIVERY"
+          ? {
+              cep: action.payload.delivery?.cep,
+              street: action.payload.delivery?.street,
+              number: action.payload.delivery?.number,
+              complement: action.payload.delivery?.complement,
+              reference: action.payload.delivery?.reference,
+            }
+          : undefined,
     });
 
     const orderId = response.data.order.id;

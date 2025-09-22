@@ -117,7 +117,11 @@ export default function OrderTracking() {
               bg={dividerColor}
               mr={2}
             ></Box>
-            <Text>Retirada</Text>
+            <Text>
+              {currentOrder.deliveryMethod === "DELIVERY"
+                ? "Entrega"
+                : "Retirada"}
+            </Text>
           </HStack>
         </VStack>
 

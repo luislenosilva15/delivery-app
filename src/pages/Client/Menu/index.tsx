@@ -182,6 +182,13 @@ const ClientMenuPage = () => {
             .map((item) => item.price * item.quantity)
             .reduce((a, b) => a + b, 0),
         },
+        delivery: {
+          cep: formData.delivery?.cep,
+          street: formData.delivery?.street,
+          number: formData.delivery?.number,
+          complement: formData.delivery?.complement,
+          reference: formData.delivery?.reference,
+        },
         companyId: company?.id,
       } as SetCreateNewOrderRequest)
     );

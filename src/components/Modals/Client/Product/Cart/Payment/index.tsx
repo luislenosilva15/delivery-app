@@ -92,7 +92,7 @@ const CartPayment = ({
                     value={subPayment as string}
                   >
                     <Stack direction="column" spacing={2}>
-                      {company?.companyPayment?.cardBrand.map((brand) => (
+                      {company?.companyPayment?.debitCardBrand.map((brand) => (
                         <Radio key={brand} value={brand} colorScheme="primary">
                           {paymentCardBrandTypes[brand]}
                         </Radio>

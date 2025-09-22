@@ -1,3 +1,5 @@
+import type { TOrderStatus } from "@/store/features/client/types/models";
+import type { TOrdersCount } from "@/store/features/orderManager/types/models";
 import type { TTeamRole } from "@/store/features/team/types/models";
 
 export const daysOfWeek = [
@@ -116,3 +118,55 @@ export const paymentMethodsTraslations = {
   CASH: "Dinheiro",
   PIX: "PIX",
 };
+
+export const deliveryMethodsTranslations = {
+  DELIVERY: "Entrega",
+  LOCAL: "Retirada",
+};
+
+export const orderStatusOptions = [
+  { label: "Pendente", color: "yellow" },
+  { label: "Aceito", color: "purple" },
+  { label: "Preparando", color: "orange" },
+  { label: "Entregando", color: "blue" },
+  { label: "Concluído", color: "green" },
+];
+
+export const statusTabs: Array<{
+  label: string;
+  color: string;
+  status: TOrderStatus;
+  countKey: keyof TOrdersCount;
+}> = [
+  {
+    label: "Pendente",
+    color: "yellow.400",
+    status: "PENDING",
+    countKey: "pending",
+  },
+  {
+    label: "Preparando",
+    color: "orange.400",
+    status: "IN_PREPARATION",
+    countKey: "inPreparation",
+  },
+  { label: "Pronto", color: "purple.400", status: "READY", countKey: "ready" },
+  {
+    label: "Entregando",
+    color: "blue.400",
+    status: "OUT_FOR_DELIVERY",
+    countKey: "outForDelivery",
+  },
+  {
+    label: "Concluído",
+    color: "green.400",
+    status: "DELIVERED",
+    countKey: "delivered",
+  },
+  {
+    label: "Cancelado",
+    color: "red.400",
+    status: "CANCELLED",
+    countKey: "cancelled",
+  },
+];

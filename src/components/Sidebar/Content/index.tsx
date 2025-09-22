@@ -26,6 +26,7 @@ import {
   MdOutlineLocalGroceryStore,
   MdOutlineRestaurant,
   MdDeliveryDining,
+  MdKitchen,
 } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hook/auth";
@@ -77,6 +78,13 @@ function SidebarContent() {
           onClick={() => navigate("/menu")}
         />
 
+        <SidebarItem
+          icon={MdKitchen}
+          label="Pedidos"
+          isActive={optionIsActive("/order-manager")}
+          onClick={() => navigate("/order-manager")}
+        />
+
         {/* LOJA */}
         <Box w="full">
           <Flex
@@ -118,6 +126,7 @@ function SidebarContent() {
                 icon={MdOutlineLocalGroceryStore}
                 label="Horário"
               />
+
               <SidebarItem
                 isActive={optionIsActive("/about")}
                 onClick={() => navigate("/about")}
