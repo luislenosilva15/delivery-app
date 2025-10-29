@@ -1,5 +1,3 @@
-export type TProductAvailabilityBy = "BOTH" | "DELIVERY" | "LOCAL";
-
 export type TProductHours = {
   dayOfWeek: number;
   startTime: null | string;
@@ -45,7 +43,6 @@ export type TProduct = {
   menuGroupId: number;
   isAdultOnly: boolean;
   image: string | null;
-  productAvailabilityBy: TProductAvailabilityBy;
   disabled: boolean;
   imageUrl: string | null;
   productHours?: TProductHours[];

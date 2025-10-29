@@ -23,7 +23,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import Breadcrumb from "@/components/Breadcrumb";
 
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -95,25 +94,8 @@ export default function MenuPage() {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   const [currentGroup, setCurrentGroup] = useState<TGroup | null>(null);
-
   const [currentProductId, setCurrentProductId] = useState<number | null>(null);
-
   const tabBorderColor = useColorModeValue("gray.200", "gray.700");
-
-  const onDragEndItems = (result, groupId) => {
-    const { source, destination } = result;
-    if (!destination) return;
-
-    const groupIndex = groups.findIndex((g) => g.id === groupId);
-    const items = Array.from(groups[groupIndex].items);
-
-    const [moved] = items.splice(source.index, 1);
-    items.splice(destination.index, 0, moved);
-
-    const updatedGroups = [...groups];
-    updatedGroups[groupIndex].items = items;
-    // setGroups(updatedGroups);
-  };
 
   const breadcrumbLinks = [
     { label: "Home", href: "/" },
@@ -191,11 +173,7 @@ export default function MenuPage() {
 
   const handleDeleteProduct = () => {
     if (!currentProductId) return;
-    dispatch(
-      setDeleteProductRequest({
-        productId: currentProductId,
-      })
-    );
+    dispatch(setDeleteProductRequest({ productId: currentProductId }));
     setCurrentProductId(null);
     onCloseDeleteProductModal();
   };
@@ -214,11 +192,11 @@ export default function MenuPage() {
         <Stack spacing={4}>
           <Box
             display="flex"
+            justifyContent="space-between"
             flexDirection="row"
-            justifyContent={"space-between"}
           >
             <Heading size="md">Cardápio</Heading>
-            <Box display="flex" gap={2} alignItems={"center"}>
+            <Box display="flex" gap={2} alignItems="center">
               <Button
                 colorScheme="primary"
                 leftIcon={<AddIcon />}
@@ -263,9 +241,9 @@ export default function MenuPage() {
                     key={group.id}
                     role="tab"
                     position="relative"
-                    paddingX={4}
-                    paddingY={2}
-                    marginRight={1}
+                    px={4}
+                    py={2}
+                    mr={1}
                     fontWeight="semibold"
                     cursor="pointer"
                     userSelect="none"
@@ -274,10 +252,8 @@ export default function MenuPage() {
                       activeTabIndex === index ? "primary.500" : "transparent"
                     }
                     borderTopRadius="md"
-                    _hover={{
-                      bg: "primary.400",
-                    }}
-                    transition={"background-color 0.3s"}
+                    _hover={{ bg: "primary.400" }}
+                    transition="background-color 0.3s"
                     whiteSpace="nowrap"
                   >
                     {group.name}
@@ -321,7 +297,7 @@ export default function MenuPage() {
                               <Badge
                                 colorScheme="red"
                                 fontSize="0.6em"
-                                padding={2}
+                                p={2}
                                 borderRadius={6}
                                 cursor="help"
                               >
@@ -331,7 +307,7 @@ export default function MenuPage() {
                           )}
                         </Heading>
 
-                        <Box display="flex" flexDirection="row" gap={2}>
+                        <Box display="flex" gap={2}>
                           <Button
                             size="sm"
                             leftIcon={<AddIcon />}
@@ -375,9 +351,9 @@ export default function MenuPage() {
                                 Excluir grupo
                               </MenuItem>
                               <MenuItem
-                                onClick={() => {
-                                  handleDisableGroup(group.id, group.disabled);
-                                }}
+                                onClick={() =>
+                                  handleDisableGroup(group.id, group.disabled)
+                                }
                               >
                                 {!group.disabled
                                   ? "Desabilitar grupo"
@@ -388,113 +364,76 @@ export default function MenuPage() {
                         </Box>
                       </Flex>
 
-                      {/* DragDropContext só para itens */}
-                      <DragDropContext
-                        onDragEnd={(result) => onDragEndItems(result, group.id)}
+                      <Stack
+                        spacing={3}
+                        minHeight="150px"
+                        justifyContent={
+                          loadingProducts || isEmptyProducts
+                            ? "center"
+                            : undefined
+                        }
+                        alignItems={
+                          loadingProducts || isEmptyProducts
+                            ? "center"
+                            : undefined
+                        }
                       >
-                        <Droppable
-                          droppableId={group.id.toString()}
-                          direction="vertical"
-                          type="item"
-                        >
-                          {(provided) => (
-                            <Stack
-                              ref={provided.innerRef}
-                              {...provided.droppableProps}
-                              spacing={3}
-                              minHeight="150px" // altura mínima para centralizar spinner e empty
-                              justifyContent={
-                                loadingProducts || isEmptyProducts
-                                  ? "center"
-                                  : undefined
-                              }
-                              alignItems={
-                                loadingProducts || isEmptyProducts
-                                  ? "center"
-                                  : undefined
-                              }
-                            >
-                              {loadingProducts && (
-                                <Center w="100%">
-                                  <Spinner
-                                    size="lg"
-                                    thickness="4px"
-                                    speed="0.65s"
-                                    color="primary.500"
-                                  />
-                                </Center>
-                              )}
+                        {loadingProducts && (
+                          <Center w="100%">
+                            <Spinner
+                              size="lg"
+                              thickness="4px"
+                              speed="0.65s"
+                              color="primary.500"
+                            />
+                          </Center>
+                        )}
 
-                              {!loadingProducts && isEmptyProducts && (
-                                <Center
-                                  flexDirection="column"
-                                  color="gray.500"
-                                  px={6}
-                                  textAlign="center"
-                                  w="100%"
-                                  userSelect="none"
-                                >
-                                  <Box fontSize="6xl" mb={4} opacity={0.3}>
-                                    🛒
-                                  </Box>
-                                  <Text
-                                    fontSize="lg"
-                                    fontWeight="semibold"
-                                    mb={2}
-                                  >
-                                    Nenhum produto encontrado
-                                  </Text>
-                                  <Text maxW="md" mb={4}>
-                                    Este grupo ainda não possui produtos
-                                    cadastrados.
-                                  </Text>
-                                </Center>
-                              )}
+                        {!loadingProducts && isEmptyProducts && (
+                          <Center
+                            flexDirection="column"
+                            color="gray.500"
+                            px={6}
+                            textAlign="center"
+                            w="100%"
+                            userSelect="none"
+                          >
+                            <Box fontSize="6xl" mb={4} opacity={0.3}>
+                              🛒
+                            </Box>
+                            <Text fontSize="lg" fontWeight="semibold" mb={2}>
+                              Nenhum produto encontrado
+                            </Text>
+                            <Text maxW="md" mb={4}>
+                              Este grupo ainda não possui produtos cadastrados.
+                            </Text>
+                          </Center>
+                        )}
 
-                              {!loadingProducts &&
-                                !isEmptyProducts &&
-                                products?.map((item, index) => (
-                                  <Draggable
-                                    draggableId={item.id.toString()}
-                                    index={index}
-                                    key={item.id}
-                                  >
-                                    {(provided) => (
-                                      <div
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                      >
-                                        <ProductCard
-                                          item={item}
-                                          onEdit={(id) => {
-                                            setCurrentProductId(id);
-                                            onOpenProductModal();
-                                          }}
-                                          onDisable={(id) => {
-                                            handleToggleDisableProduct(
-                                              id,
-                                              item.disabled
-                                            );
-                                          }}
-                                          onDelete={(id) => {
-                                            setCurrentProductId(id);
-                                            onOpenDeleteProductModal();
-                                          }}
-                                          onClickCard={(id) => {
-                                            setCurrentProductId(id);
-                                            onOpenProductDetailsModal();
-                                          }}
-                                        />
-                                      </div>
-                                    )}
-                                  </Draggable>
-                                ))}
-                              {provided.placeholder}
-                            </Stack>
-                          )}
-                        </Droppable>
-                      </DragDropContext>
+                        {!loadingProducts &&
+                          !isEmptyProducts &&
+                          products?.map((item) => (
+                            <ProductCard
+                              key={item.id}
+                              item={item}
+                              onEdit={(id) => {
+                                setCurrentProductId(id);
+                                onOpenProductModal();
+                              }}
+                              onDisable={(id) =>
+                                handleToggleDisableProduct(id, item.disabled)
+                              }
+                              onDelete={(id) => {
+                                setCurrentProductId(id);
+                                onOpenDeleteProductModal();
+                              }}
+                              onClickCard={(id) => {
+                                setCurrentProductId(id);
+                                onOpenProductDetailsModal();
+                              }}
+                            />
+                          ))}
+                      </Stack>
                     </TabPanel>
                   );
                 })}
@@ -504,6 +443,7 @@ export default function MenuPage() {
         </Stack>
       </Box>
 
+      {/* Modais */}
       <NewProductModal
         isOpen={isOpenProductModal}
         onClose={() => {
@@ -513,6 +453,7 @@ export default function MenuPage() {
         onSubmit={handleSubmitProductModal}
         productId={currentProductId}
       />
+
       <ConfirmModal
         isOpen={isOpenDeleteGroupModal}
         onClose={onCloseDeleteGroupModal}
@@ -541,7 +482,10 @@ export default function MenuPage() {
 
       <ProductModalDetails
         isOpen={isOpenProductDetailsModal}
-        onClose={onCloseProductDetailsModal}
+        onClose={() => {
+          setCurrentProductId(null);
+          onCloseProductDetailsModal();
+        }}
         productId={currentProductId}
       />
 

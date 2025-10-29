@@ -1,10 +1,7 @@
-import type { TProductAvailabilityBy } from "@/store/features/menu/types/models";
-
 export type FormData = {
   name: string;
   description: string;
   price: number;
-  availability: TProductAvailabilityBy;
   image: string | null;
   imageFile: File | null | string;
   alwaysAvailable: boolean;

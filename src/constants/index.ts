@@ -1,5 +1,5 @@
-import type { TOrderStatus } from "@/store/features/client/types/models";
 import type { TOrdersCount } from "@/store/features/orderManager/types/models";
+import type { OrderStatus } from "@/store/features/orderManager/types/request";
 import type { TTeamRole } from "@/store/features/team/types/models";
 
 export const daysOfWeek = [
@@ -135,7 +135,7 @@ export const orderStatusOptions = [
 export const statusTabs: Array<{
   label: string;
   color: string;
-  status: TOrderStatus;
+  status: OrderStatus;
   countKey: keyof TOrdersCount;
 }> = [
   {
@@ -144,13 +144,13 @@ export const statusTabs: Array<{
     status: "PENDING",
     countKey: "pending",
   },
+  { label: "Aceito", color: "purple.400", status: "READY", countKey: "ready" },
   {
     label: "Preparando",
     color: "orange.400",
     status: "IN_PREPARATION",
     countKey: "inPreparation",
   },
-  { label: "Pronto", color: "purple.400", status: "READY", countKey: "ready" },
   {
     label: "Entregando",
     color: "blue.400",
@@ -163,10 +163,28 @@ export const statusTabs: Array<{
     status: "DELIVERED",
     countKey: "delivered",
   },
-  {
-    label: "Cancelado",
-    color: "red.400",
-    status: "CANCELLED",
-    countKey: "cancelled",
-  },
+  // {
+  //   label: "Cancelado",
+  //   color: "red.400",
+  //   status: "CANCELLED",
+  //   countKey: "cancelled",
+  // },
 ];
+
+export const orderStatusCardColor = {
+  PENDING: "yellow",
+  READY: "purple",
+  IN_PREPARATION: "orange",
+  OUT_FOR_DELIVERY: "blue",
+  DELIVERED: "green",
+  CANCELLED: "red",
+};
+
+export const clientOrderStatusTranslations = {
+  PENDING: "Pedido Pendente...",
+  READY: "Pedido Aceito",
+  IN_PREPARATION: "Pedido em Preparação",
+  OUT_FOR_DELIVERY: "Pedido Saiu para Entrega",
+  DELIVERED: "Pedido Entregue",
+  CANCELLED: "Pedido Cancelado",
+};

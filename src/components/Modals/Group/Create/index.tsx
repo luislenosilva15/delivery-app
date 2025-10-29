@@ -145,6 +145,7 @@ export default function NewGroupModal({
 
   const save = () => {
     const isValid = validateSchedule();
+    console.log("isValid", isValid);
     if (!isValid) return;
     handleOnCloseModal();
     onSubmit(formData);

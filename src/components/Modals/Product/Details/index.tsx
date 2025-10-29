@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -16,7 +16,6 @@ import {
   Divider,
   Box,
   Spinner,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import type { Props } from "./types";
 import { useMenu } from "@/hook/menu";
@@ -38,12 +37,6 @@ export const ProductModalDetails = ({ isOpen, onClose, productId }: Props) => {
 
     dispatch(fetchCurrentProductRequest({ productId }));
   }, [dispatch, isOpen, productId]);
-
-  const availability = {
-    DELIVERY: "Delivery",
-    LOCAL: "Local",
-    BOTH: "Delivery e Local",
-  };
 
   const getDayName = (dayOfWeek: number) => {
     return daysOfWeek[dayOfWeek] || "";
@@ -104,11 +97,6 @@ export const ProductModalDetails = ({ isOpen, onClose, productId }: Props) => {
               <Box>
                 <Text fontWeight="bold">Preço:</Text>
                 <Text>{moneyFormat(product.price)}</Text>
-              </Box>
-
-              <Box>
-                <Text fontWeight="bold">Disponível por:</Text>
-                <Text>{availability[product.productAvailabilityBy]}</Text>
               </Box>
 
               {product.productHours && product.productHours.length > 0 && (

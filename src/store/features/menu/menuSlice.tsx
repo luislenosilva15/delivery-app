@@ -90,7 +90,7 @@ const menuSlice = createSlice({
       state,
       action: PayloadAction<SetCreateNewProductSuccess>
     ) {
-      state.products.push(action.payload.product);
+      state.products = [action.payload.product, ...state.products];
     },
 
     setToggleDisableGroupRequest(

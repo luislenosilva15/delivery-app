@@ -15,7 +15,6 @@ import {
 } from "@chakra-ui/react";
 import type { Props } from "./types";
 import emptyImage from "../../../assets/emptyImage.png";
-import { useMemo } from "react";
 import { moneyFormat } from "@/helpers/shared";
 
 export default function ProductCard({
@@ -28,15 +27,6 @@ export default function ProductCard({
   const itemBgColor = useColorModeValue("white", "gray.700");
   const itemBorderColor = useColorModeValue("gray.200", "gray.600");
   const itemImageBgColor = useColorModeValue("gray.100", "gray.600");
-
-  const renderDisponibilityTag = useMemo(() => {
-    const availability = {
-      DELIVERY: <Tag colorScheme="yellow">Delivery</Tag>,
-      LOCAL: <Tag colorScheme="gray">Local</Tag>,
-      BOTH: <Tag colorScheme="blue">Delivery e Local</Tag>,
-    };
-    return [availability[item.productAvailabilityBy]];
-  }, [item.productAvailabilityBy]);
 
   const handleCardClick = () => {
     if (onClickCard) onClickCard(item.id);
@@ -70,14 +60,12 @@ export default function ProductCard({
           <Badge colorScheme="green">{moneyFormat(item.price)}</Badge>
 
           <HStack spacing={2} mt={2}>
-            {renderDisponibilityTag}
             {item.disabled && <Tag colorScheme="red">Indisponível</Tag>}
           </HStack>
         </Box>
       </HStack>
 
       <HStack marginRight={4} onClick={(e) => e.stopPropagation()}>
-        {/* Evita disparar onClick do card ao clicar no menu */}
         <Menu>
           <MenuButton
             as={IconButton}

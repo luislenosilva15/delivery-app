@@ -41,3 +41,27 @@ export type FetchOrdersCountSuccess = {
     cancelled: number;
   };
 };
+
+export interface FetchOrderRequest {
+  orderId: string;
+}
+
+export interface FetchOrderResponse {
+  order: TOrder;
+}
+
+export type FetchOrderSuccess = {
+  order: TOrder;
+};
+
+export interface SetChangeOrderStatusRequest {
+  orderId: number;
+  status: OrderStatus;
+}
+
+export interface SetChangeOrderStatusResponse {
+  order: TOrder;
+}
+export type SetChangeOrderStatusSuccess = {
+  orderId: number;
+};

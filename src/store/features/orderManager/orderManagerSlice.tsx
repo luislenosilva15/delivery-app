@@ -4,12 +4,16 @@ import type {
   FetchOrdersCountSuccess,
   FetchOrdersRequest,
   FetchOrdersSuccess,
+  FetchOrderSuccess,
+  SetChangeOrderStatusRequest,
+  SetChangeOrderStatusSuccess,
 } from "./types/request";
 import type { TOrder } from "../client/types/models";
 
 export interface OrderManagerState {
   loading: boolean;
   loadingOrdersCount: boolean;
+  loadingOrder: boolean;
   ordersCount?: {
     pending: number;
     inPreparation: number;
@@ -19,12 +23,15 @@ export interface OrderManagerState {
     cancelled: number;
   };
   orders: TOrder[];
+  currentOrder?: TOrder | null;
 }
 
 const initialState: OrderManagerState = {
   loading: true,
   loadingOrdersCount: true,
+  loadingOrder: false,
   orders: [],
+  currentOrder: null,
   ordersCount: {
     pending: 0,
     inPreparation: 0,
@@ -55,7 +62,6 @@ const orderManagerSlice = createSlice({
 
     fetchOrdersCountRequest(state) {
       state.loadingOrdersCount = true;
-      state.ordersCount = initialState.ordersCount;
     },
 
     fetchOrdersCountSuccess(
@@ -68,6 +74,35 @@ const orderManagerSlice = createSlice({
     fetchOrdersCountError(state) {
       state.loadingOrdersCount = false;
     },
+
+    fetchOrderRequest(state, _action) {
+      state.loadingOrder = true;
+      state.currentOrder = null;
+    },
+
+    fetchOrderSuccess(state, action: PayloadAction<FetchOrderSuccess>) {
+      state.loadingOrder = false;
+      state.currentOrder = action.payload.order;
+    },
+
+    fetchOrderError(state) {
+      state.loadingOrder = false;
+      state.currentOrder = null;
+    },
+
+    setChangeOrderStatusRequest(
+      _state,
+      _action: PayloadAction<SetChangeOrderStatusRequest>
+    ) {},
+
+    setChangeOrderStatusSuccess(
+      state,
+      action: PayloadAction<SetChangeOrderStatusSuccess>
+    ) {
+      state.orders = state.orders.filter(
+        (order) => order.id !== action.payload.orderId
+      );
+    },
   },
 });
 
@@ -78,6 +113,11 @@ export const {
   fetchOrdersCountRequest,
   fetchOrdersCountError,
   fetchOrdersCountSuccess,
+  fetchOrderRequest,
+  fetchOrderSuccess,
+  fetchOrderError,
+  setChangeOrderStatusSuccess,
+  setChangeOrderStatusRequest,
 } = orderManagerSlice.actions;
 
 export default orderManagerSlice.reducer;

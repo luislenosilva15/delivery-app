@@ -24,14 +24,10 @@ import {
   StepDescription,
   StepSeparator,
   Textarea,
-  Radio,
-  RadioGroup,
-  Stack,
   FormErrorMessage,
 } from "@chakra-ui/react";
 import ImageUploader from "@/components/ImageUploader";
 import type { FormData, Props } from "./types";
-import type { TProductAvailabilityBy } from "@/store/features/menu/types/models";
 import { daysOfWeek, productStepsModal } from "@/constants";
 import { fetchCurrentProductRequest } from "@/store/features/menu/menuSlice";
 import { useDispatch } from "react-redux";
@@ -314,26 +310,6 @@ export default function ProductModal({
                     >
                       Produto para adultos
                     </Checkbox>
-                  </FormControl>
-
-                  <FormControl isRequired>
-                    <FormLabel>Disponibilidade de entrega</FormLabel>
-                    <RadioGroup
-                      onChange={(value: TProductAvailabilityBy) => {
-                        setFormData({
-                          ...formData,
-                          availability: value,
-                        });
-                      }}
-                      value={formData.availability}
-                      colorScheme="primary"
-                    >
-                      <Stack direction="row" spacing={4} mb={4}>
-                        <Radio value="DELIVERY">Delivery</Radio>
-                        <Radio value="LOCAL">Local</Radio>
-                        <Radio value="BOTH">Ambos</Radio>
-                      </Stack>
-                    </RadioGroup>
                   </FormControl>
                 </VStack>
               )}

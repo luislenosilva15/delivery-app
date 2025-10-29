@@ -23,6 +23,11 @@ import { useEffect } from "react";
 import { fetchCurrentOrderRequest } from "@/store/features/client/clientSlice";
 import { moneyFormat } from "@/helpers/shared";
 import { OrderDetails } from "@/components/Modals/Client/Order/Details";
+import {
+  clientOrderStatusTranslations,
+  orderStatusCardColor,
+} from "@/constants";
+import { LuCookingPot } from "react-icons/lu";
 
 const MotionHStack = motion(HStack);
 
@@ -45,6 +50,8 @@ export default function OrderTracking() {
 
   const onBack = () => navigate(-1);
 
+  const animation = { scale: [1, 1.05, 1] };
+
   useEffect(() => {
     dispatch(
       fetchCurrentOrderRequest({
@@ -54,6 +61,25 @@ export default function OrderTracking() {
   }, [dispatch, orderId]);
 
   if (loadingOrder || !currentOrder) return <Loading />;
+
+  const status = currentOrder.status;
+
+  const pendingColor =
+    status === "PENDING" ? orderStatusCardColor[currentOrder.status] : "green";
+
+  const readyColor =
+    status === "READY" || status === "IN_PREPARATION" ? "yellow" : "green";
+
+  const pendingText =
+    status === "PENDING"
+      ? clientOrderStatusTranslations["PENDING"]
+      : "Pedido Aceito";
+
+  const readyText =
+    status === "READY" || status === "IN_PREPARATION"
+      ? clientOrderStatusTranslations["IN_PREPARATION"]
+      : "Pedido pronto";
+
   return (
     <>
       <Box maxW="600px" mx="auto" p={6}>
@@ -89,40 +115,36 @@ export default function OrderTracking() {
           </CardBody>
         </Card>
 
+        {/* PENDING */}
         <VStack align="start" spacing={6} mb={6} pl={2}>
           <MotionHStack
-            animate={{ scale: [1, 1.05, 1] }}
+            animate={status === "PENDING" ? animation : false}
             transition={{ duration: 1.2, repeat: Infinity }}
           >
-            <Icon as={FaClock} color="orange.400" />
-            <Text fontWeight="semibold">Pedido pendente...</Text>
+            <Icon as={FaClock} color={pendingColor} />
+            <Text fontWeight="semibold">{pendingText}</Text>
           </MotionHStack>
 
-          <HStack opacity={0.5}>
-            <Box
-              w="10px"
-              h="10px"
-              borderRadius="full"
-              bg={dividerColor}
-              mr={2}
-            ></Box>
-            <Text>Preparo</Text>
-          </HStack>
+          {/* READY */}
+          <MotionHStack
+            animate={
+              status === "READY" || status === "IN_PREPARATION"
+                ? animation
+                : false
+            }
+            transition={{ duration: 1.2, repeat: Infinity }}
+          >
+            <Icon as={LuCookingPot} color={readyColor} />
+            <Text fontWeight="semibold">{readyText}</Text>
+          </MotionHStack>
 
-          <HStack opacity={0.5}>
-            <Box
-              w="10px"
-              h="10px"
-              borderRadius="full"
-              bg={dividerColor}
-              mr={2}
-            ></Box>
-            <Text>
-              {currentOrder.deliveryMethod === "DELIVERY"
-                ? "Entrega"
-                : "Retirada"}
-            </Text>
-          </HStack>
+          <MotionHStack
+            animate={status === "OUT_FOR_DELIVERY" ? animation : false}
+            transition={{ duration: 1.2, repeat: Infinity }}
+          >
+            <Icon as={LuCookingPot} color={readyColor} />
+            <Text fontWeight="semibold">{readyText}</Text>
+          </MotionHStack>
         </VStack>
 
         <Divider mb={6} borderColor={dividerColor} />

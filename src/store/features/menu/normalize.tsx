@@ -22,7 +22,6 @@ export function normalizeSetCreateNewProductRequest(
   if (product.description)
     newFormData.append("description", product.description);
   if (product.price) newFormData.append("price", String(product.price));
-  newFormData.append("productAvailabilityBy", product.availability);
   if (product.imageFile) newFormData.append("image", product.imageFile);
 
   if (product.alwaysAvailable) {
@@ -46,7 +45,6 @@ export function normalizeSetEditProductRequest(product: FormData) {
   if (product.description)
     newFormData.append("description", product.description);
   if (product.price) newFormData.append("price", String(product.price));
-  newFormData.append("productAvailabilityBy", product.availability);
 
   if (product.imageFile === null) {
     newFormData.append("removeImage", "true");
@@ -154,7 +152,6 @@ export const formDataProductEditData = (product: TProduct) => {
     name: product.name,
     description: product.description,
     price: product.price,
-    availability: product.productAvailabilityBy,
     image: product.image,
     imageFile: "",
     alwaysAvailable: product.alwaysAvailable,

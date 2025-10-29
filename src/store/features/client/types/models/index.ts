@@ -5,6 +5,7 @@ import type {
   TPaymentMethod,
   TPaymentVoucherBrand,
 } from "@/store/features/auth/types/models";
+import type { OrderStatus } from "@/store/features/orderManager/types/request";
 
 export type TCartItem = {
   uniqueId?: string;
@@ -15,14 +16,6 @@ export type TCartItem = {
   imageUrl: string;
   observation?: string;
 };
-
-export type TOrderStatus =
-  | "PENDING"
-  | "IN_PREPARATION"
-  | "READY"
-  | "OUT_FOR_DELIVERY"
-  | "DELIVERED"
-  | "CANCELLED";
 
 export type TOrderItem = {
   id: number;
@@ -51,7 +44,7 @@ export type TOrder = {
   id: number;
   createdAt: string;
   updatedAt: string;
-  status: TOrderStatus;
+  status: OrderStatus;
   clientId: number;
   companyId: number;
   totalPrice: number;
