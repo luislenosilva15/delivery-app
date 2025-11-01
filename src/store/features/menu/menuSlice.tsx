@@ -129,7 +129,7 @@ const menuSlice = createSlice({
       state,
       action: PayloadAction<SetCreateNewGroupSuccess>
     ) {
-      state.groups = [...state.groups, action.payload.group];
+      state.groups = [action.payload.group, ...state.groups];
     },
 
     fetchCurrentProductRequest(

@@ -177,6 +177,7 @@ export default function TeamPage() {
                 placeholder="Buscar"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
+                focusBorderColor="primary.500"
               />
             </InputGroup>
             <Text fontSize="sm" color={textTotal}>

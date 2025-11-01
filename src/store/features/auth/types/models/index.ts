@@ -122,6 +122,7 @@ export type TCompany = {
   isOpen?: boolean;
   cuisineType: TCuisineType;
   menuId?: number;
+  themePrimaryColor: string;
   companyPayment: TCompanyPayment;
 };
 

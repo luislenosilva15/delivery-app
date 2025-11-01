@@ -212,7 +212,7 @@ export default function OpeningHoursPage() {
           <Switch
             isChecked={open24h}
             onChange={() => setOpen24h((prev) => !prev)}
-            colorScheme="teal"
+            colorScheme="green"
           />
         </Stack>
 
@@ -227,7 +227,7 @@ export default function OpeningHoursPage() {
                 <Switch
                   isChecked={schedule[day].enabled}
                   onChange={() => toggleDay(day)}
-                  colorScheme="teal"
+                  colorScheme="primary"
                   mb={4}
                   isDisabled={open24h}
                 />
@@ -274,6 +274,8 @@ export default function OpeningHoursPage() {
                           <Input
                             type="time"
                             placeholder="Closing time"
+                            colorScheme="primary"
+                            focusBorderColor="primary.500"
                             value={hour.close}
                             onChange={(e) =>
                               handleChange(day, index, "close", e.target.value)

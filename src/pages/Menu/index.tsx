@@ -107,10 +107,16 @@ export default function MenuPage() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (groups?.length) {
-      dispatch(fetchProductsRequest({ groupId: groups[activeTabIndex]?.id }));
+    if (groups?.length && groups[activeTabIndex]?.id) {
+      dispatch(fetchProductsRequest({ groupId: groups[activeTabIndex].id }));
     }
   }, [activeTabIndex, dispatch, groups?.map((g) => g.id).join(",")]);
+
+  useEffect(() => {
+    if (groups?.length && activeTabIndex >= groups.length) {
+      setActiveTabIndex(0);
+    }
+  }, [groups?.length, activeTabIndex]);
 
   if (!groups?.length && loading) {
     return (
@@ -207,19 +213,6 @@ export default function MenuPage() {
               >
                 Novo Grupo
               </Button>
-
-              <Menu>
-                <MenuButton
-                  as={IconButton}
-                  aria-label="Opções"
-                  icon={<BsThreeDotsVertical />}
-                  variant="ghost"
-                  size="lg"
-                />
-                <MenuList>
-                  <MenuItem>Ordenar grupos</MenuItem>
-                </MenuList>
-              </Menu>
             </Box>
           </Box>
 

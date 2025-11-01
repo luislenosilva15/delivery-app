@@ -97,6 +97,7 @@ const AboutPage = () => {
             <FormControl isRequired>
               <FormLabel>Email</FormLabel>
               <Input
+                focusBorderColor="primary.500"
                 onInvalid={(e) =>
                   (e.target as HTMLInputElement).setCustomValidity(
                     "Obrigatório informar um email válido."
@@ -115,6 +116,7 @@ const AboutPage = () => {
             <FormControl isRequired>
               <FormLabel>Nome Fantasia</FormLabel>
               <Input
+                focusBorderColor="primary.500"
                 onInvalid={(e) =>
                   (e.target as HTMLInputElement).setCustomValidity(
                     "Obrigatório informar o nome fantasia."
@@ -129,6 +131,7 @@ const AboutPage = () => {
             <FormControl>
               <FormLabel>Razão Social</FormLabel>
               <Input
+                focusBorderColor="primary.500"
                 name="legalName"
                 value={formData.legalName}
                 onChange={handleChange}
@@ -139,6 +142,7 @@ const AboutPage = () => {
               <FormLabel>Tipo de Cozinha</FormLabel>
 
               <Select
+                focusBorderColor="primary.500"
                 value={formData.cuisineType}
                 placeholder="Selecione o tipo de cozinha"
                 onChange={(e) => {
@@ -160,6 +164,7 @@ const AboutPage = () => {
               <FormControl>
                 <FormLabel>CNPJ/CPF</FormLabel>
                 <Input
+                  focusBorderColor="primary.500"
                   name="document"
                   value={formData.document}
                   onChange={handleChange}
@@ -168,6 +173,7 @@ const AboutPage = () => {
               <FormControl>
                 <FormLabel>Telefone</FormLabel>
                 <Input
+                  focusBorderColor="primary.500"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
@@ -180,6 +186,7 @@ const AboutPage = () => {
             <FormControl>
               <FormLabel>Endereço</FormLabel>
               <Input
+                focusBorderColor="primary.500"
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
@@ -190,6 +197,7 @@ const AboutPage = () => {
               <FormControl>
                 <FormLabel>Cidade</FormLabel>
                 <Input
+                  focusBorderColor="primary.500"
                   name="city"
                   value={formData.city}
                   onChange={handleChange}
@@ -198,6 +206,7 @@ const AboutPage = () => {
               <FormControl>
                 <FormLabel>Estado</FormLabel>
                 <Input
+                  focusBorderColor="primary.500"
                   name="state"
                   value={formData.state}
                   onChange={handleChange}
@@ -206,6 +215,7 @@ const AboutPage = () => {
               <FormControl>
                 <FormLabel>CEP</FormLabel>
                 <Input
+                  focusBorderColor="primary.500"
                   name="zipCode"
                   value={formData.zipCode}
                   onChange={handleChange}

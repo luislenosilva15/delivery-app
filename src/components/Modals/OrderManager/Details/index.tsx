@@ -3,10 +3,8 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Button,
   Box,
   Text,
   HStack,
@@ -24,10 +22,7 @@ import {
 import type { OrderModalProps } from "./types";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
-import {
-  fetchOrderRequest,
-  setChangeOrderStatusRequest,
-} from "@/store/features/orderManager/orderManagerSlice";
+import { fetchOrderRequest } from "@/store/features/orderManager/orderManagerSlice";
 import { useOrderManager } from "@/hook/orderManager";
 import { formatDate, formatTimeAgo, moneyFormat } from "@/helpers/shared";
 import {
@@ -49,16 +44,6 @@ export const OrderModal: React.FC<OrderModalProps> = ({
 
   const { currentOrder } = useOrderManager();
 
-  const handleReadyOrder = () => {
-    if (!orderId) return;
-    dispatch(setChangeOrderStatusRequest({ orderId, status: "READY" }));
-  };
-
-  const handleRefuseOrder = () => {
-    if (!orderId) return;
-    dispatch(setChangeOrderStatusRequest({ orderId, status: "CANCELLED" }));
-  };
-
   useEffect(() => {
     if (isOpen && orderId) {
       dispatch(
@@ -69,16 +54,6 @@ export const OrderModal: React.FC<OrderModalProps> = ({
     }
   }, [dispatch, isOpen, orderId]);
 
-  const renderModalFooter = {
-    PENDING: (
-      <ModalFooter>
-        <Button variant="outline" colorScheme="red" mr={3}>
-          Recusar
-        </Button>
-        <Button colorScheme="green">Aceitar pedido</Button>
-      </ModalFooter>
-    ),
-  };
   if (!orderId || !currentOrder) return null;
 
   return (
@@ -155,7 +130,6 @@ export const OrderModal: React.FC<OrderModalProps> = ({
               ))}
             </Box>
 
-            {/* Total */}
             <Box
               p={3}
               borderWidth="1px"
@@ -169,12 +143,6 @@ export const OrderModal: React.FC<OrderModalProps> = ({
             </Box>
           </VStack>
         </ModalBody>
-
-        {
-          renderModalFooter[
-            currentOrder.status as keyof typeof renderModalFooter
-          ]
-        }
       </ModalContent>
     </Modal>
   );
