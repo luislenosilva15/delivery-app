@@ -226,8 +226,54 @@ const ClientMenuPage = () => {
 
   const categoryBg = useColorModeValue("white", "gray.800");
 
-  if (!groups || !company || loading || loadingCart) {
+  if (!company || loading || loadingCart) {
     return <Loading />;
+  }
+
+  if (!groups || groups.length === 0) {
+    return (
+      <Box>
+        <Box maxW="900px" mx="auto" py={6} px={4}>
+          <VStack spacing={3} textAlign="center">
+            <Image
+              src={company.logoUrl}
+              alt="Logo da Empresa"
+              boxSize="80px"
+              borderRadius="full"
+            />
+            <Text fontSize="2xl" fontWeight="bold">
+              {company.name}
+            </Text>
+            <HStack spacing={2}>
+              <Badge colorScheme="gray">
+                {cuisineLabel[company.cuisineType]}
+              </Badge>
+              <Badge colorScheme={company.isOpen ? "green" : "red"}>
+                {company.isOpen ? "Aberto" : "Fechado"}
+              </Badge>
+            </HStack>
+          </VStack>
+
+          <Divider my={6} />
+
+          {/* Empty State */}
+          <VStack spacing={6} py={20} textAlign="center">
+            <Box fontSize="6xl" opacity={0.3}>
+              🍽️
+            </Box>
+            <VStack spacing={2}>
+              <Text fontSize="xl" fontWeight="semibold" color="gray.600">
+                Nenhum produto cadastrado
+              </Text>
+              <Text fontSize="md" color="gray.500" maxW="400px">
+                Este estabelecimento ainda não possui produtos disponíveis no
+                momento.
+              </Text>
+            </VStack>
+          </VStack>
+        </Box>
+      </Box>
+    );
   }
 
   return (
@@ -251,9 +297,6 @@ const ClientMenuPage = () => {
               {company.isOpen ? "Aberto" : "Fechado"}
             </Badge>
           </HStack>
-          <Text fontSize="sm" color="gray.500" mt={2}>
-            Selecione um endereço para entrega
-          </Text>
         </VStack>
 
         <Divider my={6} />

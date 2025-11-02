@@ -17,6 +17,16 @@ export type TCartItem = {
   observation?: string;
 };
 
+export type TDeliveryAddress = {
+  id: number;
+  orderId: number;
+  cep: string;
+  street: string;
+  number: string;
+  complement?: string;
+  reference?: string;
+};
+
 export type TOrderItem = {
   id: number;
   orderId: number;
@@ -54,5 +64,7 @@ export type TOrder = {
   paymentVoucherBrand: TPaymentVoucherBrand | null;
   deliveryMethod: TDelilveryMethod;
   OrderItem: TOrderItem[];
+  deliveryAddress: TDeliveryAddress | null;
   client: TOrderClient;
+  outDeliveryDate: string;
 };

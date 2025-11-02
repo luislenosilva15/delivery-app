@@ -152,7 +152,7 @@ export const statusTabs: Array<{
     countKey: "inPreparation",
   },
   {
-    label: "Entregando",
+    label: "Entrega",
     color: "blue.400",
     status: "OUT_FOR_DELIVERY",
     countKey: "outForDelivery",
@@ -163,12 +163,6 @@ export const statusTabs: Array<{
     status: "DELIVERED",
     countKey: "delivered",
   },
-  // {
-  //   label: "Cancelado",
-  //   color: "red.400",
-  //   status: "CANCELLED",
-  //   countKey: "cancelled",
-  // },
 ];
 
 export const orderStatusCardColor = {

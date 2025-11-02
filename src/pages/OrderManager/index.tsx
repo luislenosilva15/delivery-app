@@ -84,16 +84,18 @@ export default function OrderManagerPage() {
                 >
                   <HStack>
                     <Text>{tab.label}</Text>
-                    {ordersCount && ordersCount[tab.countKey] > 0 && (
-                      <Badge
-                        colorScheme={tab.color.split(".")[0]}
-                        borderRadius="full"
-                        px={2}
-                        fontSize="xs"
-                      >
-                        {ordersCount[tab.countKey]}
-                      </Badge>
-                    )}
+                    {ordersCount &&
+                      tab.status !== "DELIVERED" &&
+                      ordersCount[tab.countKey] > 0 && (
+                        <Badge
+                          colorScheme={tab.color.split(".")[0]}
+                          borderRadius="full"
+                          px={2}
+                          fontSize="xs"
+                        >
+                          {ordersCount[tab.countKey]}
+                        </Badge>
+                      )}
                   </HStack>
                 </Tab>
               ))}

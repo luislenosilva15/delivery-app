@@ -12,12 +12,15 @@ import {
   Divider,
   SimpleGrid,
   useColorModeValue,
+  Button,
+  Link,
 } from "@chakra-ui/react";
 import {
   FaPhone,
   FaShoppingBag,
   FaMoneyBillWave,
   FaClock,
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 import type { OrderModalProps } from "./types";
 import { useDispatch } from "react-redux";
@@ -55,6 +58,15 @@ export const OrderModal: React.FC<OrderModalProps> = ({
   }, [dispatch, isOpen, orderId]);
 
   if (!orderId || !currentOrder) return null;
+
+  const generateGoogleMapsUrl = (
+    deliveryAddress: NonNullable<typeof currentOrder.deliveryAddress>
+  ) => {
+    const fullAddress = `${deliveryAddress.street}, ${deliveryAddress.number}, ${deliveryAddress.cep}`;
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      fullAddress
+    )}`;
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="2xl" isCentered>
@@ -103,6 +115,58 @@ export const OrderModal: React.FC<OrderModalProps> = ({
               </SimpleGrid>
             </Box>
 
+            {/* Endereço de Entrega - só mostra se for delivery */}
+            {currentOrder.deliveryMethod === "DELIVERY" &&
+              currentOrder.deliveryAddress && (
+                <Box p={4} borderWidth="1px" borderRadius="md" bg={cardBg}>
+                  <HStack mb={3}>
+                    <FaMapMarkerAlt color={iconColor} />
+                    <Text fontWeight="bold" color={textColor}>
+                      Endereço de Entrega
+                    </Text>
+                  </HStack>
+                  <VStack align="start" spacing={1}>
+                    <Text color={textColor} fontSize="sm">
+                      <strong>Rua:</strong>{" "}
+                      {currentOrder.deliveryAddress.street},{" "}
+                      {currentOrder.deliveryAddress.number}
+                    </Text>
+                    {currentOrder.deliveryAddress.complement && (
+                      <Text color={textColor} fontSize="sm">
+                        <strong>Complemento:</strong>{" "}
+                        {currentOrder.deliveryAddress.complement}
+                      </Text>
+                    )}
+                    {currentOrder.deliveryAddress.cep && (
+                      <Text color={textColor} fontSize="sm">
+                        <strong>CEP:</strong> {currentOrder.deliveryAddress.cep}
+                      </Text>
+                    )}
+                    {currentOrder.deliveryAddress.reference && (
+                      <Text color={textColor} fontSize="sm">
+                        <strong>Referência:</strong>{" "}
+                        {currentOrder.deliveryAddress.reference}
+                      </Text>
+                    )}
+                  </VStack>
+                  <Box mt={4}>
+                    <Link
+                      href={generateGoogleMapsUrl(currentOrder.deliveryAddress)}
+                      isExternal
+                    >
+                      <Button
+                        colorScheme="blue"
+                        size="sm"
+                        leftIcon={<FaMapMarkerAlt />}
+                        width="100%"
+                      >
+                        Abrir no Google Maps
+                      </Button>
+                    </Link>
+                  </Box>
+                </Box>
+              )}
+
             <Box p={3} borderWidth="1px" borderRadius="md" bg={cardBg} gap={4}>
               <Text fontWeight="bold" mb={2} color={textColor}>
                 Itens do pedido
@@ -126,6 +190,18 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                       {moneyFormat(item.price)}
                     </Text>
                   </HStack>
+                  {item.observation && (
+                    <Box
+                      mt={2}
+                      pl={4}
+                      borderLeft="2px solid"
+                      borderColor="gray.300"
+                    >
+                      <Text fontSize="sm" color="gray.600" fontStyle="italic">
+                        <strong>Observação:</strong> {item.observation}
+                      </Text>
+                    </Box>
+                  )}
                 </Box>
               ))}
             </Box>

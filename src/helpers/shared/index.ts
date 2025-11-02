@@ -21,7 +21,7 @@ export const formatDate = (isoString: string) => {
 };
 
 export const generateCompanyTheme = (primaryColor: string) => {
-  const steps = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
+  const steps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
   const scale = chroma
     .scale(["white", primaryColor, "black"])
     .mode("lab")

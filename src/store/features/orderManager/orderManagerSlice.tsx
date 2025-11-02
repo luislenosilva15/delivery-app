@@ -46,7 +46,7 @@ const orderManagerSlice = createSlice({
   name: "orderManager",
   initialState,
   reducers: {
-    fetchOrdersRequest(state, action: PayloadAction<FetchOrdersRequest>) {
+    fetchOrdersRequest(state, _action: PayloadAction<FetchOrdersRequest>) {
       state.loading = true;
       state.orders = [];
     },

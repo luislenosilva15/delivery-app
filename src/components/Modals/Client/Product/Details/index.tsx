@@ -104,9 +104,25 @@ const ProductModal: React.FC<Props> = ({
             <ProductCardEmptyState />
           )}
 
-          <Text fontWeight="semibold" fontSize="xl" mb={4} color="green">
+          <Text fontWeight="semibold" fontSize="xl" mb={2} color="green">
             {moneyFormat(product.price)}
           </Text>
+
+          {product.isAdultOnly && (
+            <Text
+              fontSize="sm"
+              color="orange.500"
+              fontWeight="medium"
+              mb={4}
+              bg="orange.50"
+              p={2}
+              borderRadius="md"
+              borderLeft="3px solid"
+              borderLeftColor="orange.500"
+            >
+              🔞 Este produto é destinado apenas para maiores de 18 anos
+            </Text>
+          )}
 
           <VStack align="stretch" spacing={4}>
             <Box>

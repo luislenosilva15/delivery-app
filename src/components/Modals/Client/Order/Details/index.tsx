@@ -23,7 +23,6 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({
   onClose,
   order,
 }) => {
-  // Cores adaptáveis
   const textPrimary = useColorModeValue("gray.800", "gray.100");
   const textSecondary = useColorModeValue("gray.600", "gray.400");
   const borderColor = useColorModeValue("gray.200", "gray.600");
@@ -91,7 +90,6 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({
 
           <Divider my={4} borderColor={borderColor} />
 
-          {/* Total */}
           <Flex justify="space-between" mb={4}>
             <Text fontWeight="bold" color={textPrimary}>
               Total
@@ -101,7 +99,6 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({
             </Text>
           </Flex>
 
-          {/* Pagamento */}
           <Box borderWidth="1px" borderColor={borderColor} rounded="md" p={3}>
             <Text fontSize="sm" color={textSecondary} mb={1}>
               Forma de pagamento

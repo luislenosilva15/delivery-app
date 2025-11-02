@@ -13,7 +13,13 @@ import {
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import { FaClock, FaWhatsapp, FaArrowLeft } from "react-icons/fa";
+import {
+  FaClock,
+  FaWhatsapp,
+  FaArrowLeft,
+  FaMotorcycle,
+  FaStore,
+} from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useClient } from "@/hook/client";
 import Loading from "@/components/Loading";
@@ -21,12 +27,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { fetchCurrentOrderRequest } from "@/store/features/client/clientSlice";
-import { moneyFormat } from "@/helpers/shared";
+import { moneyFormat, formatDate } from "@/helpers/shared";
 import { OrderDetails } from "@/components/Modals/Client/Order/Details";
-import {
-  clientOrderStatusTranslations,
-  orderStatusCardColor,
-} from "@/constants";
 import { LuCookingPot } from "react-icons/lu";
 
 const MotionHStack = motion(HStack);
@@ -63,22 +65,7 @@ export default function OrderTracking() {
   if (loadingOrder || !currentOrder) return <Loading />;
 
   const status = currentOrder.status;
-
-  const pendingColor =
-    status === "PENDING" ? orderStatusCardColor[currentOrder.status] : "green";
-
-  const readyColor =
-    status === "READY" || status === "IN_PREPARATION" ? "yellow" : "green";
-
-  const pendingText =
-    status === "PENDING"
-      ? clientOrderStatusTranslations["PENDING"]
-      : "Pedido Aceito";
-
-  const readyText =
-    status === "READY" || status === "IN_PREPARATION"
-      ? clientOrderStatusTranslations["IN_PREPARATION"]
-      : "Pedido pronto";
+  const isLocalPickup = currentOrder.deliveryMethod === "LOCAL";
 
   return (
     <>
@@ -106,45 +93,173 @@ export default function OrderTracking() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <Icon as={FaClock} boxSize={5} />
-              <Text fontWeight="semibold">Pedido enviado!</Text>
+              <Icon
+                as={
+                  status === "PENDING"
+                    ? FaClock
+                    : status === "IN_PREPARATION" || status === "READY"
+                    ? LuCookingPot
+                    : status === "OUT_FOR_DELIVERY"
+                    ? isLocalPickup
+                      ? FaStore
+                      : FaMotorcycle
+                    : status === "DELIVERED"
+                    ? FaClock
+                    : FaClock
+                }
+                boxSize={5}
+                color={
+                  status === "PENDING"
+                    ? "yellow.500"
+                    : status === "IN_PREPARATION" || status === "READY"
+                    ? "purple.500"
+                    : status === "OUT_FOR_DELIVERY"
+                    ? "blue.500"
+                    : status === "DELIVERED"
+                    ? "green.500"
+                    : "gray.500"
+                }
+              />
+              <Text fontWeight="semibold">
+                {status === "PENDING"
+                  ? "Pedido enviado!"
+                  : status === "IN_PREPARATION"
+                  ? "Pedido em preparo!"
+                  : status === "READY"
+                  ? "Pedido aceito!"
+                  : status === "OUT_FOR_DELIVERY"
+                  ? isLocalPickup
+                    ? "Pronto para retirada! 🍽️"
+                    : "Saiu para entrega! 🏍️"
+                  : status === "DELIVERED"
+                  ? isLocalPickup
+                    ? "Pedido retirado!"
+                    : "Pedido entregue!"
+                  : "Pedido enviado!"}
+              </Text>
             </MotionHStack>
             <Text fontSize="sm" color={textSecondary}>
-              Aguardando a confirmação da loja
+              {status === "PENDING"
+                ? "Aguardando a confirmação da loja"
+                : status === "IN_PREPARATION"
+                ? "Sua comida está sendo preparada com carinho"
+                : status === "READY"
+                ? "Pedido foi aceito e está sendo preparado"
+                : status === "OUT_FOR_DELIVERY"
+                ? isLocalPickup
+                  ? "Seu pedido está pronto! Pode vir buscar na loja 🏪"
+                  : "Nosso entregador está vindo até você! Fique atento 📱"
+                : status === "DELIVERED"
+                ? isLocalPickup
+                  ? "Seu pedido foi retirado com sucesso!"
+                  : "Seu pedido foi entregue com sucesso!"
+                : "Aguardando confirmação"}
             </Text>
           </CardBody>
         </Card>
 
-        {/* PENDING */}
+        {/* TRACKING STEPS */}
         <VStack align="start" spacing={6} mb={6} pl={2}>
+          {/* PENDING/ACCEPTED */}
           <MotionHStack
             animate={status === "PENDING" ? animation : false}
             transition={{ duration: 1.2, repeat: Infinity }}
           >
-            <Icon as={FaClock} color={pendingColor} />
-            <Text fontWeight="semibold">{pendingText}</Text>
+            <Icon
+              as={FaClock}
+              color={
+                status === "PENDING"
+                  ? "yellow.500"
+                  : status === "IN_PREPARATION" ||
+                    status === "READY" ||
+                    status === "OUT_FOR_DELIVERY" ||
+                    status === "DELIVERED"
+                  ? "green.500"
+                  : "gray.400"
+              }
+            />
+            <Text
+              fontWeight="semibold"
+              color={
+                status === "PENDING"
+                  ? "inherit"
+                  : status === "IN_PREPARATION" ||
+                    status === "READY" ||
+                    status === "OUT_FOR_DELIVERY" ||
+                    status === "DELIVERED"
+                  ? "inherit"
+                  : "gray.400"
+              }
+            >
+              {status === "PENDING"
+                ? "Aguardando confirmação"
+                : "Pedido aceito"}
+            </Text>
           </MotionHStack>
 
-          {/* READY */}
+          {/* PREPARATION */}
           <MotionHStack
             animate={
-              status === "READY" || status === "IN_PREPARATION"
+              status === "IN_PREPARATION" || status === "READY"
                 ? animation
                 : false
             }
             transition={{ duration: 1.2, repeat: Infinity }}
           >
-            <Icon as={LuCookingPot} color={readyColor} />
-            <Text fontWeight="semibold">{readyText}</Text>
+            <Icon
+              as={LuCookingPot}
+              color={
+                status === "IN_PREPARATION" || status === "READY"
+                  ? "purple.500"
+                  : status === "OUT_FOR_DELIVERY" || status === "DELIVERED"
+                  ? "green.500"
+                  : "gray.400"
+              }
+            />
+            <Text
+              fontWeight="semibold"
+              color={
+                status === "IN_PREPARATION" || status === "READY"
+                  ? "inherit"
+                  : status === "OUT_FOR_DELIVERY" || status === "DELIVERED"
+                  ? "inherit"
+                  : "gray.400"
+              }
+            >
+              Em preparo
+            </Text>
           </MotionHStack>
 
-          <MotionHStack
-            animate={status === "OUT_FOR_DELIVERY" ? animation : false}
-            transition={{ duration: 1.2, repeat: Infinity }}
-          >
-            <Icon as={LuCookingPot} color={readyColor} />
-            <Text fontWeight="semibold">{readyText}</Text>
-          </MotionHStack>
+          {/* DELIVERY/PICKUP */}
+          <HStack justify="space-between" width="100%">
+            <HStack>
+              <Icon
+                as={isLocalPickup ? FaStore : FaMotorcycle}
+                color={
+                  status === "OUT_FOR_DELIVERY" || status === "DELIVERED"
+                    ? isLocalPickup
+                      ? "green.500"
+                      : "blue.500"
+                    : "gray.400"
+                }
+              />
+              <Text
+                fontWeight="semibold"
+                color={
+                  status === "OUT_FOR_DELIVERY" || status === "DELIVERED"
+                    ? "inherit"
+                    : "gray.400"
+                }
+              >
+                {isLocalPickup ? "Pronto para retirada" : "Saiu para entrega"}
+              </Text>
+            </HStack>
+            {(status === "OUT_FOR_DELIVERY" || status === "DELIVERED") && (
+              <Text fontSize="xs" color={textSecondary} fontWeight="medium">
+                {formatDate(currentOrder.updatedAt)}
+              </Text>
+            )}
+          </HStack>
         </VStack>
 
         <Divider mb={6} borderColor={dividerColor} />
