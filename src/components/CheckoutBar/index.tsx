@@ -4,11 +4,13 @@ import { Box, HStack, Text } from "@chakra-ui/react";
 import { FaShoppingCart } from "react-icons/fa";
 
 const CheckoutBar = ({ onClick }: { onClick: () => void }) => {
-  const { cart } = useClient();
+  const { cart, company } = useClient();
 
   const cartTotal =
     cart?.items?.reduce((sum, item) => sum + item.price * item.quantity, 0) ||
     0;
+
+  const isRestaurantClosed = !company?.isOpen;
 
   return (
     <Box
@@ -21,10 +23,10 @@ const CheckoutBar = ({ onClick }: { onClick: () => void }) => {
       px={4}
     >
       <Box
-        onClick={onClick}
+        onClick={isRestaurantClosed ? undefined : onClick}
         maxW="900px"
         mx="auto"
-        bg="primary.500"
+        bg={isRestaurantClosed ? "gray.600" : "primary.500"}
         color="white"
         py={3}
         px={6}
@@ -33,11 +35,15 @@ const CheckoutBar = ({ onClick }: { onClick: () => void }) => {
         justifyContent="space-between"
         boxShadow="0 -2px 10px rgba(0,0,0,0.1)"
         borderTopRadius="md"
-        cursor="pointer"
+        cursor={isRestaurantClosed ? "not-allowed" : "pointer"}
         transition="transform 0.2s ease-in-out"
-        _hover={{
-          transform: "scale(1.02)",
-        }}
+        _hover={
+          isRestaurantClosed
+            ? {}
+            : {
+                transform: "scale(1.02)",
+              }
+        }
       >
         <HStack spacing={3}>
           <Box position="relative">
@@ -47,8 +53,8 @@ const CheckoutBar = ({ onClick }: { onClick: () => void }) => {
                 position="absolute"
                 top="-5px"
                 right="-5px"
-                bg="primary.400"
-                color="black"
+                bg={isRestaurantClosed ? "gray.400" : "primary.400"}
+                color={isRestaurantClosed ? "white" : "black"}
                 borderRadius="full"
                 fontSize="xs"
                 px={2}
@@ -58,7 +64,9 @@ const CheckoutBar = ({ onClick }: { onClick: () => void }) => {
               </Box>
             )}
           </Box>
-          <Text fontWeight="bold">Meu pedido</Text>
+          <Text fontWeight="bold">
+            {isRestaurantClosed ? "Restaurante fechado" : "Meu pedido"}
+          </Text>
         </HStack>
         <Text fontWeight="bold">{moneyFormat(cartTotal)}</Text>
       </Box>

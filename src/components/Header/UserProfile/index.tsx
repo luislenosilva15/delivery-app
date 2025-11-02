@@ -11,7 +11,7 @@ import {
   useColorModeValue,
   Icon,
 } from "@chakra-ui/react";
-import { FiUser, FiSettings, FiLogOut } from "react-icons/fi";
+import { FiUser, FiLogOut } from "react-icons/fi";
 
 interface UserProfileProps {
   name: string;
@@ -25,7 +25,6 @@ const UserProfile = ({
   name,
   avatarUrl,
   onProfileClick,
-  onSettingsClick,
   onLogoutClick,
 }: UserProfileProps) => {
   const hoverBg = useColorModeValue("gray.100", "gray.600");
@@ -68,14 +67,6 @@ const UserProfile = ({
           _hover={{ bg: hoverBg }}
         >
           Perfil
-        </MenuItem>
-
-        <MenuItem
-          icon={<Icon as={FiSettings} boxSize={5} />}
-          onClick={onSettingsClick}
-          _hover={{ bg: hoverBg }}
-        >
-          Configurações
         </MenuItem>
 
         <MenuItem

@@ -21,6 +21,7 @@ import { AddIcon, MinusIcon, ArrowBackIcon } from "@chakra-ui/icons";
 import type { Props } from "./types";
 import ProductCardEmptyState from "@/components/Card/Client/Product/emptyState";
 import { moneyFormat } from "@/helpers/shared";
+import { useClient } from "@/hook/client";
 
 const ProductModal: React.FC<Props> = ({
   isOpen,
@@ -30,6 +31,8 @@ const ProductModal: React.FC<Props> = ({
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [observations, setObservations] = useState("");
+
+  const { company } = useClient();
 
   const bg = useColorModeValue("white", "gray.800");
   const textColor = useColorModeValue("gray.800", "white");
@@ -44,6 +47,8 @@ const ProductModal: React.FC<Props> = ({
   );
 
   if (!product) return null;
+
+  const isRestaurantClosed = !company?.isOpen;
 
   const handleAdd = () => {
     addProduct(product, quantity, observations);
@@ -171,6 +176,7 @@ const ProductModal: React.FC<Props> = ({
             borderColor={borderColor}
             borderRadius="md"
             overflow="hidden"
+            opacity={isRestaurantClosed ? 0.5 : 1}
           >
             <IconButton
               ml={1}
@@ -180,6 +186,7 @@ const ProductModal: React.FC<Props> = ({
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
               bg={placeholderBg}
               _hover={{ bg: hoverBg }}
+              isDisabled={isRestaurantClosed}
             />
             <Box
               display="flex"
@@ -198,17 +205,22 @@ const ProductModal: React.FC<Props> = ({
               onClick={() => setQuantity((q) => q + 1)}
               bg={placeholderBg}
               _hover={{ bg: hoverBg }}
+              isDisabled={isRestaurantClosed}
             />
           </HStack>
 
           <Button
-            colorScheme="primary"
+            colorScheme={isRestaurantClosed ? "red" : "primary"}
             size="md"
             fontSize="md"
             px={4}
-            onClick={handleAdd}
+            onClick={isRestaurantClosed ? undefined : handleAdd}
+            isDisabled={isRestaurantClosed}
+            cursor={isRestaurantClosed ? "not-allowed" : "pointer"}
           >
-            Adicionar {moneyFormat(product.price * quantity)}
+            {isRestaurantClosed
+              ? "🔒 Restaurante Fechado"
+              : `Adicionar ${moneyFormat(product.price * quantity)}`}
           </Button>
         </ModalFooter>
       </ModalContent>

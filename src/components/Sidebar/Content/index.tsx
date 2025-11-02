@@ -13,12 +13,9 @@ import SidebarItem from "../Item";
 import {
   FiChevronDown,
   FiChevronUp,
-  FiClock,
-  FiFileText,
   FiHelpCircle,
   FiHome,
   FiSettings,
-  FiStar,
 } from "react-icons/fi";
 
 import { BiStore } from "react-icons/bi";
@@ -109,12 +106,6 @@ function SidebarContent() {
           <Collapse in={storeOpen} animateOpacity>
             <VStack pl={6} align="start" mt={2} spacing={2}>
               <SidebarItem
-                isActive={optionIsActive("/sells")}
-                onClick={() => navigate("/sells")}
-                icon={MdOutlineLocalGroceryStore}
-                label="Vendas"
-              />
-              <SidebarItem
                 isActive={optionIsActive("/team")}
                 onClick={() => navigate("/team")}
                 icon={MdOutlineLocalGroceryStore}
@@ -171,18 +162,9 @@ function SidebarContent() {
                 icon={SettingsIcon}
                 label="Configurações"
               />
-              <SidebarItem
-                isActive={optionIsActive("/delivery/fees")}
-                onClick={() => navigate("/delivery/fees")}
-                icon={FiFileText}
-                label="Taxas"
-              />
             </VStack>
           </Collapse>
         </Box>
-
-        <SidebarItem icon={FiClock} label="History" />
-        <SidebarItem icon={FiStar} label="Favorites" />
       </VStack>
 
       <Box flex="1" />

@@ -32,6 +32,7 @@ import type { TGroup, TProduct } from "@/store/features/menu/types/models";
 import ProductModal from "@/components/Modals/Client/Product/Details";
 import CheckoutBar from "@/components/CheckoutBar";
 import { CartModal } from "@/components/Modals/Client/Product/Cart";
+import CompanyInfoModal from "@/components/Modals/Client/CompanyInfo";
 import type { FormData } from "@/components/Modals/Client/Product/Cart/types";
 import type { SetCreateNewOrderRequest } from "@/store/features/client/types/request";
 import Loading from "@/components/Loading";
@@ -59,6 +60,12 @@ const ClientMenuPage = () => {
     isOpen: isOpenCart,
     onOpen: onOpenCart,
     onClose: onCloseCart,
+  } = useDisclosure();
+
+  const {
+    isOpen: isCompanyInfoOpen,
+    onOpen: onCompanyInfoOpen,
+    onClose: onCompanyInfoClose,
   } = useDisclosure();
 
   const cartEmpty: boolean =
@@ -235,12 +242,24 @@ const ClientMenuPage = () => {
       <Box>
         <Box maxW="900px" mx="auto" py={6} px={4}>
           <VStack spacing={3} textAlign="center">
-            <Image
-              src={company.logoUrl}
-              alt="Logo da Empresa"
-              boxSize="80px"
-              borderRadius="full"
-            />
+            <Box position="relative">
+              <Image
+                src={company.logoUrl}
+                alt="Logo da Empresa"
+                boxSize="80px"
+                borderRadius="full"
+                cursor="pointer"
+                onClick={onCompanyInfoOpen}
+                transition="all 0.2s ease-in-out"
+                _hover={{
+                  transform: "scale(1.08)",
+                  shadow: "xl",
+                  borderWidth: "2px",
+                  borderColor: "blue.400",
+                }}
+                shadow="md"
+              />
+            </Box>
             <Text fontSize="2xl" fontWeight="bold">
               {company.name}
             </Text>
@@ -256,7 +275,6 @@ const ClientMenuPage = () => {
 
           <Divider my={6} />
 
-          {/* Empty State */}
           <VStack spacing={6} py={20} textAlign="center">
             <Box fontSize="6xl" opacity={0.3}>
               🍽️
@@ -280,12 +298,24 @@ const ClientMenuPage = () => {
     <Box>
       <Box maxW="900px" mx="auto" py={6} px={4}>
         <VStack spacing={3} textAlign="center">
-          <Image
-            src={company.logoUrl}
-            alt="Logo da Empresa"
-            boxSize="80px"
-            borderRadius="full"
-          />
+          <Box position="relative">
+            <Image
+              src={company.logoUrl}
+              alt="Logo da Empresa"
+              boxSize="80px"
+              borderRadius="full"
+              cursor="pointer"
+              onClick={onCompanyInfoOpen}
+              transition="all 0.2s ease-in-out"
+              _hover={{
+                transform: "scale(1.08)",
+                shadow: "xl",
+                borderWidth: "2px",
+                borderColor: "blue.400",
+              }}
+              shadow="md"
+            />
+          </Box>
           <Text fontSize="2xl" fontWeight="bold">
             {company.name}
           </Text>
@@ -355,6 +385,14 @@ const ClientMenuPage = () => {
         onUpdateQuantity={handleUpdateCartItemQuantity}
       />
       {!cartEmpty && <CheckoutBar onClick={onOpenCart} />}
+
+      {company && (
+        <CompanyInfoModal
+          isOpen={isCompanyInfoOpen}
+          onClose={onCompanyInfoClose}
+          company={company}
+        />
+      )}
 
       <Box position="fixed" bottom="20px" right="20px" zIndex={20}>
         <IconButton
