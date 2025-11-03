@@ -8,7 +8,7 @@ import {
   setChangeQuantityRequest,
   setCreateNewOrderRequest,
 } from "@/store/features/client/clientSlice";
-import { LuCookingPot } from "react-icons/lu";
+import { FiPackage } from "react-icons/fi";
 
 import { cuisineLabel } from "@/utils/typeNormalize";
 import {
@@ -23,11 +23,10 @@ import {
   SimpleGrid,
   useColorModeValue,
   useDisclosure,
-  IconButton,
 } from "@chakra-ui/react";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import type { TGroup, TProduct } from "@/store/features/menu/types/models";
 import ProductModal from "@/components/Modals/Client/Product/Details";
 import CheckoutBar from "@/components/CheckoutBar";
@@ -39,6 +38,7 @@ import Loading from "@/components/Loading";
 
 const ClientMenuPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { id: clientId } = useParams<{ id: string }>();
   const { company, loading, groups, loadingCart, cart } = useClient();
 
@@ -145,6 +145,10 @@ const ClientMenuPage = () => {
         },
       })
     );
+  };
+
+  const onOpenOrderHistory = () => {
+    navigate("order-history/1");
   };
 
   const handleGroupClick = (groupId: number) => {
@@ -394,29 +398,41 @@ const ClientMenuPage = () => {
         />
       )}
 
-      <Box position="fixed" bottom="20px" right="20px" zIndex={20}>
-        <IconButton
-          aria-label="Ver pedidos"
-          icon={<LuCookingPot />}
-          colorScheme="primary"
-          size="lg"
-          rounded="full"
-          shadow="lg"
-          onClick={onOpenCart}
-        />
-        {!cartEmpty && (
-          <Badge
-            colorScheme="red"
+      <Box
+        position="fixed"
+        bottom={!cartEmpty ? "50px" : "20px"}
+        right="20px"
+        zIndex={30}
+        transition="bottom 0.3s ease-in-out"
+      >
+        <Box position="relative">
+          <Button
+            leftIcon={<FiPackage />}
+            colorScheme="orange"
+            variant="solid"
+            size="lg"
             borderRadius="full"
-            px={2}
-            position="absolute"
-            top="-5px"
-            right="-5px"
-            fontSize="0.8em"
+            shadow="xl"
+            onClick={onOpenOrderHistory}
+            bg="primary.500"
+            color="white"
+            _hover={{
+              bg: "primary.600",
+              transform: "scale(1.05)",
+              shadow: "2xl",
+            }}
+            _active={{
+              transform: "scale(0.98)",
+            }}
+            transition="all 0.2s ease-in-out"
+            px={6}
+            py={3}
+            fontSize="md"
+            fontWeight="bold"
           >
-            {cart.items.reduce((acc, item) => acc + item.quantity, 0)}
-          </Badge>
-        )}
+            Meus Pedidos
+          </Button>
+        </Box>
       </Box>
     </Box>
   );

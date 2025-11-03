@@ -65,7 +65,7 @@ const CheckoutBar = ({ onClick }: { onClick: () => void }) => {
             )}
           </Box>
           <Text fontWeight="bold">
-            {isRestaurantClosed ? "Restaurante fechado" : "Meu pedido"}
+            {isRestaurantClosed ? "Restaurante fechado" : "Carrinho"}
           </Text>
         </HStack>
         <Text fontWeight="bold">{moneyFormat(cartTotal)}</Text>

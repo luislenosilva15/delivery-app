@@ -103,6 +103,9 @@ const orderManagerSlice = createSlice({
         (order) => order.id !== action.payload.orderId
       );
     },
+    socketAddNewOrder(state, action: PayloadAction<TOrder>) {
+      state.orders = [action.payload, ...state.orders];
+    },
   },
 });
 
@@ -118,6 +121,7 @@ export const {
   fetchOrderError,
   setChangeOrderStatusSuccess,
   setChangeOrderStatusRequest,
+  socketAddNewOrder,
 } = orderManagerSlice.actions;
 
 export default orderManagerSlice.reducer;

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { call, put, takeLatest } from "redux-saga/effects";
+import { call, put, takeLatest, fork, take } from "redux-saga/effects";
 import {
   setAlwaysOpenRequest,
   setAlwaysOpenSuccess,
@@ -43,6 +43,54 @@ import { toast } from "@/utils/toast";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { normalizeSchedule } from "./normalize";
 import type { TCompany } from "@/store/features/auth/types/models";
+
+import { eventChannel } from "redux-saga";
+import { io, Socket } from "socket.io-client";
+import { socketAddNewOrder } from "../orderManager/orderManagerSlice";
+
+let socket: Socket | null = null;
+
+function createSocketChannel(companyId: number) {
+  if (!socket) {
+    socket = io("http://localhost:3000", {
+      transports: ["websocket"],
+    });
+  }
+
+  return eventChannel((emit) => {
+    socket!.on("connect", () => {
+      console.log("🌐 WebSocket conectado!", socket!.id);
+      socket!.emit("join-company", companyId);
+      console.log(`✅ Entrou na room company-${companyId}`);
+    });
+
+    socket!.on("new-order", (order) => {
+      emit(order);
+    });
+
+    socket!.on("disconnect", (reason) => {
+      console.log("⚠️ WebSocket desconectado:", reason);
+    });
+
+    const unsubscribe = () => {
+      socket!.disconnect();
+      socket = null;
+    };
+
+    return unsubscribe;
+  });
+}
+
+function* watchNewOrders(companyId: number): Generator<unknown, void, any> {
+  const channel = yield call(createSocketChannel, companyId);
+
+  while (true) {
+    const order: any = yield take(channel);
+    yield put(socketAddNewOrder(order));
+  }
+}
+
+/* ==================== Auth sagas ==================== */
 
 function* setLoginSaga(
   action: PayloadAction<LoginRequest>
@@ -341,4 +389,18 @@ export default function* authSaga() {
     setEditDeliverySettingsRequest.type,
     setEditDeliverySettingsSaga
   );
+
+  yield takeLatest(setLoginSuccess.type, function* (action: any) {
+    const companyId = action.payload?.company?.id;
+    if (companyId) {
+      yield fork(watchNewOrders, companyId);
+    }
+  });
+
+  yield takeLatest(setAuthValidSuccess.type, function* (action: any) {
+    const companyId = action.payload?.company?.id;
+    if (companyId) {
+      yield fork(watchNewOrders, companyId);
+    }
+  });
 }
