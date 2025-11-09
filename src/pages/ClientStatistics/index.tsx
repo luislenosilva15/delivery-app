@@ -1,3 +1,196 @@
+import {
+  Box,
+  Flex,
+  Heading,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Spinner,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  HStack,
+  Avatar,
+  Stack,
+  Select,
+  useColorModeValue,
+} from "@chakra-ui/react";
+import { SearchIcon } from "@chakra-ui/icons";
+import { useEffect, useState, useCallback } from "react";
+import { useStatistics } from "@/hook/statistics";
+import { useDispatch } from "react-redux";
+import {
+  fetchClientsRequest,
+  resetStatistics,
+} from "@/store/features/statistics/statisticsSlice";
+import Breadcrumb from "@/components/Breadcrumb";
+import type { TClient } from "@/store/features/statistics/types/models";
+
+function daysAgo(dateStr?: string | null) {
+  if (!dateStr) return "-";
+  const d = new Date(dateStr);
+  const diff = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24));
+  if (diff === 0) return "Hoje";
+  if (diff === 1) return "1 dia";
+  return `${diff} dias`;
+}
+
 export default function ClientStatisticsPage() {
-  return <div>Client Statistics Page</div>;
+  const dispatch = useDispatch();
+
+  const { clients, loading, loadingMore, page, hasMore, total } =
+    useStatistics();
+
+  const [searchText, setSearchText] = useState("");
+  const [lastOrderDays, setLastOrderDays] = useState<number | undefined>(
+    undefined
+  );
+
+  const textTotal = useColorModeValue("gray.600", "gray.200");
+
+  const fetchClients = useCallback(
+    (pageNum: number, query: string, lastDays?: number) => {
+      dispatch(
+        fetchClientsRequest({
+          page: pageNum,
+          search: query,
+          lastOrderDays: lastDays,
+        })
+      );
+    },
+    [dispatch]
+  );
+
+  useEffect(() => {
+    // initial load
+    fetchClients(1, "", undefined);
+    return () => {
+      dispatch(resetStatistics());
+    };
+  }, [fetchClients, dispatch]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      fetchClients(1, searchText, lastOrderDays);
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [searchText, lastOrderDays, fetchClients]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+          document.body.offsetHeight - 200 &&
+        !loading &&
+        !loadingMore &&
+        hasMore
+      ) {
+        fetchClients(page + 1, searchText, lastOrderDays);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [
+    loading,
+    loadingMore,
+    hasMore,
+    page,
+    searchText,
+    lastOrderDays,
+    fetchClients,
+  ]);
+
+  const breadcrumbLinks = [
+    { label: "Home", href: "/" },
+    { label: "Estatísticas", href: "/statistics", isCurrent: false },
+    { label: "Clientes", isCurrent: true },
+  ];
+
+  return (
+    <Box mx="auto" p={6}>
+      <Breadcrumb links={breadcrumbLinks} />
+      <Stack>
+        <Flex justify="space-between" align="center">
+          <Heading size="md">Clientes — Estatísticas</Heading>
+        </Flex>
+
+        <Flex justify="space-between" align="center" mb={4}>
+          <HStack spacing={3}>
+            <InputGroup maxW="300px">
+              <InputLeftElement pointerEvents="none">
+                <SearchIcon color="gray.400" />
+              </InputLeftElement>
+              <Input
+                placeholder="Buscar por nome"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                focusBorderColor="primary.500"
+              />
+            </InputGroup>
+
+            <Select
+              value={lastOrderDays ?? ""}
+              onChange={(e) =>
+                setLastOrderDays(
+                  e.target.value ? Number(e.target.value) : undefined
+                )
+              }
+              maxW="200px"
+            >
+              <option value="">Todos os clientes</option>
+              <option value={7}>Último pedido nos últimos 7 dias</option>
+              <option value={14}>Último pedido nos últimos 14 dias</option>
+              <option value={30}>Último pedido nos últimos 30 dias</option>
+              <option value={60}>Último pedido nos últimos 60 dias</option>
+            </Select>
+          </HStack>
+
+          <Text fontSize="sm" color={textTotal}>
+            Total: {total} clientes
+          </Text>
+        </Flex>
+
+        <Table variant="simple">
+          <Thead>
+            <Tr>
+              <Th>Nome</Th>
+              <Th>Telefone</Th>
+              <Th>Cliente há</Th>
+              <Th>Último pedido</Th>
+              <Th>Quant. pedidos</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {clients?.map((c: TClient) => (
+              <Tr key={c.id}>
+                <Td>
+                  <HStack spacing={3}>
+                    <Avatar name={c.name} size="sm" />
+                    <Box>
+                      <Text fontWeight="medium">{c.name}</Text>
+                    </Box>
+                  </HStack>
+                </Td>
+                <Td>{c.phone || "-"}</Td>
+                <Td>{daysAgo(c.firstOrderDate)}</Td>
+                <Td>{c.lastOrderDate ? daysAgo(c.lastOrderDate) : "-"}</Td>
+                <Td>{c.ordersCount ?? 0}</Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+
+        {(loading || loadingMore) && (
+          <Flex justify="center" mt={4}>
+            <Spinner color="primary.500" />
+          </Flex>
+        )}
+      </Stack>
+    </Box>
+  );
 }
