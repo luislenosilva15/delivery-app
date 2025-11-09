@@ -18,6 +18,10 @@ import {
   FiSettings,
 } from "react-icons/fi";
 
+import { HiUsers } from "react-icons/hi2";
+
+import { BsClipboardData } from "react-icons/bs";
+
 import { BiStore } from "react-icons/bi";
 import {
   MdOutlineLocalGroceryStore,
@@ -32,6 +36,7 @@ import { SettingsIcon } from "@chakra-ui/icons";
 function SidebarContent() {
   const [storeOpen, setStoreOpen] = useState(false);
   const [deliveryOpen, setDeliveryOpen] = useState(false);
+  const [statisticsOpen, setStatisticsOpen] = useState(false);
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -166,6 +171,44 @@ function SidebarContent() {
           </Collapse>
         </Box>
       </VStack>
+
+      {/* Estatisticas */}
+      <Box w="full" mt={2}>
+        <Flex
+          align="center"
+          cursor="pointer"
+          onClick={() => setStatisticsOpen(!statisticsOpen)}
+          bg="transparent"
+          p={2}
+          borderRadius="md"
+          justify="space-between"
+          _hover={{ bg: hoverBg }}
+        >
+          <Flex align="center">
+            <Icon
+              as={BsClipboardData}
+              mr={2}
+              color={textColor}
+              fontSize="18px"
+            />
+            <Text color={textColor}>Estatísticas</Text>
+          </Flex>
+          <Icon
+            as={statisticsOpen ? FiChevronUp : FiChevronDown}
+            color={textColor}
+          />
+        </Flex>
+        <Collapse in={statisticsOpen} animateOpacity>
+          <VStack pl={6} align="start" mt={2} spacing={2}>
+            <SidebarItem
+              isActive={optionIsActive("/statistics/clients")}
+              onClick={() => navigate("/statistics/clients")}
+              icon={HiUsers}
+              label="Clientes"
+            />
+          </VStack>
+        </Collapse>
+      </Box>
 
       <Box flex="1" />
 
