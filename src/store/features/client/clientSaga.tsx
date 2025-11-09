@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { call, put, takeLatest } from "redux-saga/effects";
+import { call, put, takeLatest, fork, take } from "redux-saga/effects";
 
-import apiClient from "@/api";
+import apiClient from "@/api/client";
 import type { AxiosResponse } from "axios";
 
 import { toast } from "@/utils/toast";
@@ -13,6 +13,7 @@ import type {
   FetchCurrentOrderResponse,
   FetchGroupsRequest,
   FetchGroupsResponse,
+  FetchLastOrderErrorResponse,
   SetAddToCartRequest,
   SetChangeQuantityRequest,
   SetCreateNewOrderRequest,
@@ -30,6 +31,9 @@ import {
   fetchGroupsFailure,
   fetchGroupsRequest,
   fetchGroupsSuccess,
+  fetchLastOrderFailure,
+  fetchLastOrderRequest,
+  fetchLastOrderSuccess,
   setAddToCartRequest,
   setAddToCartSuccess,
   setChangeQuantityRequest,
@@ -40,6 +44,9 @@ import {
 } from "./clientSlice";
 import type { TCartItem } from "./types/models";
 import { router } from "@/routes";
+import { HandleApiError } from "@/utils/errorApi";
+import { eventChannel } from "redux-saga";
+import { io, Socket } from "socket.io-client";
 
 function* fetchCompanySaga(
   action: PayloadAction<FetchCompanyRequest>
@@ -136,7 +143,6 @@ function* fetchCartSaga(): Generator<any, void> {
 function* setChangeQuantitySaga(
   action: PayloadAction<SetChangeQuantityRequest>
 ): Generator<any, void> {
-  console.log("Changing quantity for item:", action.payload);
   try {
     const existingCart: TCartItem[] = JSON.parse(
       localStorage.getItem("cart") || "[]"
@@ -192,6 +198,7 @@ function* setCreateNewOrderSaga(
       paymentDebitCardBrand: action.payload.payment.debitCardBrand,
       paymentVoucherBrand: action.payload.payment.voucherBrand,
       totalPrice: action.payload.payment.totalPrice,
+      documentInTicket: action.payload.documentInTicket,
       client: {
         name: action.payload.name,
         phone: action.payload.phone,
@@ -209,20 +216,20 @@ function* setCreateNewOrderSaga(
           : undefined,
     });
 
-    const orderId = response.data.order.id;
+    const clientId = response.data.order.clientId;
+    localStorage.setItem("clientId", clientId.toString());
 
     yield put(
       setCreateNewOrderSuccess({
         order: response.data.order,
       })
     );
-
     toast({
       title: "Pedido criado com sucesso",
       status: "success",
     });
 
-    router.navigate(`order/${orderId}`);
+    router.navigate(`order`);
   } catch {
     toast({
       title: "Erro ao criar o pedido",
@@ -250,6 +257,69 @@ function* fetchCurrentOrderSaga(
   }
 }
 
+function* fetchLastOrderSaga(): Generator<
+  any,
+  void,
+  AxiosResponse<FetchCurrentOrderResponse>
+> {
+  try {
+    const response = yield apiClient.get(`/client/order/lastOrder`);
+
+    yield put(
+      fetchLastOrderSuccess({
+        order: response.data.order,
+      })
+    );
+  } catch (error: FetchLastOrderErrorResponse | unknown) {
+    yield put(
+      fetchLastOrderFailure({
+        errorMessage: HandleApiError(error as FetchLastOrderErrorResponse),
+      })
+    );
+  }
+}
+
+let socket: Socket | null = null;
+
+function createClientSocketChannel(clientId: number) {
+  if (!socket) {
+    socket = io("http://localhost:3000", {
+      transports: ["websocket"],
+    });
+  }
+
+  return eventChannel((emit) => {
+    socket!.on("connect", () => {
+      console.log("🌐 Client WebSocket conectado!", socket!.id);
+      socket!.emit("join-client", clientId);
+    });
+
+    socket!.on("order-status-changed", (data) => {
+      emit(data);
+    });
+
+    socket!.on("disconnect", (reason) => {
+      console.log("⚠️ Client WebSocket desconectado:", reason);
+    });
+
+    const unsubscribe = () => {
+      socket!.disconnect();
+      socket = null;
+    };
+
+    return unsubscribe;
+  });
+}
+
+function* watchOrderStatus(clientId: number): Generator<unknown, void, any> {
+  const channel = yield call(createClientSocketChannel, clientId);
+
+  while (true) {
+    const data: any = yield take(channel);
+    yield put(fetchLastOrderRequest());
+  }
+}
+
 export default function* clientSaga() {
   yield takeLatest(fetchCompanyRequest.type, fetchCompanySaga);
   yield takeLatest(fetchGroupsRequest.type, fetchGroupsSaga);
@@ -258,4 +328,16 @@ export default function* clientSaga() {
   yield takeLatest(setChangeQuantityRequest.type, setChangeQuantitySaga);
   yield takeLatest(setCreateNewOrderRequest.type, setCreateNewOrderSaga);
   yield takeLatest(fetchCurrentOrderRequest.type, fetchCurrentOrderSaga);
+  yield takeLatest(fetchLastOrderRequest.type, fetchLastOrderSaga);
+  const storedClientId = Number(localStorage.getItem("clientId"));
+  if (storedClientId) {
+    yield fork(watchOrderStatus, storedClientId);
+  }
+
+  yield takeLatest(setCreateNewOrderSuccess.type, function* (action: any) {
+    const clientId = action.payload?.order?.clientId;
+    if (clientId) {
+      yield fork(watchOrderStatus, clientId);
+    }
+  });
 }

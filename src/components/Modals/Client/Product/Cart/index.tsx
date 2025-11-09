@@ -14,6 +14,7 @@ import {
 import type { CartModalProps, FormData } from "./types";
 import CartCard from "@/components/Card/Client/Cart";
 import { maskPhone } from "@/utils/mask";
+import { isValidCpfCnpj } from "@/utils/validations";
 import CartPayment from "./Payment";
 import UserDetails from "./UserDetails";
 import Delivery from "./Delivery";
@@ -32,6 +33,7 @@ export const CartModal: React.FC<CartModalProps> = ({
     subPayment: null,
     name: "",
     phone: "",
+    documentInTicket: "",
     delivery: {
       cep: "",
       street: "",
@@ -48,6 +50,7 @@ export const CartModal: React.FC<CartModalProps> = ({
     payment: "",
     name: "",
     phone: "",
+    documentInTicket: "",
   });
 
   const total = items.reduce(
@@ -56,7 +59,13 @@ export const CartModal: React.FC<CartModalProps> = ({
   );
 
   const handleSubmit = () => {
-    const newError = { option: "", payment: "", name: "", phone: "" };
+    const newError = {
+      option: "",
+      payment: "",
+      name: "",
+      phone: "",
+      documentInTicket: "",
+    };
     let hasError = false;
 
     if (!formData.option) {
@@ -100,6 +109,15 @@ export const CartModal: React.FC<CartModalProps> = ({
       }
       if (!formData.delivery.number || !formData.delivery.number.trim()) {
         newError.option = "Número é obrigatório";
+        hasError = true;
+      }
+    }
+
+    const docValue = formData.documentInTicket.trim();
+    if (docValue) {
+      if (!isValidCpfCnpj(docValue)) {
+        newError.documentInTicket =
+          "Informe um CPF (11 dígitos) ou CNPJ (14 dígitos) válido";
         hasError = true;
       }
     }
@@ -181,6 +199,7 @@ export const CartModal: React.FC<CartModalProps> = ({
             error={{
               name: error.name,
               phone: error.phone,
+              documentInTicket: error.documentInTicket,
             }}
             phone={formData.phone}
             name={formData.name}
@@ -189,8 +208,11 @@ export const CartModal: React.FC<CartModalProps> = ({
                 setFormData((prev) => ({ ...prev, name: value }));
               } else if (field === "phone") {
                 handleChangePhone(value);
+              } else if (field === "documentInTicket") {
+                setFormData((prev) => ({ ...prev, documentInTicket: value }));
               }
             }}
+            documentInTicket={formData.documentInTicket}
           />
         </ModalBody>
 

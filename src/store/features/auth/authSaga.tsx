@@ -47,6 +47,8 @@ import type { TCompany } from "@/store/features/auth/types/models";
 import { eventChannel } from "redux-saga";
 import { io, Socket } from "socket.io-client";
 import { socketAddNewOrder } from "../orderManager/orderManagerSlice";
+import type { TError } from "../client/types/models";
+import { HandleApiError } from "@/utils/errorApi";
 
 let socket: Socket | null = null;
 
@@ -61,7 +63,6 @@ function createSocketChannel(companyId: number) {
     socket!.on("connect", () => {
       console.log("🌐 WebSocket conectado!", socket!.id);
       socket!.emit("join-company", companyId);
-      console.log(`✅ Entrou na room company-${companyId}`);
     });
 
     socket!.on("new-order", (order) => {
@@ -116,9 +117,9 @@ function* setLoginSaga(
       title: "Login realizado com sucesso",
       status: "success",
     });
-  } catch {
+  } catch (error: TError | unknown) {
     toast({
-      title: "Email ou senha inválidos",
+      title: HandleApiError(error as TError),
       status: "error",
     });
     yield put(setLoginError());

@@ -80,7 +80,7 @@ export const router = createBrowserRouter([
         element: <ClientMenuPage />,
       },
       {
-        path: "/client/:id/menu/order/:orderId",
+        path: "/client/:id/menu/order",
         element: <OrderTrackingPage />,
       },
       {

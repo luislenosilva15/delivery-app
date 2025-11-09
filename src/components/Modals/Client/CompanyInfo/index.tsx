@@ -222,34 +222,6 @@ const CompanyInfoModal = ({
                         ))}
                       </VStack>
                     </Box>
-
-                    {/* Informações Adicionais de Pagamento */}
-                    <VStack spacing={1} align="stretch">
-                      {company.companyPayment.requiredDocument && (
-                        <HStack justify="space-between">
-                          <Text fontSize="sm" color={subtitleColor}>
-                            Documento obrigatório:
-                          </Text>
-                          <Badge
-                            colorScheme="yellow"
-                            variant="subtle"
-                            size="sm"
-                          >
-                            Sim
-                          </Badge>
-                        </HStack>
-                      )}
-                      {company.companyPayment.documentInTicket && (
-                        <HStack justify="space-between">
-                          <Text fontSize="sm" color={subtitleColor}>
-                            CPF na nota:
-                          </Text>
-                          <Badge colorScheme="green" variant="subtle" size="sm">
-                            Disponível
-                          </Badge>
-                        </HStack>
-                      )}
-                    </VStack>
                   </VStack>
                 </Box>
               </>

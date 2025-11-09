@@ -123,7 +123,8 @@ const DeliverySettingsPage = () => {
                 Documento
               </Heading>
               <Stack spacing={4}>
-                <FormControl>
+                {/* V2 */}
+                {/* <FormControl>
                   <Checkbox
                     colorScheme="primary"
                     isChecked={formData.requireCpfCnpj}
@@ -133,7 +134,7 @@ const DeliverySettingsPage = () => {
                   >
                     Obrigatório informar CPF/CNPJ
                   </Checkbox>
-                </FormControl>
+                </FormControl> */}
 
                 <FormControl>
                   <Checkbox

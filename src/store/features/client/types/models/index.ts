@@ -7,6 +7,15 @@ import type {
 } from "@/store/features/auth/types/models";
 import type { OrderStatus } from "@/store/features/orderManager/types/request";
 
+export type TError = {
+  response: {
+    data: {
+      message: string;
+      statusCode: number;
+    };
+  };
+};
+
 export type TCartItem = {
   uniqueId?: string;
   id: number;
@@ -59,6 +68,7 @@ export type TOrder = {
   companyId: number;
   totalPrice: number;
   paymentMethod: TPaymentMethod;
+  documentInTicket: string | null;
   paymentCardBrand: TPaymentCardBrand | null;
   paymentDebitCardBrand: TPaymentDebitBrand | null;
   paymentVoucherBrand: TPaymentVoucherBrand | null;

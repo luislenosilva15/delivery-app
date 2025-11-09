@@ -9,6 +9,7 @@ import type {
   FetchCurrentOrderSuccess,
   FetchGroupsRequest,
   FetchGroupsSuccess,
+  FetchLastOrderSuccess,
   SetAddToCartRequest,
   SetAddToCartSuccess,
   SetChangeQuantityRequest,
@@ -30,6 +31,7 @@ export interface ClientState {
     items: TCartItem[];
   };
   currentOrder?: TOrder | null;
+  errorMessage: string | null;
 }
 
 const initialState: ClientState = {
@@ -42,6 +44,7 @@ const initialState: ClientState = {
   cart: {
     items: [],
   },
+  errorMessage: null,
 };
 
 const clientSlice = createSlice({
@@ -150,6 +153,24 @@ const clientSlice = createSlice({
       state.currentOrder = action.payload.order;
     },
 
+    fetchLastOrderRequest(state) {
+      state.loadingOrder = true;
+    },
+
+    fetchLastOrderSuccess(state, action: PayloadAction<FetchLastOrderSuccess>) {
+      state.loadingOrder = false;
+      state.currentOrder = action.payload.order;
+    },
+
+    fetchLastOrderFailure(
+      state,
+      action: PayloadAction<{ errorMessage: string }>
+    ) {
+      state.loadingOrder = false;
+      state.currentOrder = null;
+      state.errorMessage = action.payload.errorMessage;
+    },
+
     fetchCurrentOrderFailure(state) {
       state.loadingOrder = false;
       state.currentOrder = null;
@@ -176,6 +197,9 @@ export const {
   fetchCurrentOrderRequest,
   fetchCurrentOrderSuccess,
   fetchCurrentOrderFailure,
+  fetchLastOrderRequest,
+  fetchLastOrderSuccess,
+  fetchLastOrderFailure,
 } = clientSlice.actions;
 
 export default clientSlice.reducer;

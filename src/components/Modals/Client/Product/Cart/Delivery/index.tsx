@@ -38,12 +38,6 @@ const Delivery = ({
           if (data.logradouro && data.logradouro !== deliveryFormData.street) {
             handleChangeForm("street", data.logradouro);
           }
-          if (
-            data.complemento &&
-            data.complemento !== deliveryFormData.complement
-          ) {
-            handleChangeForm("complement", data.complemento);
-          }
         }
       } catch {
         if (deliveryFormData.street) handleChangeForm("street", "");

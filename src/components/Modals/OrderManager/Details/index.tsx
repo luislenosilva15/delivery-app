@@ -21,6 +21,7 @@ import {
   FaMoneyBillWave,
   FaClock,
   FaMapMarkerAlt,
+  FaIdBadge,
 } from "react-icons/fa";
 import type { OrderModalProps } from "./types";
 import { useDispatch } from "react-redux";
@@ -113,9 +114,25 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                   </Text>
                 </HStack>
               </SimpleGrid>
+              {currentOrder.documentInTicket && (
+                <HStack mt={3} spacing={3} align="center">
+                  <FaIdBadge color={iconColor} />
+                  <VStack align="start" spacing={0}>
+                    <Text fontSize="sm" color={textColor}>
+                      <strong>Document na nota</strong>
+                    </Text>
+                    <Text
+                      fontSize="sm"
+                      color={highlightColor}
+                      fontWeight="semibold"
+                    >
+                      {currentOrder.documentInTicket}
+                    </Text>
+                  </VStack>
+                </HStack>
+              )}
             </Box>
 
-            {/* Endereço de Entrega - só mostra se for delivery */}
             {currentOrder.deliveryMethod === "DELIVERY" &&
               currentOrder.deliveryAddress && (
                 <Box p={4} borderWidth="1px" borderRadius="md" bg={cardBg}>

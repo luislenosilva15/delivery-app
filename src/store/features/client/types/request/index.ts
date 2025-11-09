@@ -60,6 +60,7 @@ export interface SetCreateNewOrderRequest {
   phone: string;
   name: string;
   deliveryMethod: TDelilveryMethod;
+  documentInTicket?: string;
   payment: {
     method: TPaymentMethod;
     cardBrand?: TPaymentCardBrand | null;
@@ -95,4 +96,17 @@ export interface FetchCurrentOrderResponse {
 
 export interface FetchCurrentOrderSuccess {
   order: TOrder;
+}
+
+export interface FetchLastOrderSuccess {
+  order: TOrder;
+}
+
+export interface FetchLastOrderErrorResponse {
+  response: {
+    data: {
+      message: string;
+      statusCode: number;
+    };
+  };
 }

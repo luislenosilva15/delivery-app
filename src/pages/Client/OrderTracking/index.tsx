@@ -23,19 +23,19 @@ import {
 import { motion } from "framer-motion";
 import { useClient } from "@/hook/client";
 import Loading from "@/components/Loading";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { fetchCurrentOrderRequest } from "@/store/features/client/clientSlice";
+import { fetchLastOrderRequest } from "@/store/features/client/clientSlice";
 import { moneyFormat, formatDate } from "@/helpers/shared";
 import { OrderDetails } from "@/components/Modals/Client/Order/Details";
 import { LuCookingPot } from "react-icons/lu";
+import Error from "@/components/Error";
 
 const MotionHStack = motion(HStack);
 
 export default function OrderTracking() {
   const navigate = useNavigate();
-  const { orderId } = useParams();
   const dispatch = useDispatch();
 
   const cardBg = useColorModeValue("white", "gray.800");
@@ -48,19 +48,19 @@ export default function OrderTracking() {
     onClose: onCloseDetailsModal,
   } = useDisclosure();
 
-  const { loadingOrder, currentOrder, company } = useClient();
+  const { loadingOrder, currentOrder, company, errorMessage } = useClient();
 
   const onBack = () => navigate(-1);
 
   const animation = { scale: [1, 1.05, 1] };
 
   useEffect(() => {
-    dispatch(
-      fetchCurrentOrderRequest({
-        orderId: Number(orderId),
-      })
-    );
-  }, [dispatch, orderId]);
+    dispatch(fetchLastOrderRequest());
+  }, [dispatch]);
+
+  if (errorMessage) {
+    return <Error message={errorMessage} />;
+  }
 
   if (loadingOrder || !currentOrder) return <Loading />;
 
@@ -283,7 +283,7 @@ export default function OrderTracking() {
             <Flex mt={4} gap={3}>
               <Button
                 leftIcon={<FaWhatsapp />}
-                colorScheme="primary"
+                colorScheme="green"
                 variant="outline"
                 flex="1"
               >

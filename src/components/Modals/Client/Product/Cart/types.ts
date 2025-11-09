@@ -32,4 +32,5 @@ export type FormData = {
     complement?: string;
     reference?: string;
   };
+  documentInTicket: string;
 };

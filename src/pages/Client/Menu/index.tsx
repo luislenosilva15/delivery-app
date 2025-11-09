@@ -56,6 +56,8 @@ const ClientMenuPage = () => {
   const buttonRefs = useRef<Record<number, HTMLButtonElement | null>>({});
   const observerRef = useRef<IntersectionObserver | null>(null);
 
+  const hasClient = localStorage.getItem("clientId");
+
   const {
     isOpen: isOpenCart,
     onOpen: onOpenCart,
@@ -148,7 +150,7 @@ const ClientMenuPage = () => {
   };
 
   const onOpenOrderHistory = () => {
-    navigate("order-history/1");
+    navigate("order");
   };
 
   const handleGroupClick = (groupId: number) => {
@@ -201,6 +203,7 @@ const ClientMenuPage = () => {
           reference: formData.delivery?.reference,
         },
         companyId: company?.id,
+        documentInTicket: formData.documentInTicket,
       } as SetCreateNewOrderRequest)
     );
   };
@@ -398,42 +401,44 @@ const ClientMenuPage = () => {
         />
       )}
 
-      <Box
-        position="fixed"
-        bottom={!cartEmpty ? "50px" : "20px"}
-        right="20px"
-        zIndex={30}
-        transition="bottom 0.3s ease-in-out"
-      >
-        <Box position="relative">
-          <Button
-            leftIcon={<FiPackage />}
-            colorScheme="orange"
-            variant="solid"
-            size="lg"
-            borderRadius="full"
-            shadow="xl"
-            onClick={onOpenOrderHistory}
-            bg="primary.500"
-            color="white"
-            _hover={{
-              bg: "primary.600",
-              transform: "scale(1.05)",
-              shadow: "2xl",
-            }}
-            _active={{
-              transform: "scale(0.98)",
-            }}
-            transition="all 0.2s ease-in-out"
-            px={6}
-            py={3}
-            fontSize="md"
-            fontWeight="bold"
-          >
-            Meus Pedidos
-          </Button>
+      {hasClient && (
+        <Box
+          position="fixed"
+          bottom={!cartEmpty ? "50px" : "20px"}
+          right="20px"
+          zIndex={30}
+          transition="bottom 0.3s ease-in-out"
+        >
+          <Box position="relative">
+            <Button
+              leftIcon={<FiPackage />}
+              colorScheme="orange"
+              variant="solid"
+              size="lg"
+              borderRadius="full"
+              shadow="xl"
+              onClick={onOpenOrderHistory}
+              bg="primary.500"
+              color="white"
+              _hover={{
+                bg: "primary.600",
+                transform: "scale(1.05)",
+                shadow: "2xl",
+              }}
+              _active={{
+                transform: "scale(0.98)",
+              }}
+              transition="all 0.2s ease-in-out"
+              px={6}
+              py={3}
+              fontSize="md"
+              fontWeight="bold"
+            >
+              Meu Pedido
+            </Button>
+          </Box>
         </Box>
-      </Box>
+      )}
     </Box>
   );
 };
