@@ -6,11 +6,15 @@ export const normalizeClient = (clients: FetchClientsResponse["clients"]) => {
       id: client.id,
       name: client.name,
       phone: client.phone,
-      firstOrderDate: client.orders.length ? client.orders[0].createdAt : null,
-      lastOrderDate: client.orders.length
+      lastOrderDate: client.orders.length ? client.orders[0].createdAt : null,
+      firstOrderDate: client.orders.length
         ? client.orders[client.orders.length - 1].createdAt
         : null,
       ordersCount: client.orders.length,
+      totalSpent: client.orders.reduce(
+        (acc, order) => acc + (order.totalPrice || 0),
+        0
+      ),
     };
   });
 };

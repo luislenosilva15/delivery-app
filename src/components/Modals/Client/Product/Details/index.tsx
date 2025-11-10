@@ -50,15 +50,21 @@ const ProductModal: React.FC<Props> = ({
 
   const isRestaurantClosed = !company?.isOpen;
 
+  const handleOnClose = () => {
+    setQuantity(1);
+    setObservations("");
+    onClose();
+  };
+
   const handleAdd = () => {
     addProduct(product, quantity, observations);
-    onClose();
+    handleOnClose();
   };
 
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleOnClose}
       size="2xl"
       isCentered
       motionPreset="scale"
@@ -85,7 +91,7 @@ const ProductModal: React.FC<Props> = ({
               icon={<ArrowBackIcon />}
               size="md"
               variant="ghost"
-              onClick={onClose}
+              onClick={handleOnClose}
             />
             <Text fontSize="lg" fontWeight="bold" textAlign="center" flex="1">
               Detalhe do produto

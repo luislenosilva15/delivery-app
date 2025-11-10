@@ -5,4 +5,5 @@ export type TClient = {
   firstOrderDate?: string | null;
   lastOrderDate?: string | null;
   ordersCount?: number;
+  totalSpent?: number;
 };

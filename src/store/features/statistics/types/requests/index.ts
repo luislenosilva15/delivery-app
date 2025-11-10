@@ -10,6 +10,7 @@ export interface FetchClientsResponse {
     orders: [
       {
         createdAt: string;
+        totalPrice: number | null;
       }
     ];
   }[];

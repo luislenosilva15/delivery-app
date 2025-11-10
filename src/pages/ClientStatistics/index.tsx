@@ -27,6 +27,7 @@ import {
   resetStatistics,
 } from "@/store/features/statistics/statisticsSlice";
 import Breadcrumb from "@/components/Breadcrumb";
+import { ClientModalDetails } from "@/components/Modals/Statistics/Client/Details";
 import type { TClient } from "@/store/features/statistics/types/models";
 
 function daysAgo(dateStr?: string | null) {
@@ -45,12 +46,13 @@ export default function ClientStatisticsPage() {
   const { clients, loading, loadingMore, page, hasMore, total } = stats.client;
 
   const [searchText, setSearchText] = useState("");
-  const [lastOrderDays, setLastOrderDays] = useState<number | undefined>(
-    undefined
-  );
+  const [lastOrderDays] = useState<number | undefined>(undefined);
   const [sortBy, setSortBy] = useState<
     "" | "orders" | "firstOrder" | "lastOrder"
   >("");
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<TClient | null>(null);
 
   const isFirstDebounce = useRef(true);
 
@@ -124,6 +126,8 @@ export default function ClientStatisticsPage() {
     fetchClients,
   ]);
 
+  const hoverBg = useColorModeValue("gray.50", "gray.700");
+
   const breadcrumbLinks = [
     { label: "Home", href: "/" },
     { label: "Clientes", isCurrent: true },
@@ -152,22 +156,6 @@ export default function ClientStatisticsPage() {
             </InputGroup>
 
             <Select
-              value={lastOrderDays ?? ""}
-              onChange={(e) =>
-                setLastOrderDays(
-                  e.target.value ? Number(e.target.value) : undefined
-                )
-              }
-              maxW="220px"
-            >
-              <option value="">Todos os clientes</option>
-              <option value={7}>Último pedido nos últimos 7 dias</option>
-              <option value={14}>Último pedido nos últimos 14 dias</option>
-              <option value={30}>Último pedido nos últimos 30 dias</option>
-              <option value={60}>Último pedido nos últimos 60 dias</option>
-            </Select>
-
-            <Select
               value={sortBy}
               onChange={(e) =>
                 setSortBy(
@@ -178,8 +166,6 @@ export default function ClientStatisticsPage() {
             >
               <option value="">Ordenar por padrão</option>
               <option value="orders">Quantidade de pedidos</option>
-              <option value="firstOrder">Cliente há</option>
-              <option value="lastOrder">Último pedido</option>
             </Select>
           </HStack>
 
@@ -200,7 +186,15 @@ export default function ClientStatisticsPage() {
           </Thead>
           <Tbody>
             {clients?.map((c: TClient) => (
-              <Tr key={c.id}>
+              <Tr
+                key={c.id}
+                cursor="pointer"
+                _hover={{ bg: hoverBg }}
+                onClick={() => {
+                  setSelectedClient(c);
+                  setIsModalOpen(true);
+                }}
+              >
                 <Td>
                   <HStack spacing={3}>
                     <Box>
@@ -223,6 +217,12 @@ export default function ClientStatisticsPage() {
           </Flex>
         )}
       </Stack>
+
+      <ClientModalDetails
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        client={selectedClient}
+      />
     </Box>
   );
 }
