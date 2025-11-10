@@ -2,7 +2,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 import type { TClient } from "@/store/features/statistics/types/models";
 
-export interface StatisticsState {
+export interface PaginatedClients {
   loading: boolean;
   loadingMore: boolean;
   clients: TClient[];
@@ -10,17 +10,23 @@ export interface StatisticsState {
   totalPages?: number;
   total: number;
   hasMore: boolean;
-  errorMessage?: string | null;
+}
+
+export interface StatisticsState {
+  client: PaginatedClients;
+  // future sections: store, sales, etc.
 }
 
 const initialState: StatisticsState = {
-  loading: true,
-  loadingMore: false,
-  clients: [],
-  page: 1,
-  total: 0,
-  hasMore: true,
-  errorMessage: null,
+  client: {
+    loading: true,
+    loadingMore: false,
+    clients: [],
+    page: 1,
+    total: 0,
+    hasMore: true,
+    totalPages: undefined,
+  },
 };
 
 const statisticsSlice = createSlice({
@@ -33,17 +39,18 @@ const statisticsSlice = createSlice({
         page: number;
         search: string;
         lastOrderDays?: number;
+        sortBy?: "orders" | "firstOrder" | "lastOrder";
       }>
     ) {
       const page = _action.payload.page;
       if (page === 1) {
-        state.loading = true;
-        state.clients = [];
-        state.hasMore = true;
+        state.client.loading = true;
+        state.client.clients = [];
+        state.client.hasMore = true;
       } else {
-        state.loadingMore = true;
+        state.client.loadingMore = true;
       }
-      state.page = page;
+      state.client.page = page;
     },
 
     fetchClientsSuccess(
@@ -55,33 +62,35 @@ const statisticsSlice = createSlice({
         total: number;
       }>
     ) {
-      state.loading = false;
-      state.loadingMore = false;
-      state.total = action.payload.total;
+      state.client.loading = false;
+      state.client.loadingMore = false;
+      state.client.total = action.payload.total;
       const { clients, page, totalPages } = action.payload;
-      state.page = page;
+      state.client.page = page;
       if (page === 1) {
-        state.clients = clients;
+        state.client.clients = clients;
       } else {
-        state.clients = [...state.clients, ...clients];
+        state.client.clients = [...state.client.clients, ...clients];
       }
-      state.totalPages = totalPages;
-      state.hasMore = totalPages ? page < totalPages : clients.length > 0;
+      state.client.totalPages = totalPages;
+      state.client.hasMore = totalPages
+        ? page < totalPages
+        : clients.length > 0;
     },
 
     fetchClientsError(state) {
-      state.loading = false;
-      state.loadingMore = false;
+      state.client.loading = false;
+      state.client.loadingMore = false;
     },
 
     resetStatistics(state) {
-      state.loading = true;
-      state.loadingMore = false;
-      state.clients = [];
-      state.page = 1;
-      state.total = 0;
-      state.hasMore = true;
-      state.errorMessage = null;
+      state.client.loading = true;
+      state.client.loadingMore = false;
+      state.client.clients = [];
+      state.client.page = 1;
+      state.client.total = 0;
+      state.client.hasMore = true;
+      state.client.totalPages = undefined;
     },
   },
 });

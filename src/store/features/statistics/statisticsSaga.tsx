@@ -10,6 +10,8 @@ import {
   fetchClientsError,
 } from "./statisticsSlice";
 import { HandleApiError } from "@/utils/errorApi";
+import type { FetchClientsResponse } from "./types/requests";
+import { normalizeClient } from "./normalize";
 
 function* fetchClientsSaga(
   action: PayloadAction<{
@@ -17,26 +19,24 @@ function* fetchClientsSaga(
     search: string;
     lastOrderDays?: number;
   }>
-): Generator<any, void, AxiosResponse<any>> {
+): Generator<any, void, AxiosResponse<FetchClientsResponse>> {
   try {
     const { payload } = action;
 
-    const { page, search, lastOrderDays } = payload;
+    const { page, search, lastOrderDays, sortBy } = payload as any;
 
-    // Endpoint assumido: GET /statistics/clients?page=1&search=abc&lastOrderDays=30
     const query = `?page=${page}&search=${encodeURIComponent(search || "")}${
       lastOrderDays ? `&lastOrderDays=${lastOrderDays}` : ""
-    }`;
+    }${sortBy ? `&sortBy=${encodeURIComponent(sortBy)}` : ""}`;
 
-    const response = yield call(apiClient.get, `/statistics/clients${query}`);
+    const response = yield call(apiClient.get, `/statistic/clients${query}`);
 
-    // espera response.data: { clients: [], page, totalPages, total }
     yield put(
       fetchClientsSuccess({
-        clients: response.data.clients,
+        clients: normalizeClient(response.data.clients),
         page: response.data.page || page,
         totalPages: response.data.totalPages,
-        total: response.data.total || response.data.totalItems || 0,
+        total: response.data.totalItems || 0,
       })
     );
   } catch (error: any) {

@@ -14,13 +14,12 @@ import {
   Thead,
   Tr,
   HStack,
-  Avatar,
   Stack,
   Select,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useStatistics } from "@/hook/statistics";
 import { useDispatch } from "react-redux";
 import {
@@ -42,23 +41,34 @@ function daysAgo(dateStr?: string | null) {
 export default function ClientStatisticsPage() {
   const dispatch = useDispatch();
 
-  const { clients, loading, loadingMore, page, hasMore, total } =
-    useStatistics();
+  const stats = useStatistics();
+  const { clients, loading, loadingMore, page, hasMore, total } = stats.client;
 
   const [searchText, setSearchText] = useState("");
   const [lastOrderDays, setLastOrderDays] = useState<number | undefined>(
     undefined
   );
+  const [sortBy, setSortBy] = useState<
+    "" | "orders" | "firstOrder" | "lastOrder"
+  >("");
+
+  const isFirstDebounce = useRef(true);
 
   const textTotal = useColorModeValue("gray.600", "gray.200");
 
   const fetchClients = useCallback(
-    (pageNum: number, query: string, lastDays?: number) => {
+    (
+      pageNum: number,
+      query: string,
+      lastDays?: number,
+      sort?: "orders" | "firstOrder" | "lastOrder"
+    ) => {
       dispatch(
         fetchClientsRequest({
           page: pageNum,
           search: query,
           lastOrderDays: lastDays,
+          sortBy: sort,
         })
       );
     },
@@ -74,12 +84,20 @@ export default function ClientStatisticsPage() {
   }, [fetchClients, dispatch]);
 
   useEffect(() => {
+    // skip the debounce fetch on the first mount because we already
+    // perform an initial load in the mount effect. This prevents
+    // a double request (initial + debounce) when the page loads.
+    if (isFirstDebounce.current) {
+      isFirstDebounce.current = false;
+      return;
+    }
+
     const handler = setTimeout(() => {
-      fetchClients(1, searchText, lastOrderDays);
+      fetchClients(1, searchText, lastOrderDays, sortBy || undefined);
     }, 500);
 
     return () => clearTimeout(handler);
-  }, [searchText, lastOrderDays, fetchClients]);
+  }, [searchText, lastOrderDays, sortBy, fetchClients]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -90,7 +108,7 @@ export default function ClientStatisticsPage() {
         !loadingMore &&
         hasMore
       ) {
-        fetchClients(page + 1, searchText, lastOrderDays);
+        fetchClients(page + 1, searchText, lastOrderDays, sortBy || undefined);
       }
     };
     window.addEventListener("scroll", handleScroll);
@@ -102,12 +120,12 @@ export default function ClientStatisticsPage() {
     page,
     searchText,
     lastOrderDays,
+    sortBy,
     fetchClients,
   ]);
 
   const breadcrumbLinks = [
     { label: "Home", href: "/" },
-    { label: "Estatísticas", href: "/statistics", isCurrent: false },
     { label: "Clientes", isCurrent: true },
   ];
 
@@ -116,17 +134,17 @@ export default function ClientStatisticsPage() {
       <Breadcrumb links={breadcrumbLinks} />
       <Stack>
         <Flex justify="space-between" align="center">
-          <Heading size="md">Clientes — Estatísticas</Heading>
+          <Heading size="md">Clientes</Heading>
         </Flex>
 
         <Flex justify="space-between" align="center" mb={4}>
-          <HStack spacing={3}>
+          <HStack spacing={3} mt={2}>
             <InputGroup maxW="300px">
               <InputLeftElement pointerEvents="none">
                 <SearchIcon color="gray.400" />
               </InputLeftElement>
               <Input
-                placeholder="Buscar por nome"
+                placeholder="Buscar por nome ou telefone"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 focusBorderColor="primary.500"
@@ -140,13 +158,28 @@ export default function ClientStatisticsPage() {
                   e.target.value ? Number(e.target.value) : undefined
                 )
               }
-              maxW="200px"
+              maxW="220px"
             >
               <option value="">Todos os clientes</option>
               <option value={7}>Último pedido nos últimos 7 dias</option>
               <option value={14}>Último pedido nos últimos 14 dias</option>
               <option value={30}>Último pedido nos últimos 30 dias</option>
               <option value={60}>Último pedido nos últimos 60 dias</option>
+            </Select>
+
+            <Select
+              value={sortBy}
+              onChange={(e) =>
+                setSortBy(
+                  e.target.value as "" | "orders" | "firstOrder" | "lastOrder"
+                )
+              }
+              maxW="220px"
+            >
+              <option value="">Ordenar por padrão</option>
+              <option value="orders">Quantidade de pedidos</option>
+              <option value="firstOrder">Cliente há</option>
+              <option value="lastOrder">Último pedido</option>
             </Select>
           </HStack>
 
@@ -170,7 +203,6 @@ export default function ClientStatisticsPage() {
               <Tr key={c.id}>
                 <Td>
                   <HStack spacing={3}>
-                    <Avatar name={c.name} size="sm" />
                     <Box>
                       <Text fontWeight="medium">{c.name}</Text>
                     </Box>
