@@ -7,12 +7,10 @@ export interface FetchClientsResponse {
     createdAt: string;
     updatedAt: string;
     companyId: number;
-    orders: [
-      {
-        createdAt: string;
-        totalPrice: number | null;
-      }
-    ];
+    firstOrderDate?: string;
+    lastOrderDate?: string;
+    totalSpent?: number;
+    totalOrders?: number;
   }[];
   total: number;
   totalPages?: number;

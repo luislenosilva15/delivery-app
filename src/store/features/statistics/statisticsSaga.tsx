@@ -11,7 +11,6 @@ import {
 } from "./statisticsSlice";
 import { HandleApiError } from "@/utils/errorApi";
 import type { FetchClientsResponse } from "./types/requests";
-import { normalizeClient } from "./normalize";
 
 function* fetchClientsSaga(
   action: PayloadAction<{
@@ -33,7 +32,7 @@ function* fetchClientsSaga(
 
     yield put(
       fetchClientsSuccess({
-        clients: normalizeClient(response.data.clients),
+        clients: response.data.clients,
         page: response.data.page || page,
         totalPages: response.data.totalPages,
         total: response.data.totalItems || 0,
