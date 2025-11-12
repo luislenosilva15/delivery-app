@@ -206,6 +206,12 @@ function SidebarContent() {
               icon={HiUsers}
               label="Clientes"
             />
+            <SidebarItem
+              isActive={optionIsActive("/statistics/sales")}
+              onClick={() => navigate("/statistics/sales")}
+              icon={BsClipboardData}
+              label="Vendas"
+            />
           </VStack>
         </Collapse>
       </Box>

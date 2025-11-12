@@ -7,7 +7,7 @@ import { PrivateRoutes } from "./PrivateRoutes";
 import LoginPage from "@/pages/Login";
 import DashboardPage from "@/pages/Dashboard";
 import SettingsPage from "@/pages/Settings";
-import SellsPage from "@/pages/Sells";
+import SellsPage from "@/pages/sales";
 import ProfilePage from "@/pages/Profile";
 import OpeningHourPage from "@/pages/OpeningHour";
 import AboutPage from "@/pages/About";
@@ -20,6 +20,7 @@ import OrderTrackingPage from "@/pages/Client/OrderTracking";
 import OrderManagerPage from "@/pages/OrderManager";
 import OrderHistoryPage from "@/pages/Client/orderHistory";
 import ClientStatisticsPage from "@/pages/ClientStatistics";
+import SalesPage from "@/pages/sales";
 
 export const router = createBrowserRouter([
   {
@@ -76,6 +77,10 @@ export const router = createBrowserRouter([
         children: [
           { path: "/statistics/clients", element: <ClientStatisticsPage /> },
         ],
+      },
+      {
+        element: <PrivateLayout />,
+        children: [{ path: "/statistics/sales", element: <SalesPage /> }],
       },
     ],
   },
