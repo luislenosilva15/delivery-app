@@ -182,3 +182,12 @@ export const clientOrderStatusTranslations = {
   DELIVERED: "Pedido Entregue",
   CANCELLED: "Pedido Cancelado",
 };
+
+export const clientOrderStatusTranslationsList = {
+  PENDING: "Pendente",
+  READY: "Aceito",
+  IN_PREPARATION: "Em Preparação",
+  OUT_FOR_DELIVERY: "Saiu para Entrega",
+  DELIVERED: "Entregue",
+  CANCELLED: "Cancelado",
+};

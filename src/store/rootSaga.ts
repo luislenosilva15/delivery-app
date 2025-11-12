@@ -5,6 +5,7 @@ import MenuSaga from "./features/menu/menuSaga";
 import clientSaga from "./features/client/clientSaga";
 import OrderManagerSaga from "./features/orderManager/orderManagerSaga";
 import statisticsSaga from "./features/statistics/statisticsSaga";
+import salesSaga from "./features/sales/salesSaga";
 
 export default function* rootSaga() {
   yield all([
@@ -14,5 +15,6 @@ export default function* rootSaga() {
     clientSaga(),
     OrderManagerSaga(),
     statisticsSaga(),
+    salesSaga(),
   ]);
 }

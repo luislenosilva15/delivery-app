@@ -14,7 +14,6 @@ export interface PaginatedClients {
 
 export interface StatisticsState {
   client: PaginatedClients;
-  // future sections: store, sales, etc.
 }
 
 const initialState: StatisticsState = {
