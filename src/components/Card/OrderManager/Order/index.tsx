@@ -122,7 +122,7 @@ function OrderCard({ order, onClick, onChangeStatus }: Props) {
           <HStack>
             <Icon as={FiUser} color="gray.500" />
             <Text fontSize="sm" fontWeight="semibold">
-              {order.client.name}
+              {order.clientName || "-"}
             </Text>
           </HStack>
 

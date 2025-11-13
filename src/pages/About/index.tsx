@@ -77,7 +77,9 @@ const AboutPage = () => {
     <Box mx="auto" p={6}>
       <Breadcrumb links={breadcrumbLinks} />
       <Stack spacing={4}>
-        <Heading size="md">Sobre a loja</Heading>
+        <Heading mt={2} size="md">
+          Sobre a loja
+        </Heading>
 
         <form onSubmit={handleSubmit}>
           <Stack spacing={4}>

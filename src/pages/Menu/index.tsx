@@ -201,7 +201,9 @@ export default function MenuPage() {
             justifyContent="space-between"
             flexDirection="row"
           >
-            <Heading size="md">Cardápio</Heading>
+            <Heading size="md" mt={2}>
+              Cardápio
+            </Heading>
             <Box display="flex" gap={2} alignItems="center">
               <Button
                 colorScheme="primary"

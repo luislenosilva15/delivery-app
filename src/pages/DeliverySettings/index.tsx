@@ -107,7 +107,9 @@ const DeliverySettingsPage = () => {
     <Box w="100%" p={6}>
       <Breadcrumb links={breadcrumbLinks} />
       <Stack spacing={8} w="100%">
-        <Heading size="md">Configurações do Delivery</Heading>
+        <Heading mt={2} size="md">
+          Configurações do Delivery
+        </Heading>
 
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
           <Stack spacing={8} w="100%">

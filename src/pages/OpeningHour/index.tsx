@@ -203,7 +203,7 @@ export default function OpeningHoursPage() {
       <Box mx="auto" p={6}>
         <Breadcrumb links={breadcrumbLinks} />
 
-        <Heading size="md" mb={6}>
+        <Heading size="md" mb={6} mt={6}>
           Horário de Funcionamento
         </Heading>
 

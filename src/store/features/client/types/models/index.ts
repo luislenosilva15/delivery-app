@@ -65,6 +65,7 @@ export type TOrder = {
   updatedAt: string;
   status: OrderStatus;
   clientId: number;
+  clientName?: string;
   companyId: number;
   totalPrice: number;
   paymentMethod: TPaymentMethod;

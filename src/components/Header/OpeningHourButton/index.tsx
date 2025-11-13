@@ -61,7 +61,7 @@ function OpeningHourButton() {
         </MenuButton>
 
         <MenuList p={4}>
-          <Text fontWeight="bold" fontSize="lg" mb={2}>
+          <Text fontWeight="bold" fontSize="lg" mb={2} mt={2}>
             Horário de Funcionamento
           </Text>
           <Text

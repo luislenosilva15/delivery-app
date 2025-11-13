@@ -67,7 +67,9 @@ export default function OrderManagerPage() {
         <Breadcrumb links={breadcrumbLinks} />
         <Stack>
           <Flex justify="space-between" align="center">
-            <Heading size="md">Pedidos</Heading>
+            <Heading mt={2} size="md">
+              Pedidos
+            </Heading>
           </Flex>
           <Tabs
             colorScheme="yellow"

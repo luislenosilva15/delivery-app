@@ -18,7 +18,6 @@ import {
   Tr,
   Th,
   Td,
-  Spinner,
 } from "@chakra-ui/react";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { moneyFormat } from "@/helpers/shared";
@@ -35,6 +34,13 @@ import {
   deliveryMethodsTranslations,
   paymentMethodsTraslations,
 } from "@/constants";
+import Loading from "@/components/Loading";
+import Breadcrumb from "@/components/Breadcrumb";
+
+const breadcrumbLinks = [
+  { label: "Home", href: "/" },
+  { label: "Vendas", isCurrent: true },
+];
 
 function startOfMonth(d = new Date()) {
   return new Date(d.getFullYear(), d.getMonth(), 1);
@@ -130,7 +136,6 @@ const SalesPage = () => {
     fetchSales,
   ]);
 
-  // libera a trava quando terminou de carregar
   useEffect(() => {
     if (!loading && !loadingMore) {
       requestingRef.current = false;
@@ -147,7 +152,8 @@ const SalesPage = () => {
 
   return (
     <Box mx="auto" p={6}>
-      <Flex justify="space-between" align="center" mb={4} wrap="wrap" gap={4}>
+      <Breadcrumb links={breadcrumbLinks} />
+      <Flex justify="space-between" align="center" mb={4} wrap="wrap" gap={2}>
         <Heading size="md">Vendas</Heading>
         <Button
           leftIcon={<DownloadIcon />}
@@ -158,7 +164,6 @@ const SalesPage = () => {
         </Button>
       </Flex>
 
-      {/* Filtros */}
       <HStack spacing={3} mb={6} align="center" wrap="wrap">
         <HStack>
           <Input
@@ -183,7 +188,6 @@ const SalesPage = () => {
         </Checkbox>
       </HStack>
 
-      {/* Cards de métricas */}
       <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={4} mb={6}>
         <Box
           bg={cardBg}
@@ -223,7 +227,6 @@ const SalesPage = () => {
         </Box>
       </SimpleGrid>
 
-      {/* Tabela */}
       <Table variant="simple">
         <Thead>
           <Tr>
@@ -260,7 +263,7 @@ const SalesPage = () => {
 
       {(loading || loadingMore) && (
         <Flex justify="center" mt={4}>
-          <Spinner />
+          <Loading />
         </Flex>
       )}
     </Box>

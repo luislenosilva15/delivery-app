@@ -138,7 +138,9 @@ export default function ClientStatisticsPage() {
       <Breadcrumb links={breadcrumbLinks} />
       <Stack>
         <Flex justify="space-between" align="center">
-          <Heading size="md">Clientes</Heading>
+          <Heading mt={2} size="md">
+            Clientes
+          </Heading>
         </Flex>
 
         <Flex justify="space-between" align="center" mb={4}>
