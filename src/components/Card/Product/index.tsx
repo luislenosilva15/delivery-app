@@ -23,6 +23,7 @@ export default function ProductCard({
   onDisable,
   onDelete,
   onClickCard,
+  showActions = true,
 }: Props) {
   const itemBgColor = useColorModeValue("white", "gray.700");
   const itemBorderColor = useColorModeValue("gray.200", "gray.600");
@@ -65,24 +66,32 @@ export default function ProductCard({
         </Box>
       </HStack>
 
-      <HStack marginRight={4} onClick={(e) => e.stopPropagation()}>
-        <Menu>
-          <MenuButton
-            as={IconButton}
-            aria-label="Mais opções"
-            icon={<Text fontSize="xl">⋮</Text>}
-            size="sm"
-            variant="ghost"
-          />
-          <MenuList>
-            <MenuItem onClick={() => onDisable(item.id)}>
-              {item.disabled ? "Tornar disponível" : "Tornar indisponível"}
-            </MenuItem>
-            <MenuItem onClick={() => onEdit(item.id)}>Editar</MenuItem>
-            <MenuItem onClick={() => onDelete(item.id)}>Excluir</MenuItem>
-          </MenuList>
-        </Menu>
-      </HStack>
+      {showActions && (onEdit || onDisable || onDelete) && (
+        <HStack marginRight={4} onClick={(e) => e.stopPropagation()}>
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              aria-label="Mais opções"
+              icon={<Text fontSize="xl">⋮</Text>}
+              size="sm"
+              variant="ghost"
+            />
+            <MenuList>
+              {onDisable && (
+                <MenuItem onClick={() => onDisable(item.id)}>
+                  {item.disabled ? "Tornar disponível" : "Tornar indisponível"}
+                </MenuItem>
+              )}
+              {onEdit && (
+                <MenuItem onClick={() => onEdit(item.id)}>Editar</MenuItem>
+              )}
+              {onDelete && (
+                <MenuItem onClick={() => onDelete(item.id)}>Excluir</MenuItem>
+              )}
+            </MenuList>
+          </Menu>
+        </HStack>
+      )}
     </Flex>
   );
 }

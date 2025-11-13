@@ -19,6 +19,7 @@ import {
 import EmptyState from "@/components/EmptyState";
 import OrderCard from "@/components/Card/OrderManager/Order";
 import ProductCard from "@/components/Card/Product";
+import { moneyFormat } from "@/helpers/shared";
 import type { TOrder } from "@/store/features/client/types/models";
 import type { OrderStatus } from "@/store/features/orderManager/types/request";
 import type { TProduct } from "@/store/features/menu/types/models/index";
@@ -64,7 +65,69 @@ const mockOrders: TOrder[] = [
   },
 ];
 
-const mockProducts: TProduct[] = [];
+const mockProducts: TProduct[] = [
+  {
+    id: 1,
+    alwaysAvailable: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    code: "P001",
+    name: "Combo Burguer",
+    description: "Delicioso combo com batata e refrigerante",
+    price: 29.9,
+    menuGroupId: 1,
+    isAdultOnly: false,
+    image: null,
+    disabled: false,
+    imageUrl: null,
+  },
+  {
+    id: 2,
+    alwaysAvailable: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    code: "P002",
+    name: "Pizza Margherita",
+    description: "Pizza clássica com molho de tomate e manjericão",
+    price: 39.5,
+    menuGroupId: 1,
+    isAdultOnly: false,
+    image: null,
+    disabled: false,
+    imageUrl: null,
+  },
+  {
+    id: 3,
+    alwaysAvailable: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    code: "P003",
+    name: "Salada Caesar",
+    description: "Salada fresca com molho caesar",
+    price: 18.0,
+    menuGroupId: 1,
+    isAdultOnly: false,
+    image: null,
+    disabled: false,
+    imageUrl: null,
+  },
+];
+
+// Mock sales counts for products (used to determine top sellers)
+const mockProductSales = [
+  { productId: 2, sold: 48 },
+  { productId: 1, sold: 35 },
+  { productId: 3, sold: 12 },
+];
+
+const topProducts = mockProductSales
+  .slice()
+  .sort((a, b) => b.sold - a.sold)
+  .slice(0, 3)
+  .map((s) => ({
+    product: mockProducts.find((p) => p.id === s.productId) as TProduct,
+    sold: s.sold,
+  }));
 
 const DashboardPage: React.FC = () => {
   const cardBg = useColorModeValue("white", "gray.800");
@@ -75,6 +138,15 @@ const DashboardPage: React.FC = () => {
     { label: "Delivery", percent: 72 },
     { label: "Retirada", percent: 28 },
   ];
+
+  // derive some simple stats from the mocked orders (replace with real data later)
+  const ordersLast7 = mockOrders; // replace with filter by date when real data available
+  const totalSalesAmount = ordersLast7.reduce(
+    (s, o) => s + (o.totalPrice || 0),
+    0
+  );
+  const totalSalesCount = ordersLast7.length;
+  const avgTicket = totalSalesCount ? totalSalesAmount / totalSalesCount : 0;
 
   return (
     <Box>
@@ -126,7 +198,33 @@ const DashboardPage: React.FC = () => {
           >
             <Stat>
               <StatLabel>Receita - 7 dias</StatLabel>
-              <StatNumber>R$ 0,00</StatNumber>
+              <StatNumber>{moneyFormat(totalSalesAmount)}</StatNumber>
+            </Stat>
+          </Box>
+
+          <Box
+            borderWidth="1px"
+            borderColor={border}
+            borderRadius="md"
+            bg={cardBg}
+            p={4}
+          >
+            <Stat>
+              <StatLabel>Ticket médio vendas dos 7 dias</StatLabel>
+              <StatNumber>{moneyFormat(avgTicket)}</StatNumber>
+            </Stat>
+          </Box>
+
+          <Box
+            borderWidth="1px"
+            borderColor={border}
+            borderRadius="md"
+            bg={cardBg}
+            p={4}
+          >
+            <Stat>
+              <StatLabel>Total vendas últimos 7 dias</StatLabel>
+              <StatNumber>{moneyFormat(totalSalesAmount)}</StatNumber>
             </Stat>
           </Box>
 
@@ -189,14 +287,13 @@ const DashboardPage: React.FC = () => {
             />
           ) : (
             <VStack align="stretch" spacing={3}>
-              {mockProducts.map((p) => (
-                <ProductCard
-                  key={p.id}
-                  item={p}
-                  onEdit={() => {}}
-                  onDisable={() => {}}
-                  onDelete={() => {}}
-                />
+              {topProducts.map(({ product, sold }) => (
+                <Box key={product.id}>
+                  <ProductCard item={product} showActions={false} />
+                  <Text fontSize="sm" color="gray.500" mt={1}>
+                    Vendidos: {sold}
+                  </Text>
+                </Box>
               ))}
             </VStack>
           )}
