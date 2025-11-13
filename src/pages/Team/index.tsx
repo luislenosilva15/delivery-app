@@ -44,6 +44,8 @@ import CreateTeamModal from "@/components/Modals/Team/Create";
 import type { SetCreateNewTeamRequest } from "@/store/features/team/types/request";
 import ConfirmModal from "@/components/Modals/ConfirmModal";
 import type { TUser } from "@/store/features/team/types/models";
+import EmptyState from "@/components/EmptyState";
+import { MdInbox } from "react-icons/md";
 
 export default function TeamPage() {
   const dispatch = useDispatch();
@@ -81,7 +83,8 @@ export default function TeamPage() {
     return () => {
       dispatch(resetTeam());
     };
-  }, []);
+    // dispatch is stable from useDispatch; adding for lint compliance
+  }, [dispatch]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -185,77 +188,91 @@ export default function TeamPage() {
             </Text>
           </Flex>
 
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>Nome</Th>
-                <Th>Perfil</Th>
-                <Th>Status</Th>
-                <Th></Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {users?.map((u) => (
-                <Tr key={u.id}>
-                  <Td>
-                    <HStack spacing={3}>
-                      <Avatar name={u.name} size="sm" />
-                      <Box>
-                        <Text fontWeight="medium">{u.name}</Text>
-                        <Text fontSize="sm" color="gray.500">
-                          {u.email}
-                        </Text>
-                      </Box>
-                    </HStack>
-                  </Td>
-                  <Td>{normalizeTeamRole(u.role)}</Td>
-                  <Td>
-                    <Tag colorScheme={u.isActive ? "green" : "red"} size="sm">
-                      {u.isActive ? "Ativo" : "Inativo"}
-                    </Tag>
-                  </Td>
-                  <Td textAlign="right" px={2}>
-                    <Menu>
-                      <MenuButton
-                        as={IconButton}
-                        aria-label="Mais opções"
-                        icon={<Text fontSize="xl">⋮</Text>}
-                        size="sm"
-                        variant="ghost"
-                      />
-                      <MenuList>
-                        <MenuItem
-                          onClick={() => {
-                            setCurrentTeam(u);
-                            setEditPermission(true);
-                            onOpen();
-                          }}
-                        >
-                          Editar permissões
-                        </MenuItem>
-                        <MenuItem
-                          onClick={() => {
-                            setCurrentTeam(u);
-                            onOpenActive();
-                          }}
-                        >
-                          {u.isActive ? "Desativar" : "Ativar"}
-                        </MenuItem>
-                        <MenuItem
-                          onClick={() => {
-                            setCurrentTeam(u);
-                            onOpenDelete();
-                          }}
-                        >
-                          Excluir
-                        </MenuItem>
-                      </MenuList>
-                    </Menu>
-                  </Td>
+          {!loading && users && users.length === 0 ? (
+            <EmptyState
+              size="md"
+              icon={<MdInbox />}
+              title="Nenhum membro encontrado"
+              description="Use o botão 'Adicionar Usuário' para criar o primeiro membro da equipe."
+              action={
+                <Button colorScheme="primary" onClick={onOpen} size="sm">
+                  Adicionar Usuário
+                </Button>
+              }
+            />
+          ) : (
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th>Nome</Th>
+                  <Th>Perfil</Th>
+                  <Th>Status</Th>
+                  <Th></Th>
                 </Tr>
-              ))}
-            </Tbody>
-          </Table>
+              </Thead>
+              <Tbody>
+                {users?.map((u) => (
+                  <Tr key={u.id}>
+                    <Td>
+                      <HStack spacing={3}>
+                        <Avatar name={u.name} size="sm" />
+                        <Box>
+                          <Text fontWeight="medium">{u.name}</Text>
+                          <Text fontSize="sm" color="gray.500">
+                            {u.email}
+                          </Text>
+                        </Box>
+                      </HStack>
+                    </Td>
+                    <Td>{normalizeTeamRole(u.role)}</Td>
+                    <Td>
+                      <Tag colorScheme={u.isActive ? "green" : "red"} size="sm">
+                        {u.isActive ? "Ativo" : "Inativo"}
+                      </Tag>
+                    </Td>
+                    <Td textAlign="right" px={2}>
+                      <Menu>
+                        <MenuButton
+                          as={IconButton}
+                          aria-label="Mais opções"
+                          icon={<Text fontSize="xl">⋮</Text>}
+                          size="sm"
+                          variant="ghost"
+                        />
+                        <MenuList>
+                          <MenuItem
+                            onClick={() => {
+                              setCurrentTeam(u);
+                              setEditPermission(true);
+                              onOpen();
+                            }}
+                          >
+                            Editar permissões
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              setCurrentTeam(u);
+                              onOpenActive();
+                            }}
+                          >
+                            {u.isActive ? "Desativar" : "Ativar"}
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              setCurrentTeam(u);
+                              onOpenDelete();
+                            }}
+                          >
+                            Excluir
+                          </MenuItem>
+                        </MenuList>
+                      </Menu>
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          )}
 
           {(loading || loadingMore) && (
             <Flex justify="center" mt={4}>

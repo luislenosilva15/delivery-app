@@ -36,6 +36,8 @@ import {
 } from "@/constants";
 import Loading from "@/components/Loading";
 import Breadcrumb from "@/components/Breadcrumb";
+import EmptyState from "@/components/EmptyState";
+import { MdInbox } from "react-icons/md";
 
 const breadcrumbLinks = [
   { label: "Home", href: "/" },
@@ -227,39 +229,49 @@ const SalesPage = () => {
         </Box>
       </SimpleGrid>
 
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th># Id</Th>
-            <Th>Nome</Th>
-            <Th>Tipo</Th>
-            <Th>Pagamento</Th>
-            <Th>Status</Th>
-            <Th>Criado em</Th>
-            <Th isNumeric>Total do pedido</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {list.map((s) => {
-            const name = s.clientName || "-";
-            const deliveryType = deliveryMethodsTranslations[s.deliveryMethod];
-            const payment = paymentMethodsTraslations[s.paymentMethod];
-            const total = s.totalPrice;
-            const status = clientOrderStatusTranslationsList[s.status];
-            return (
-              <Tr key={s.id} _hover={{ bg: hoverBg }} cursor="pointer">
-                <Td>{s.id}</Td>
-                <Td>{name}</Td>
-                <Td>{deliveryType}</Td>
-                <Td>{payment}</Td>
-                <Td>{status}</Td>
-                <Td>{new Date(s.createdAt).toLocaleDateString()}</Td>
-                <Td isNumeric>{moneyFormat(total)}</Td>
-              </Tr>
-            );
-          })}
-        </Tbody>
-      </Table>
+      {!loading && list.length === 0 ? (
+        <EmptyState
+          size="md"
+          icon={<MdInbox />}
+          title="Nenhuma venda encontrada"
+          description="Ajuste os filtros ou aguarde novos pedidos para ver os resultados aqui."
+        />
+      ) : (
+        <Table variant="simple">
+          <Thead>
+            <Tr>
+              <Th># Id</Th>
+              <Th>Nome</Th>
+              <Th>Tipo</Th>
+              <Th>Pagamento</Th>
+              <Th>Status</Th>
+              <Th>Criado em</Th>
+              <Th isNumeric>Total do pedido</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {list.map((s) => {
+              const name = s.clientName || "-";
+              const deliveryType =
+                deliveryMethodsTranslations[s.deliveryMethod];
+              const payment = paymentMethodsTraslations[s.paymentMethod];
+              const total = s.totalPrice;
+              const status = clientOrderStatusTranslationsList[s.status];
+              return (
+                <Tr key={s.id} _hover={{ bg: hoverBg }} cursor="pointer">
+                  <Td>{s.id}</Td>
+                  <Td>{name}</Td>
+                  <Td>{deliveryType}</Td>
+                  <Td>{payment}</Td>
+                  <Td>{status}</Td>
+                  <Td>{new Date(s.createdAt).toLocaleDateString()}</Td>
+                  <Td isNumeric>{moneyFormat(total)}</Td>
+                </Tr>
+              );
+            })}
+          </Tbody>
+        </Table>
+      )}
 
       {(loading || loadingMore) && (
         <Flex justify="center" mt={4}>

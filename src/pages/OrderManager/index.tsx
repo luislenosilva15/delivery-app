@@ -1,5 +1,6 @@
 import Breadcrumb from "@/components/Breadcrumb";
 import { MdInbox } from "react-icons/md";
+import EmptyState from "@/components/EmptyState";
 import OrderCard from "@/components/Card/OrderManager/Order";
 import Loading from "@/components/Loading";
 import { useOrderManager } from "@/hook/orderManager";
@@ -113,34 +114,12 @@ export default function OrderManagerPage() {
                     ) : (
                       <Flex wrap="wrap" gap={6} pb={2}>
                         {orders?.length === 0 ? (
-                          <Flex
-                            direction="column"
-                            align="center"
-                            justify="center"
-                            w="full"
-                            py={12}
-                          >
-                            <Box mb={4} color="gray.300">
-                              <MdInbox size={80} />
-                            </Box>
-                            <Text
-                              fontWeight="bold"
-                              fontSize="lg"
-                              color="gray.500"
-                              mb={2}
-                            >
-                              Nenhum pedido encontrado
-                            </Text>
-                            <Text
-                              color="gray.400"
-                              fontSize="md"
-                              textAlign="center"
-                              maxW="300px"
-                            >
-                              Não há pedidos para este status no momento. Assim
-                              que um novo pedido chegar, ele aparecerá aqui!
-                            </Text>
-                          </Flex>
+                          <EmptyState
+                            size="md"
+                            icon={<MdInbox />}
+                            title="Nenhum pedido encontrado"
+                            description="Não há pedidos para este status no momento. Assim que um novo pedido chegar, ele aparecerá aqui!"
+                          />
                         ) : (
                           orders?.map((order) => (
                             <OrderCard

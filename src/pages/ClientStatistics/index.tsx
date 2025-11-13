@@ -18,6 +18,8 @@ import {
   Select,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { MdInbox } from "react-icons/md";
+import EmptyState from "@/components/EmptyState";
 import { SearchIcon } from "@chakra-ui/icons";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useStatistics } from "@/hook/statistics";
@@ -176,42 +178,51 @@ export default function ClientStatisticsPage() {
           </Text>
         </Flex>
 
-        <Table variant="simple">
-          <Thead>
-            <Tr>
-              <Th>Nome</Th>
-              <Th>Telefone</Th>
-              <Th>Cliente há</Th>
-              <Th>Último pedido</Th>
-              <Th>Quant. pedidos</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {clients?.map((c: TClient) => (
-              <Tr
-                key={c.id}
-                cursor="pointer"
-                _hover={{ bg: hoverBg }}
-                onClick={() => {
-                  setSelectedClient(c);
-                  setIsModalOpen(true);
-                }}
-              >
-                <Td>
-                  <HStack spacing={3}>
-                    <Box>
-                      <Text fontWeight="medium">{c.name}</Text>
-                    </Box>
-                  </HStack>
-                </Td>
-                <Td>{c.phone || "-"}</Td>
-                <Td>{daysAgo(c.firstOrderDate)}</Td>
-                <Td>{c.lastOrderDate ? daysAgo(c.lastOrderDate) : "-"}</Td>
-                <Td>{c.ordersCount ?? 0}</Td>
+        {!loading && clients && clients.length === 0 ? (
+          <EmptyState
+            size="md"
+            icon={<MdInbox />}
+            title="Nenhum cliente encontrado"
+            description="Ainda não há registros que atendam aos filtros atuais. Assim que novos clientes fizerem pedidos, eles aparecerão aqui."
+          />
+        ) : (
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th>Nome</Th>
+                <Th>Telefone</Th>
+                <Th>Cliente há</Th>
+                <Th>Último pedido</Th>
+                <Th>Quant. pedidos</Th>
               </Tr>
-            ))}
-          </Tbody>
-        </Table>
+            </Thead>
+            <Tbody>
+              {clients?.map((c: TClient) => (
+                <Tr
+                  key={c.id}
+                  cursor="pointer"
+                  _hover={{ bg: hoverBg }}
+                  onClick={() => {
+                    setSelectedClient(c);
+                    setIsModalOpen(true);
+                  }}
+                >
+                  <Td>
+                    <HStack spacing={3}>
+                      <Box>
+                        <Text fontWeight="medium">{c.name}</Text>
+                      </Box>
+                    </HStack>
+                  </Td>
+                  <Td>{c.phone || "-"}</Td>
+                  <Td>{daysAgo(c.firstOrderDate)}</Td>
+                  <Td>{c.lastOrderDate ? daysAgo(c.lastOrderDate) : "-"}</Td>
+                  <Td>{c.ordersCount ?? 0}</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        )}
 
         {(loading || loadingMore) && (
           <Flex justify="center" mt={4}>
