@@ -4,7 +4,6 @@ import {
   DrawerContent,
   DrawerOverlay,
   IconButton,
-  useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
 import { FiMenu } from "react-icons/fi";
@@ -30,9 +29,9 @@ export default function Sidebar({ children }: React.PropsWithChildren) {
         w="250px"
         pos="fixed"
         h="full"
-        bg={useColorModeValue("white", "gray.800")}
+        bg="bg.surface"
         borderRightWidth="1px"
-        borderColor={useColorModeValue("gray.200", "gray.700")}
+        borderColor="border.subtle"
         p={4}
       >
         <SidebarContent />
@@ -41,12 +40,7 @@ export default function Sidebar({ children }: React.PropsWithChildren) {
       <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
         <DrawerOverlay />
         <DrawerContent>
-          <Box
-            w="full"
-            h="full"
-            bg={useColorModeValue("white", "gray.800")}
-            p={4}
-          >
+          <Box w="full" h="full" bg="bg.surface" p={4}>
             <SidebarContent />
           </Box>
         </DrawerContent>

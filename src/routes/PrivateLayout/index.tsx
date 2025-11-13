@@ -12,7 +12,16 @@ export const PrivateLayout = () => {
           <Flex direction="column">
             <Header />
             <Box as="main" flex="1" p={4} overflowY="auto">
-              <Outlet />
+              <Box
+                bg="bg.surface"
+                borderWidth="1px"
+                borderColor="border.subtle"
+                borderRadius="md"
+                p={4}
+                boxShadow="sm"
+              >
+                <Outlet />
+              </Box>
             </Box>
           </Flex>
         </Box>

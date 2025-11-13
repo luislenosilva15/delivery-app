@@ -14,6 +14,7 @@ import {
   useColorModeValue,
   Button,
   Link,
+  Spinner,
 } from "@chakra-ui/react";
 import {
   FaPhone,
@@ -33,7 +34,7 @@ import {
   deliveryMethodsTranslations,
   paymentMethodsTraslations,
 } from "@/constants";
-import Loading from "@/components/Loading";
+// Loading UI handled with Chakra Spinner
 
 export const OrderModal: React.FC<OrderModalProps> = ({
   isOpen,
@@ -82,7 +83,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
       <ModalContent>
         <ModalHeader>
           {isLoading ? (
-            <Loading />
+            <Spinner size="sm" color="gray.500" />
           ) : (
             <>
               Pedido #{currentOrder?.id}
@@ -104,7 +105,18 @@ export const OrderModal: React.FC<OrderModalProps> = ({
               py={10}
               spacing={4}
               w="full"
-            />
+            >
+              <Spinner
+                thickness="3px"
+                speed="0.65s"
+                emptyColor="gray.200"
+                color="gray.500"
+                size="lg"
+              />
+              <Text fontSize="sm" color="gray.500">
+                Buscando informações do pedido...
+              </Text>
+            </VStack>
           ) : (
             <VStack align="stretch" spacing={6}>
               {(() => {

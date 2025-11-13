@@ -1,11 +1,5 @@
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
-import {
-  Flex,
-  IconButton,
-  Text,
-  useColorMode,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Flex, IconButton, Text, useColorMode } from "@chakra-ui/react";
 import UserProfile from "./UserProfile";
 import { useDispatch } from "react-redux";
 import { setLoggout } from "@/store/features/auth/authSlice";
@@ -20,9 +14,6 @@ const Header = () => {
   const { user, company } = useAuth();
   const { colorMode, toggleColorMode } = useColorMode();
 
-  const bgColor = useColorModeValue("white", "gray.800");
-  const borderColor = useColorModeValue("gray.200", "gray.700");
-
   if (!user || !company) return null;
 
   return (
@@ -31,12 +22,12 @@ const Header = () => {
       align="center"
       justify="space-between"
       padding="4"
-      bg={bgColor}
+      bg="bg.surface"
       position="sticky"
       top="0"
       zIndex="10"
       borderBottom="1px solid"
-      borderColor={borderColor}
+      borderColor="border.subtle"
     >
       <Text fontSize="lg" fontWeight="bold">
         {company.name}
