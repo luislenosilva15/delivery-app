@@ -13,6 +13,7 @@ import {
   Progress,
   Divider,
   VStack,
+  HStack,
   Button,
 } from "@chakra-ui/react";
 
@@ -20,6 +21,16 @@ import EmptyState from "@/components/EmptyState";
 import OrderCard from "@/components/Card/OrderManager/Order";
 import ProductCard from "@/components/Card/Product";
 import { moneyFormat } from "@/helpers/shared";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { format, subDays } from "date-fns";
 import type { TOrder } from "@/store/features/client/types/models";
 import type { OrderStatus } from "@/store/features/orderManager/types/request";
 import type { TProduct } from "@/store/features/menu/types/models/index";
@@ -147,13 +158,24 @@ const DashboardPage: React.FC = () => {
   );
   const totalSalesCount = ordersLast7.length;
   const avgTicket = totalSalesCount ? totalSalesAmount / totalSalesCount : 0;
+  const uniqueClientsCount = new Set(
+    ordersLast7.map((o) => o.clientId || o.client?.id)
+  ).size;
+
+  // generate mock 30-day sales data (replace with real series later)
+  const sales30 = Array.from({ length: 30 }).map((_, idx) => {
+    const day = subDays(new Date(), 29 - idx);
+    const seed = (idx * 7) % 50;
+    const value = Math.round(20 + seed + (idx % 5) * 6);
+    return { date: format(day, "dd/MM"), value };
+  });
 
   return (
     <Box>
       <Heading mb={6}>Início</Heading>
 
       <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={6} mb={6}>
-        {/* Main revenue / hero card */}
+        {/* Main revenue / hero card (expanded to fill whitespace) */}
         <Box
           gridColumn={{ base: "1 / -1", lg: "1 / span 2" }}
           borderWidth="1px"
@@ -163,28 +185,109 @@ const DashboardPage: React.FC = () => {
           p={6}
         >
           <Flex justify="space-between" align="center">
-            <Box>
+            <Box flex="1">
               <Text fontSize="sm" color="gray.500">
-                Receita total
+                Receita mensal
               </Text>
               <Text fontSize="2xl" fontWeight="bold">
-                R$ 0,00
+                {moneyFormat(totalSalesAmount)}
               </Text>
             </Box>
 
-            <Box textAlign="right">
-              <Text fontSize="sm" color="gray.500">
-                Pedidos - 7 dias
-              </Text>
-              <Text fontWeight="semibold">0</Text>
-            </Box>
+            {/* CTA removed as requested */}
           </Flex>
 
           <Divider my={4} />
 
-          <Text color="gray.500">
-            Sua jornada começa aqui! A soma de suas vendas aparecerá aqui.
-          </Text>
+          {/* chart + larger KPIs to occupy space */}
+          <Flex gap={6} align="stretch">
+            <Box
+              flex={1}
+              borderWidth="1px"
+              borderColor={border}
+              borderRadius="md"
+              p={4}
+              bg={useColorModeValue("gray.50", "gray.800")}
+            >
+              <Text fontSize="sm" fontWeight="semibold" mb={2}>
+                Vendas deste mês
+              </Text>
+              <Box h="140px" borderRadius="md">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={sales30}
+                    margin={{ top: 8, right: 12, left: -8, bottom: 4 }}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke={useColorModeValue("#f0f0f0", "#2d2d2d")}
+                    />
+                    <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                    <YAxis />
+                    <Tooltip />
+                    <Line
+                      type="monotone"
+                      dataKey="value"
+                      stroke={useColorModeValue("#2b6cb0", "#63b3ed")}
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Box>
+            </Box>
+
+            <VStack
+              spacing={3}
+              align="stretch"
+              w={{ base: "180px", md: "260px" }}
+            >
+              <Box
+                borderWidth="1px"
+                borderColor={border}
+                borderRadius="md"
+                p={3}
+                bg={cardBg}
+              >
+                <Text fontSize="xs" color="gray.500">
+                  Total pedidos este mês
+                </Text>
+                <Text fontWeight="bold" fontSize="lg">
+                  {totalSalesCount}
+                </Text>
+              </Box>
+
+              <Box
+                borderWidth="1px"
+                borderColor={border}
+                borderRadius="md"
+                p={3}
+                bg={cardBg}
+              >
+                <Text fontSize="xs" color="gray.500">
+                  Novos clientes este mês
+                </Text>
+                <Text fontWeight="bold" fontSize="lg">
+                  {uniqueClientsCount}
+                </Text>
+              </Box>
+
+              <Box
+                borderWidth="1px"
+                borderColor={border}
+                borderRadius="md"
+                p={3}
+                bg={cardBg}
+              >
+                <Text fontSize="xs" color="gray.500">
+                  Ticket médio deste mês
+                </Text>
+                <Text fontWeight="bold" fontSize="lg">
+                  {moneyFormat(avgTicket)}
+                </Text>
+              </Box>
+            </VStack>
+          </Flex>
         </Box>
 
         {/* Side quick stats */}
