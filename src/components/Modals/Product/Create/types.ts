@@ -6,6 +6,7 @@ export type FormData = {
   imageFile: File | null | string;
   alwaysAvailable: boolean;
   isAdultOnly: boolean;
+  availability: "BOTH" | "DELIVERY" | "PICKUP";
   code?: string;
   schedule: Record<
     string,

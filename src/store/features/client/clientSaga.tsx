@@ -316,6 +316,7 @@ function* watchOrderStatus(clientId: number): Generator<unknown, void, any> {
 
   while (true) {
     const data: any = yield take(channel);
+    console.log("📢 Atualização de status do pedido recebida:", data);
     yield put(fetchLastOrderRequest());
   }
 }

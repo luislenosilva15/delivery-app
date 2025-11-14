@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Spinner, Center, Checkbox } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import {
@@ -170,7 +171,7 @@ export default function ProductModal({
 
   useEffect(() => {
     if (currentProduct && isOpen && productId) {
-      setFormData(formDataProductEditData(currentProduct));
+      setFormData(formDataProductEditData(currentProduct) as FormData);
     }
   }, [currentProduct, isOpen, productId]);
 
