@@ -33,7 +33,12 @@ import { orderActions } from "@/helpers/orderActions";
 import { MdPix } from "react-icons/md";
 import type { OrderStatus } from "@/store/features/orderManager/types/request";
 
-function OrderCard({ order, onClick, onChangeStatus }: Props) {
+function OrderCard({
+  order,
+  onClick,
+  onChangeStatus,
+  showActions = true,
+}: Props) {
   const cardBg = useColorModeValue("white", "gray.800");
   const border = useColorModeValue("gray.200", "gray.700");
   const shadow = useColorModeValue("md", "dark-lg");
@@ -66,10 +71,7 @@ function OrderCard({ order, onClick, onChangeStatus }: Props) {
         maxW="350px"
         boxShadow={shadow}
         mr={5}
-        _hover={{
-          boxShadow: "xl",
-          cursor: "pointer",
-        }}
+        _hover={onClick ? { boxShadow: "xl", cursor: "pointer" } : undefined}
         position="relative"
         onClick={onClick}
       >
@@ -85,8 +87,8 @@ function OrderCard({ order, onClick, onChangeStatus }: Props) {
               Pedido #{order.id}
             </Badge>
           </HStack>
-          <Menu isLazy>
-            {order.status !== "DELIVERED" && (
+          {showActions && onChangeStatus && order.status !== "DELIVERED" && (
+            <Menu isLazy>
               <>
                 <MenuButton
                   as={IconButton}
@@ -112,8 +114,8 @@ function OrderCard({ order, onClick, onChangeStatus }: Props) {
                   ))}
                 </MenuList>
               </>
-            )}
-          </Menu>
+            </Menu>
+          )}
         </Flex>
 
         <Divider mb={3} />

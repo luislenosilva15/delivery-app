@@ -418,13 +418,8 @@ const DashboardPage: React.FC = () => {
           </Flex>
 
           <Stack>
-            {mockOrders.map((o) => (
-              <OrderCard
-                key={o.id}
-                order={o}
-                onClick={() => {}}
-                onChangeStatus={() => {}}
-              />
+            {mockOrders.slice(0, 3).map((o) => (
+              <OrderCard key={o.id} order={o} showActions={false} />
             ))}
 
             {mockOrders.length === 0 && (
