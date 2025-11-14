@@ -364,8 +364,7 @@ const DashboardPage: React.FC = () => {
         </Stack>
       </SimpleGrid>
 
-      <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={6}>
-        {/* Products most sold area (left) */}
+      {/* <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={6}>
         <Box
           gridColumn={{ base: "1 / -1", lg: "1 / span 2" }}
           borderWidth="1px"
@@ -401,7 +400,6 @@ const DashboardPage: React.FC = () => {
           )}
         </Box>
 
-        {/* Orders in progress (right) */}
         <Box
           borderWidth="1px"
           borderColor={border}
@@ -430,7 +428,7 @@ const DashboardPage: React.FC = () => {
             )}
           </Stack>
         </Box>
-      </SimpleGrid>
+      </SimpleGrid> */}
     </Box>
   );
 };
