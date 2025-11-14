@@ -97,7 +97,9 @@ const ClientMenuPage = () => {
       (entries) => {
         const visibleEntry = entries.find((entry) => entry.isIntersecting);
         if (visibleEntry) {
-          const groupId = Number(visibleEntry.target.dataset.group);
+          const groupId = Number(
+            (visibleEntry.target as HTMLElement).dataset.group
+          );
           setActiveGroup(groupId);
 
           const button = buttonRefs.current[groupId];
@@ -214,7 +216,9 @@ const ClientMenuPage = () => {
         <Box
           key={group.id}
           data-group={group.id}
-          ref={(el) => (groupsRef.current[group.id] = el)}
+          ref={(el) => {
+            groupsRef.current[group.id] = el;
+          }}
           mb={10}
           scrollMarginTop="100px"
         >
@@ -358,7 +362,9 @@ const ClientMenuPage = () => {
             {groups.map((group) => (
               <Button
                 key={group.id}
-                ref={(el) => (buttonRefs.current[group.id] = el)}
+                ref={(el) => {
+                  buttonRefs.current[group.id] = el;
+                }}
                 display="inline-block"
                 whiteSpace="nowrap"
                 variant={activeGroup === group.id ? "solid" : "outline"}

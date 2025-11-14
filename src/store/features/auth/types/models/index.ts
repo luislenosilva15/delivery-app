@@ -21,7 +21,7 @@ export type TCuisineType =
   | "BRAZILIAN"
   | "OTHERS";
 
-export type TAvailability = ["DELIVERY", "LOCAL"];
+export type TAvailability = ("DELIVERY" | "LOCAL")[];
 
 export type TPaymentMethod =
   | "CREDIT_CARD"
@@ -56,40 +56,40 @@ export type TPaymentVoucherBrand =
 
 export type TDelilveryMethod = "LOCAL" | "DELIVERY";
 
-export type PaymentMethods = [
-  "CREDIT_CARD",
-  "DEBIT_CARD",
-  "PIX",
-  "CASH",
-  "VOUCHER"
-];
+export type PaymentMethods = (
+  | "CREDIT_CARD"
+  | "DEBIT_CARD"
+  | "PIX"
+  | "CASH"
+  | "VOUCHER"
+)[];
 
-export type PaymentCardBrand = [
-  "VISA",
-  "MASTERCARD",
-  "AMEX",
-  "ELO",
-  "HIPERCARD",
-  "OTHER"
-];
+export type PaymentCardBrand = (
+  | "VISA"
+  | "MASTERCARD"
+  | "AMEX"
+  | "ELO"
+  | "HIPERCARD"
+  | "OTHER"
+)[];
 
-export type PaymentDebitBrand = [
-  "VISA",
-  "MASTERCARD",
-  "AMEX",
-  "ELO",
-  "HIPERCARD",
-  "OTHER"
-];
+export type PaymentDebitBrand = (
+  | "VISA"
+  | "MASTERCARD"
+  | "AMEX"
+  | "ELO"
+  | "HIPERCARD"
+  | "OTHER"
+)[];
 
-export type PaymentVoucherBrand = [
-  "ALELO",
-  "SODEXO",
-  "VR",
-  "BEN",
-  "VEROCHEQUE",
-  "OTHER"
-];
+export type PaymentVoucherBrand = (
+  | "ALELO"
+  | "SODEXO"
+  | "VR"
+  | "BEN"
+  | "VEROCHEQUE"
+  | "OTHER"
+)[];
 
 export type TCompanyPayment = {
   id?: number;
@@ -129,8 +129,8 @@ export type TCompany = {
 export type TOpeningHours = {
   id: number;
   companyId: number;
-  dayOfWeek: number; // 0 (domingo) a 6 (sábado)
-  startTime: string | null; // formato "HH:mm" ou null
+  dayOfWeek: number;
+  startTime: string | null;
   endTime: string | null;
   closed: boolean;
 };

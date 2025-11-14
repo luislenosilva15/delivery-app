@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { TTeamRole, TUser } from "./types/models";
+import type { TUser } from "./types/models";
 import type {
   FetchTeamRequest,
   FetchTeamSuccess,
