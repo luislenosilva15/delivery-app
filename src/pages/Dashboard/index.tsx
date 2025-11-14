@@ -13,12 +13,9 @@ import {
   Progress,
   Divider,
   VStack,
-  Button,
 } from "@chakra-ui/react";
 
-import EmptyState from "@/components/EmptyState";
-import OrderCard from "@/components/Card/OrderManager/Order";
-import ProductCard from "@/components/Card/Product";
+import Loading from "@/components/Loading";
 import { moneyFormat } from "@/helpers/shared";
 import {
   LineChart,
@@ -30,136 +27,43 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { format, subDays } from "date-fns";
-import type { TOrder } from "@/store/features/client/types/models";
-import type { OrderStatus } from "@/store/features/orderManager/types/request";
-import type { TProduct } from "@/store/features/menu/types/models/index";
-
-const mockOrders: TOrder[] = [
-  {
-    id: 123,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    status: "IN_PREPARATION" as OrderStatus,
-    clientId: 1,
-    clientName: "Compra de teste",
-    companyId: 1,
-    totalPrice: 30.5,
-    paymentMethod: "CASH",
-    documentInTicket: null,
-    paymentCardBrand: null,
-    paymentDebitCardBrand: null,
-    paymentVoucherBrand: null,
-    deliveryMethod: "DELIVERY",
-    OrderItem: [
-      {
-        id: 1,
-        orderId: 123,
-        productId: 1,
-        quantity: 1,
-        price: 30.5,
-        product: { id: 1, name: "Teste" },
-        observation: null,
-      },
-    ],
-    deliveryAddress: null,
-    client: {
-      id: 1,
-      companyId: 1,
-      name: "Exemplo",
-      email: null,
-      phone: "(41) 99947 9736",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    outDeliveryDate: "",
-  },
-];
-
-const mockProducts: TProduct[] = [
-  {
-    id: 1,
-    alwaysAvailable: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    code: "P001",
-    name: "Combo Burguer",
-    description: "Delicioso combo com batata e refrigerante",
-    price: 29.9,
-    menuGroupId: 1,
-    isAdultOnly: false,
-    image: null,
-    disabled: false,
-    imageUrl: null,
-  },
-  {
-    id: 2,
-    alwaysAvailable: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    code: "P002",
-    name: "Pizza Margherita",
-    description: "Pizza clássica com molho de tomate e manjericão",
-    price: 39.5,
-    menuGroupId: 1,
-    isAdultOnly: false,
-    image: null,
-    disabled: false,
-    imageUrl: null,
-  },
-  {
-    id: 3,
-    alwaysAvailable: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    code: "P003",
-    name: "Salada Caesar",
-    description: "Salada fresca com molho caesar",
-    price: 18.0,
-    menuGroupId: 1,
-    isAdultOnly: false,
-    image: null,
-    disabled: false,
-    imageUrl: null,
-  },
-];
-
-// Mock sales counts for products (used to determine top sellers)
-const mockProductSales = [
-  { productId: 2, sold: 48 },
-  { productId: 1, sold: 35 },
-  { productId: 3, sold: 12 },
-];
-
-const topProducts = mockProductSales
-  .slice()
-  .sort((a, b) => b.sold - a.sold)
-  .slice(0, 3)
-  .map((s) => ({
-    product: mockProducts.find((p) => p.id === s.productId) as TProduct,
-    sold: s.sold,
-  }));
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { fetchDashboardRequest } from "@/store/features/dashboard/dashboardSlice";
+import useDashboard from "@/hook/dashboard";
+// Keeping charts mocked for now; real series can be wired later
 
 const DashboardPage: React.FC = () => {
   const cardBg = useColorModeValue("white", "gray.800");
   const border = useColorModeValue("gray.200", "gray.700");
+  const chartBg = useColorModeValue("gray.50", "gray.800");
+  const gridStroke = useColorModeValue("#f0f0f0", "#2d2d2d");
+  const lineStroke = useColorModeValue("#2b6cb0", "#63b3ed");
 
-  // NOTE: All data is mocked. Replace with real requests later.
+  const dispatch = useDispatch();
+  const { data, loading } = useDashboard();
+
+  useEffect(() => {
+    dispatch(fetchDashboardRequest());
+  }, [dispatch]);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  // Use delivery method percentages from dashboard data when available
   const methodStats = [
-    { label: "Delivery", percent: 72 },
-    { label: "Retirada", percent: 28 },
+    {
+      label: "Delivery",
+      percent: data?.deliveryMethodPercentages?.DELIVERY ?? 0,
+    },
+    { label: "Retirada", percent: data?.deliveryMethodPercentages?.LOCAL ?? 0 },
   ];
 
-  // derive some simple stats from the mocked orders (replace with real data later)
-  const ordersLast7 = mockOrders; // replace with filter by date when real data available
-  const totalSalesAmount = ordersLast7.reduce(
-    (s, o) => s + (o.totalPrice || 0),
-    0
-  );
-  const totalSalesCount = ordersLast7.length;
-  const avgTicket = totalSalesCount ? totalSalesAmount / totalSalesCount : 0;
-  const uniqueClientsCount = new Set(
-    ordersLast7.map((o) => o.clientId || o.client?.id)
-  ).size;
+  const totalSalesAmount = data?.totalRevenueMonth ?? 0;
+  const totalSalesCount = data?.totalOrdersMonth ?? 0;
+  const avgTicket = data?.averageTicketMonth ?? 0;
+  const uniqueClientsCount = data?.totalNewClientsMonth ?? 0;
 
   // generate mock 30-day sales data (replace with real series later)
   const sales30 = Array.from({ length: 30 }).map((_, idx) => {
@@ -206,7 +110,7 @@ const DashboardPage: React.FC = () => {
               borderColor={border}
               borderRadius="md"
               p={4}
-              bg={useColorModeValue("gray.50", "gray.800")}
+              bg={chartBg}
             >
               <Text fontSize="sm" fontWeight="semibold" mb={2}>
                 Vendas deste mês
@@ -217,17 +121,14 @@ const DashboardPage: React.FC = () => {
                     data={sales30}
                     margin={{ top: 8, right: 12, left: -8, bottom: 4 }}
                   >
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      stroke={useColorModeValue("#f0f0f0", "#2d2d2d")}
-                    />
+                    <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                     <XAxis dataKey="date" tick={{ fontSize: 10 }} />
                     <YAxis />
                     <Tooltip />
                     <Line
                       type="monotone"
                       dataKey="value"
-                      stroke={useColorModeValue("#2b6cb0", "#63b3ed")}
+                      stroke={lineStroke}
                       strokeWidth={2}
                       dot={false}
                     />
@@ -300,7 +201,9 @@ const DashboardPage: React.FC = () => {
           >
             <Stat>
               <StatLabel>Receita - 7 dias</StatLabel>
-              <StatNumber>{moneyFormat(totalSalesAmount)}</StatNumber>
+              <StatNumber>
+                {moneyFormat(data?.totalRevenue7Days ?? 0)}
+              </StatNumber>
             </Stat>
           </Box>
 
@@ -313,7 +216,9 @@ const DashboardPage: React.FC = () => {
           >
             <Stat>
               <StatLabel>Ticket médio vendas dos 7 dias</StatLabel>
-              <StatNumber>{moneyFormat(avgTicket)}</StatNumber>
+              <StatNumber>
+                {moneyFormat(data?.averageTicket7Days ?? 0)}
+              </StatNumber>
             </Stat>
           </Box>
 
@@ -326,7 +231,9 @@ const DashboardPage: React.FC = () => {
           >
             <Stat>
               <StatLabel>Total vendas últimos 7 dias</StatLabel>
-              <StatNumber>{moneyFormat(totalSalesAmount)}</StatNumber>
+              <StatNumber>
+                {moneyFormat(data?.totalRevenue7Days ?? 0)}
+              </StatNumber>
             </Stat>
           </Box>
 

@@ -7,4 +7,8 @@ export type TDashboardData = {
   totalOrders7Days: number;
   totalNewClients7Days: number;
   averageTicket7Days: number;
+  deliveryMethodPercentages?: {
+    DELIVERY: number;
+    LOCAL: number;
+  };
 };
