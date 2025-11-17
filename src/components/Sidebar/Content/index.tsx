@@ -33,6 +33,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hook/auth";
 import { SettingsIcon } from "@chakra-ui/icons";
 
+import { MdOutlinePriceChange } from "react-icons/md";
+
 function SidebarContent() {
   const [storeOpen, setStoreOpen] = useState(false);
   const [deliveryOpen, setDeliveryOpen] = useState(false);
@@ -166,6 +168,16 @@ function SidebarContent() {
                 onClick={() => navigate("/delivery/settings")}
                 icon={SettingsIcon}
                 label="Configurações"
+              />
+            </VStack>
+          </Collapse>
+          <Collapse in={deliveryOpen} animateOpacity>
+            <VStack pl={6} align="start" mt={2} spacing={2}>
+              <SidebarItem
+                isActive={optionIsActive("/delivery/fees")}
+                onClick={() => navigate("/delivery/fees")}
+                icon={MdOutlinePriceChange}
+                label="Taxas"
               />
             </VStack>
           </Collapse>

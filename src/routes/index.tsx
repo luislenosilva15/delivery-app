@@ -21,6 +21,7 @@ import OrderManagerPage from "@/pages/OrderManager";
 import OrderHistoryPage from "@/pages/Client/orderHistory";
 import ClientStatisticsPage from "@/pages/ClientStatistics";
 import SalesPage from "@/pages/sales";
+import DeliveryFeesPage from "@/pages/DeliveryFees";
 
 export const router = createBrowserRouter([
   {
@@ -65,6 +66,7 @@ export const router = createBrowserRouter([
       {
         element: <PrivateLayout />,
         children: [
+          { path: "/delivery/fees", element: <DeliveryFeesPage /> },
           { path: "/delivery/settings", element: <DeliverySettings /> },
         ],
       },
