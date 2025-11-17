@@ -8,13 +8,7 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
-import {
-  FaCreditCard,
-  FaMoneyBillWave,
-  FaQrcode,
-  FaUniversity,
-  FaUtensils,
-} from "react-icons/fa";
+import { FaCreditCard, FaMoneyBillWave, FaUtensils } from "react-icons/fa";
 import type { CartPaymentProps } from "./types";
 import { useClient } from "@/hook/client";
 import { paymentCardBrandTypes, paymentVoucherBrandTypes } from "@/constants";
@@ -24,6 +18,8 @@ import type {
   TPaymentMethod,
   TPaymentVoucherBrand,
 } from "@/store/features/auth/types/models";
+
+import { MdOutlinePix } from "react-icons/md";
 
 const CartPayment = ({
   payment,
@@ -38,7 +34,7 @@ const CartPayment = ({
   return (
     <Box borderWidth="1px" rounded="md" p={4} mt={4} borderColor={borderColor}>
       <Text mb={3} fontWeight="semibold" fontSize="lg">
-        Método de pagamento
+        Pagamento
       </Text>
       <RadioGroup
         onChange={(v) => {
@@ -80,7 +76,7 @@ const CartPayment = ({
             <Box>
               <Radio value="DEBIT_CARD" colorScheme="primary">
                 <HStack spacing={2}>
-                  <FaUniversity /> <Text>Cartão de Débito</Text>
+                  <FaCreditCard /> <Text>Cartão de Débito</Text>
                 </HStack>
               </Radio>
               <Collapse in={payment === "DEBIT_CARD"} animateOpacity>
@@ -146,7 +142,7 @@ const CartPayment = ({
             <Box>
               <Radio value="PIX" colorScheme="primary">
                 <HStack spacing={2}>
-                  <FaQrcode /> <Text>Pix</Text>
+                  <MdOutlinePix /> <Text>Pix</Text>
                 </HStack>
               </Radio>
             </Box>

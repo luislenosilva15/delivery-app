@@ -18,11 +18,16 @@ import {
   Tr,
   Th,
   Td,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { moneyFormat } from "@/helpers/shared";
 import { DownloadIcon } from "@chakra-ui/icons";
 import { toast } from "@/utils/toast";
+import { exportToCSV, exportToExcel } from "@/utils/export";
 import { useDispatch } from "react-redux";
 import { useSales } from "@/hook/sales";
 import {
@@ -148,8 +153,59 @@ const SalesPage = () => {
   const cardBg = useColorModeValue("white", "gray.800");
   const cardBorder = useColorModeValue("gray.100", "gray.700");
 
-  const handleExport = () => {
-    toast({ title: "Exportação em breve", status: "info" });
+  const handleExport = async (format: "csv" | "excel" = "csv") => {
+    if (!list.length) {
+      toast({
+        title: "Nenhum dado para exportar",
+        description: "Não há vendas no período selecionado.",
+        status: "warning",
+      });
+      return;
+    }
+
+    try {
+      const exportData = list.map((sale) => ({
+        id: sale.id,
+        cliente: sale.clientName || "-",
+        tipo_entrega: deliveryMethodsTranslations[sale.deliveryMethod],
+        pagamento: paymentMethodsTraslations[sale.paymentMethod],
+        status: clientOrderStatusTranslationsList[sale.status],
+        data_criacao: new Date(sale.createdAt).toLocaleDateString("pt-BR"),
+        total: sale.totalPrice,
+      }));
+
+      const exportOptions = {
+        filename: `vendas_${from}_ate_${to}`,
+        data: exportData,
+        columns: [
+          { key: "id", label: "ID do Pedido" },
+          { key: "cliente", label: "Cliente" },
+          { key: "tipo_entrega", label: "Tipo de Entrega" },
+          { key: "pagamento", label: "Forma de Pagamento" },
+          { key: "status", label: "Status" },
+          { key: "data_criacao", label: "Data de Criação" },
+          {
+            key: "total",
+            label: "Total",
+            formatter: (value: unknown) => moneyFormat(Number(value)),
+          },
+        ],
+      };
+
+      if (format === "excel") {
+        await exportToExcel(exportOptions);
+      } else {
+        exportToCSV(exportOptions);
+      }
+    } catch (error) {
+      //  LOGGER
+      console.error("Erro ao exportar:", error);
+      toast({
+        title: "Erro na exportação",
+        description: "Ocorreu um erro ao exportar os dados.",
+        status: "error",
+      });
+    }
   };
 
   return (
@@ -157,13 +213,19 @@ const SalesPage = () => {
       <Breadcrumb links={breadcrumbLinks} />
       <Flex justify="space-between" align="center" mb={4} wrap="wrap" gap={2}>
         <Heading size="md">Vendas</Heading>
-        <Button
-          leftIcon={<DownloadIcon />}
-          onClick={handleExport}
-          variant="outline"
-        >
-          Exportar
-        </Button>
+        <Menu>
+          <MenuButton as={Button} leftIcon={<DownloadIcon />} variant="outline">
+            Exportar
+          </MenuButton>
+          <MenuList>
+            <MenuItem onClick={() => handleExport("csv")}>
+              Exportar como CSV
+            </MenuItem>
+            <MenuItem onClick={() => handleExport("excel")}>
+              Exportar como Excel
+            </MenuItem>
+          </MenuList>
+        </Menu>
       </Flex>
 
       <HStack spacing={3} mb={6} align="center" wrap="wrap">
