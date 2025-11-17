@@ -11,20 +11,26 @@ export const orderActions = (
       { label: "Iniciar Preparação", action: "IN_PREPARATION" },
       { label: "Iniciar Entrega", action: "OUT_FOR_DELIVERY" },
       { label: "Marcar como Entregue", action: "DELIVERED" },
+      { label: "Cancelar Pedido", action: "CANCELLED" },
     ];
   } else if (status === "READY") {
     actions = [
       { label: "Iniciar Preparação", action: "IN_PREPARATION" },
       { label: "Iniciar Entrega", action: "OUT_FOR_DELIVERY" },
       { label: "Marcar como Entregue", action: "DELIVERED" },
+      { label: "Cancelar Pedido", action: "CANCELLED" },
     ];
   } else if (status === "IN_PREPARATION") {
     actions = [
       { label: "Iniciar Entrega", action: "OUT_FOR_DELIVERY" },
       { label: "Marcar como Entregue", action: "DELIVERED" },
+      { label: "Cancelar Pedido", action: "CANCELLED" },
     ];
   } else if (status === "OUT_FOR_DELIVERY") {
-    actions = [{ label: "Marcar como Entregue", action: "DELIVERED" }];
+    actions = [
+      { label: "Marcar como Entregue", action: "DELIVERED" },
+      { label: "Cancelar Pedido", action: "CANCELLED" },
+    ];
   }
 
   return actions;

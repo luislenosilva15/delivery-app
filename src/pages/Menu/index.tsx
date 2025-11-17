@@ -246,6 +246,7 @@ export default function MenuPage() {
                     backgroundColor={
                       activeTabIndex === index ? "primary.500" : "transparent"
                     }
+                    textColor={activeTabIndex === index ? "white" : "inherit"}
                     borderTopRadius="md"
                     _hover={{ bg: "primary.400" }}
                     transition="background-color 0.3s"
@@ -438,7 +439,6 @@ export default function MenuPage() {
         </Stack>
       </Box>
 
-      {/* Modais */}
       <NewProductModal
         isOpen={isOpenProductModal}
         onClose={() => {

@@ -10,12 +10,12 @@ import {
   StatLabel,
   StatNumber,
   useColorModeValue,
+  Skeleton,
   Progress,
   Divider,
   VStack,
 } from "@chakra-ui/react";
 
-import Loading from "@/components/Loading";
 import { moneyFormat } from "@/helpers/shared";
 import {
   LineChart,
@@ -31,7 +31,6 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { fetchDashboardRequest } from "@/store/features/dashboard/dashboardSlice";
 import useDashboard from "@/hook/dashboard";
-// Keeping charts mocked for now; real series can be wired later
 
 const DashboardPage: React.FC = () => {
   const cardBg = useColorModeValue("white", "gray.800");
@@ -39,6 +38,8 @@ const DashboardPage: React.FC = () => {
   const chartBg = useColorModeValue("gray.50", "gray.800");
   const gridStroke = useColorModeValue("#f0f0f0", "#2d2d2d");
   const lineStroke = useColorModeValue("#2b6cb0", "#63b3ed");
+  const skeletonStart = useColorModeValue("gray.50", "gray.700");
+  const skeletonEnd = useColorModeValue("gray.100", "gray.600");
 
   const dispatch = useDispatch();
   const { data, loading } = useDashboard();
@@ -48,10 +49,221 @@ const DashboardPage: React.FC = () => {
   }, [dispatch]);
 
   if (loading) {
-    return <Loading />;
+    return (
+      <Box>
+        <Skeleton
+          height="28px"
+          width="200px"
+          mb={6}
+          startColor={skeletonStart}
+          endColor={skeletonEnd}
+        />
+
+        <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={6} mb={6}>
+          <Box
+            gridColumn={{ base: "1 / -1", lg: "1 / span 2" }}
+            borderWidth="1px"
+            borderColor={border}
+            borderRadius="md"
+            bg={cardBg}
+            p={6}
+          >
+            <Flex justify="space-between" align="center">
+              <Box flex="1">
+                <Text fontSize="sm" color="gray.500">
+                  Receita mensal
+                </Text>
+                <Box h="32px" w="220px" bg={chartBg} borderRadius="sm">
+                  {/* title placeholder */}
+                </Box>
+              </Box>
+            </Flex>
+
+            <Divider my={4} />
+
+            <Flex gap={6} align="stretch">
+              <Box
+                flex={1}
+                borderWidth="1px"
+                borderColor={border}
+                borderRadius="md"
+                p={4}
+                bg={chartBg}
+              >
+                <Text fontSize="sm" fontWeight="semibold" mb={2}>
+                  Vendas deste mês
+                </Text>
+                <Box h="140px" borderRadius="md">
+                  <Skeleton
+                    height="100%"
+                    borderRadius="md"
+                    startColor={skeletonStart}
+                    endColor={skeletonEnd}
+                  />
+                </Box>
+              </Box>
+
+              <VStack
+                spacing={3}
+                align="stretch"
+                w={{ base: "180px", md: "260px" }}
+              >
+                <Box
+                  borderWidth="1px"
+                  borderColor={border}
+                  borderRadius="md"
+                  p={3}
+                  bg={cardBg}
+                >
+                  <Skeleton
+                    height="20px"
+                    width="80%"
+                    startColor={skeletonStart}
+                    endColor={skeletonEnd}
+                  />
+                </Box>
+
+                <Box
+                  borderWidth="1px"
+                  borderColor={border}
+                  borderRadius="md"
+                  p={3}
+                  bg={cardBg}
+                >
+                  <Skeleton
+                    height="20px"
+                    width="60%"
+                    startColor={skeletonStart}
+                    endColor={skeletonEnd}
+                  />
+                </Box>
+
+                <Box
+                  borderWidth="1px"
+                  borderColor={border}
+                  borderRadius="md"
+                  p={3}
+                  bg={cardBg}
+                >
+                  <Skeleton
+                    height="20px"
+                    width="70%"
+                    startColor={skeletonStart}
+                    endColor={skeletonEnd}
+                  />
+                </Box>
+              </VStack>
+            </Flex>
+          </Box>
+
+          <Stack spacing={4}>
+            <Box
+              borderWidth="1px"
+              borderColor={border}
+              borderRadius="md"
+              bg={cardBg}
+              p={4}
+            >
+              <Skeleton
+                height="20px"
+                width="50%"
+                startColor={skeletonStart}
+                endColor={skeletonEnd}
+              />
+            </Box>
+
+            <Box
+              borderWidth="1px"
+              borderColor={border}
+              borderRadius="md"
+              bg={cardBg}
+              p={4}
+            >
+              <Skeleton
+                height="20px"
+                width="60%"
+                startColor={skeletonStart}
+                endColor={skeletonEnd}
+              />
+            </Box>
+
+            <Box
+              borderWidth="1px"
+              borderColor={border}
+              borderRadius="md"
+              bg={cardBg}
+              p={4}
+            >
+              <Skeleton
+                height="20px"
+                width="60%"
+                startColor={skeletonStart}
+                endColor={skeletonEnd}
+              />
+            </Box>
+
+            <Box
+              borderWidth="1px"
+              borderColor={border}
+              borderRadius="md"
+              bg={cardBg}
+              p={4}
+            >
+              <Text fontWeight="semibold" mb={2}>
+                Formas mais pedidas
+              </Text>
+              <VStack spacing={3} align="stretch">
+                <Box>
+                  <Flex justify="space-between" align="center" mb={1}>
+                    <Skeleton
+                      height="12px"
+                      width="30%"
+                      startColor={skeletonStart}
+                      endColor={skeletonEnd}
+                    />
+                    <Skeleton
+                      height="12px"
+                      width="10%"
+                      startColor={skeletonStart}
+                      endColor={skeletonEnd}
+                    />
+                  </Flex>
+                  <Skeleton
+                    height="8px"
+                    startColor={skeletonStart}
+                    endColor={skeletonEnd}
+                  />
+                </Box>
+
+                <Box>
+                  <Flex justify="space-between" align="center" mb={1}>
+                    <Skeleton
+                      height="12px"
+                      width="30%"
+                      startColor={skeletonStart}
+                      endColor={skeletonEnd}
+                    />
+                    <Skeleton
+                      height="12px"
+                      width="10%"
+                      startColor={skeletonStart}
+                      endColor={skeletonEnd}
+                    />
+                  </Flex>
+                  <Skeleton
+                    height="8px"
+                    startColor={skeletonStart}
+                    endColor={skeletonEnd}
+                  />
+                </Box>
+              </VStack>
+            </Box>
+          </Stack>
+        </SimpleGrid>
+      </Box>
+    );
   }
 
-  // Use delivery method percentages from dashboard data when available
   const methodStats = [
     {
       label: "Delivery",
@@ -65,20 +277,30 @@ const DashboardPage: React.FC = () => {
   const avgTicket = data?.averageTicketMonth ?? 0;
   const uniqueClientsCount = data?.totalNewClientsMonth ?? 0;
 
-  // generate mock 30-day sales data (replace with real series later)
-  const sales30 = Array.from({ length: 30 }).map((_, idx) => {
-    const day = subDays(new Date(), 29 - idx);
-    const seed = (idx * 7) % 50;
-    const value = Math.round(20 + seed + (idx % 5) * 6);
-    return { date: format(day, "dd/MM"), value };
-  });
+  const sales30 =
+    data?.ordersPerDay && data.ordersPerDay.length > 0
+      ? data.ordersPerDay
+          .slice()
+          .sort((a, b) => a.day - b.day)
+          .map((d) => {
+            const now = new Date();
+            const date = new Date(now.getFullYear(), now.getMonth(), d.day);
+            return { date: format(date, "dd/MM"), pedidos: d.total };
+          })
+      : Array.from({ length: 30 }).map((_, idx) => {
+          const day = subDays(new Date(), 29 - idx);
+          const seed = (idx * 7) % 50;
+          const value = Math.round(20 + seed + (idx % 5) * 6);
+          return { date: format(day, "dd/MM"), pedidos: value };
+        });
 
   return (
     <Box>
-      <Heading mb={6}>Início</Heading>
+      <Heading size="md" mb={6}>
+        Dashboard
+      </Heading>
 
       <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={6} mb={6}>
-        {/* Main revenue / hero card (expanded to fill whitespace) */}
         <Box
           gridColumn={{ base: "1 / -1", lg: "1 / span 2" }}
           borderWidth="1px"
@@ -96,13 +318,10 @@ const DashboardPage: React.FC = () => {
                 {moneyFormat(totalSalesAmount)}
               </Text>
             </Box>
-
-            {/* CTA removed as requested */}
           </Flex>
 
           <Divider my={4} />
 
-          {/* chart + larger KPIs to occupy space */}
           <Flex gap={6} align="stretch">
             <Box
               flex={1}
@@ -127,7 +346,7 @@ const DashboardPage: React.FC = () => {
                     <Tooltip />
                     <Line
                       type="monotone"
-                      dataKey="value"
+                      dataKey="pedidos"
                       stroke={lineStroke}
                       strokeWidth={2}
                       dot={false}

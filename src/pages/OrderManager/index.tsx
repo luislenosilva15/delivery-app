@@ -23,6 +23,8 @@ import {
   Heading,
   Stack,
   useDisclosure,
+  Alert,
+  AlertIcon,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
@@ -106,6 +108,14 @@ export default function OrderManagerPage() {
             <TabPanels>
               {statusTabs.map((tab) => (
                 <TabPanel key={tab.label}>
+                  {tab.status === "DELIVERED" && (
+                    <Alert status="info" mb={4} borderRadius="md">
+                      <AlertIcon />
+                      Aqui serão exibidos apenas os pedidos concluídos do dia de
+                      hoje. Para pedidos anteriores, consulte o relatório de
+                      pedidos.
+                    </Alert>
+                  )}
                   <Box position="relative" w="full" minH="180px">
                     {loading ? (
                       <Flex align="center" justify="center" minH="180px" py={8}>

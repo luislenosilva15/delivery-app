@@ -11,4 +11,8 @@ export type TDashboardData = {
     DELIVERY: number;
     LOCAL: number;
   };
+  ordersPerDay?: {
+    day: number;
+    total: number;
+  }[];
 };
