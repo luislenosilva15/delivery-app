@@ -16,8 +16,13 @@ import {
   Stack,
   Text,
   VStack,
-  HStack,
   IconButton,
+  Grid,
+  Switch,
+  Flex,
+  Badge,
+  Tooltip,
+  useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
@@ -107,7 +112,6 @@ const DeliveryFeesPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock save
     toast({
       title: "Configurações salvas",
       description: "As taxas de entrega foram atualizadas com sucesso.",
@@ -121,6 +125,13 @@ const DeliveryFeesPage = () => {
     { label: "Home", href: "/" },
     { label: "Taxas de Entrega", isCurrent: true },
   ];
+
+  const freeBgLight = "green.50";
+  const freeBgDark = "rgba(56,161,105,0.12)";
+  const tierCardBg = useColorModeValue("white", "gray.800");
+  const addCardHover = useColorModeValue("primary.50", "whiteAlpha.50");
+  const addCardBorder = useColorModeValue("primary.300", "primary.200");
+  const disabledPriceBg = useColorModeValue("gray.50", "whiteAlpha.100");
 
   return (
     <Box w="100%" p={6}>
@@ -237,46 +248,68 @@ const DeliveryFeesPage = () => {
                   </FormControl>
 
                   <Text fontWeight="semibold">Faixas de Distância</Text>
-                  {formData.distanceBasedFee.tiers.map((tier, index) => (
-                    <Box key={index} p={4} borderWidth="1px" borderRadius="md">
-                      <HStack spacing={4} align="start">
-                        <FormControl>
-                          <Text fontSize="sm" mb={1}>
-                            Máx. KM
-                          </Text>
-                          <NumberInput
-                            value={tier.maxKm}
-                            onChange={(valueString) =>
-                              handleTierChange(
-                                index,
-                                "maxKm",
-                                parseFloat(valueString) || 0
-                              )
-                            }
-                            min={0}
-                            precision={1}
-                          >
-                            <NumberInputField />
-                            <NumberInputStepper>
-                              <NumberIncrementStepper />
-                              <NumberDecrementStepper />
-                            </NumberInputStepper>
-                          </NumberInput>
-                        </FormControl>
-
-                        <Checkbox
-                          colorScheme="primary"
-                          isChecked={tier.isFree}
-                          onChange={(e) =>
-                            handleTierChange(index, "isFree", e.target.checked)
-                          }
+                  {formData.distanceBasedFee.tiers.map((tier, index) => {
+                    const isFree = tier.isFree;
+                    return (
+                      <Box
+                        key={index}
+                        p={4}
+                        borderWidth="1px"
+                        borderRadius="lg"
+                        position="relative"
+                        bg={isFree ? freeBgLight : tierCardBg}
+                        _dark={{ bg: isFree ? freeBgDark : tierCardBg }}
+                        _hover={{ boxShadow: "md" }}
+                        transition="box-shadow 0.15s ease"
+                      >
+                        {formData.distanceBasedFee.tiers.length > 1 && (
+                          <IconButton
+                            aria-label="Remover faixa"
+                            icon={<CloseIcon />}
+                            size="xs"
+                            colorScheme="red"
+                            variant="ghost"
+                            position="absolute"
+                            top={2}
+                            right={2}
+                            onClick={() => removeTier(index)}
+                          />
+                        )}
+                        <Grid
+                          templateColumns={{
+                            base: "repeat(2,1fr)",
+                            md: "140px 1fr 90px 140px",
+                          }}
+                          gap={4}
+                          alignItems="flex-end"
                         >
-                          Grátis
-                        </Checkbox>
-
-                        {!tier.isFree && (
+                          {/* Máx. KM */}
                           <FormControl>
-                            <Text fontSize="sm" mb={1}>
+                            <Text fontSize="xs" mb={1} fontWeight="semibold">
+                              Máx. KM
+                            </Text>
+                            <NumberInput
+                              value={tier.maxKm}
+                              onChange={(valueString) =>
+                                handleTierChange(
+                                  index,
+                                  "maxKm",
+                                  parseFloat(valueString) || 0
+                                )
+                              }
+                              min={0}
+                              precision={1}
+                            >
+                              <NumberInputField />
+                              <NumberInputStepper>
+                                <NumberIncrementStepper />
+                                <NumberDecrementStepper />
+                              </NumberInputStepper>
+                            </NumberInput>
+                          </FormControl>
+                          {/* Preço (R$) */}
+                          <FormControl>
+                            <Text fontSize="xs" mb={1} fontWeight="semibold">
                               Preço (R$)
                             </Text>
                             <NumberInput
@@ -290,6 +323,65 @@ const DeliveryFeesPage = () => {
                               }
                               min={0}
                               precision={2}
+                              isDisabled={isFree}
+                            >
+                              <NumberInputField
+                                bg={isFree ? disabledPriceBg : undefined}
+                              />
+                              <NumberInputStepper>
+                                <NumberIncrementStepper />
+                                <NumberDecrementStepper />
+                              </NumberInputStepper>
+                            </NumberInput>
+                          </FormControl>
+                          {/* Switch Grátis */}
+                          <Flex
+                            direction="column"
+                            justify="center"
+                            align="flex-start"
+                            pb={1}
+                          >
+                            <Text fontSize="xs" fontWeight="semibold" mb={1}>
+                              Grátis
+                            </Text>
+                            <Switch
+                              size="sm"
+                              colorScheme="green"
+                              isChecked={isFree}
+                              onChange={(e) =>
+                                handleTierChange(
+                                  index,
+                                  "isFree",
+                                  e.target.checked
+                                )
+                              }
+                            />
+                            {isFree && (
+                              <Badge
+                                mt={2}
+                                colorScheme="green"
+                                variant="solid"
+                                fontSize="0.55rem"
+                              >
+                                Entrega grátis
+                              </Badge>
+                            )}
+                          </Flex>
+                          {/* Tempo Estimado */}
+                          <FormControl>
+                            <Text fontSize="xs" mb={1} fontWeight="semibold">
+                              Tempo Est. (min)
+                            </Text>
+                            <NumberInput
+                              value={tier.estimatedTime}
+                              onChange={(valueString) =>
+                                handleTierChange(
+                                  index,
+                                  "estimatedTime",
+                                  parseInt(valueString) || 0
+                                )
+                              }
+                              min={0}
                             >
                               <NumberInputField />
                               <NumberInputStepper>
@@ -298,55 +390,33 @@ const DeliveryFeesPage = () => {
                               </NumberInputStepper>
                             </NumberInput>
                           </FormControl>
-                        )}
+                        </Grid>
+                      </Box>
+                    );
+                  })}
 
-                        <FormControl>
-                          <Text fontSize="sm" mb={1}>
-                            Tempo Est. (min)
-                          </Text>
-                          <NumberInput
-                            value={tier.estimatedTime}
-                            onChange={(valueString) =>
-                              handleTierChange(
-                                index,
-                                "estimatedTime",
-                                parseInt(valueString) || 0
-                              )
-                            }
-                            min={0}
-                          >
-                            <NumberInputField />
-                            <NumberInputStepper>
-                              <NumberIncrementStepper />
-                              <NumberDecrementStepper />
-                            </NumberInputStepper>
-                          </NumberInput>
-                        </FormControl>
-
-                        {formData.distanceBasedFee.tiers.length > 1 && (
-                          <IconButton
-                            aria-label="Remover faixa"
-                            icon={<CloseIcon />}
-                            size="sm"
-                            colorScheme="red"
-                            variant="ghost"
-                            onClick={() => removeTier(index)}
-                          />
-                        )}
-                      </HStack>
-                    </Box>
-                  ))}
-
-                  <Button
-                    leftIcon={<AddIcon />}
-                    colorScheme="primary"
-                    variant="outline"
-                    size="sm"
-                    onClick={addTier}
-                    alignSelf="flex-start"
-                  >
-                    Adicionar Faixa
-                  </Button>
+                  {/* Add tier card */}
+                  <Tooltip label="Adicionar nova faixa de distância" hasArrow>
+                    <Flex
+                      onClick={addTier}
+                      cursor="pointer"
+                      border="2px dashed"
+                      borderColor={addCardBorder}
+                      p={4}
+                      borderRadius="lg"
+                      align="center"
+                      justify="center"
+                      gap={2}
+                      _hover={{ bg: addCardHover }}
+                      transition="background 0.15s ease"
+                      w="100%"
+                    >
+                      <AddIcon boxSize={3} />
+                      <Text fontSize="sm" fontWeight="semibold">
+                        Adicionar nova faixa
+                      </Text>
+                    </Flex>
+                  </Tooltip>
                 </VStack>
               </Box>
             )}
