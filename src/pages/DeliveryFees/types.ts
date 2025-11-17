@@ -16,7 +16,7 @@ export type DistanceTier = {
 export type DistanceBasedFee = {
   isFree: boolean;
   type: "DISTANCE_BASED";
-  estimatedTime: number;
+  // removed global estimatedTime (each tier already has its own estimatedTime)
   tiers: DistanceTier[];
 };
 

@@ -43,7 +43,6 @@ const DeliveryFeesPage = () => {
     distanceBasedFee: {
       isFree: false,
       type: "DISTANCE_BASED",
-      estimatedTime: 0,
       tiers: [
         { maxKm: 3, price: 0, isFree: true, estimatedTime: 20 },
         { maxKm: 6, price: 7.5, isFree: false, estimatedTime: 35 },
@@ -66,15 +65,7 @@ const DeliveryFeesPage = () => {
     }));
   };
 
-  const handleDistanceBasedChange = (
-    field: keyof typeof formData.distanceBasedFee,
-    value: boolean | number
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      distanceBasedFee: { ...prev.distanceBasedFee, [field]: value },
-    }));
-  };
+  // Removed global distance based change handler (only tiers are modified now)
 
   const handleTierChange = (
     index: number,
@@ -225,29 +216,12 @@ const DeliveryFeesPage = () => {
                   Taxa Baseada em Distância
                 </Heading>
                 <VStack spacing={4} align="stretch">
-                  <FormControl>
-                    <Text fontWeight="semibold" mb={2}>
-                      Tempo Estimado Geral (minutos)
-                    </Text>
-                    <NumberInput
-                      value={formData.distanceBasedFee.estimatedTime}
-                      onChange={(valueString) =>
-                        handleDistanceBasedChange(
-                          "estimatedTime",
-                          parseInt(valueString) || 0
-                        )
-                      }
-                      min={0}
-                    >
-                      <NumberInputField />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
-                  </FormControl>
-
                   <Text fontWeight="semibold">Faixas de Distância</Text>
+                  {formData.distanceBasedFee.tiers.length === 0 && (
+                    <Text fontSize="sm" color="gray.500">
+                      Nenhuma faixa cadastrada. Adicione a primeira.
+                    </Text>
+                  )}
                   {formData.distanceBasedFee.tiers.map((tier, index) => {
                     const isFree = tier.isFree;
                     return (
@@ -262,19 +236,17 @@ const DeliveryFeesPage = () => {
                         _hover={{ boxShadow: "md" }}
                         transition="box-shadow 0.15s ease"
                       >
-                        {formData.distanceBasedFee.tiers.length > 1 && (
-                          <IconButton
-                            aria-label="Remover faixa"
-                            icon={<CloseIcon />}
-                            size="xs"
-                            colorScheme="red"
-                            variant="ghost"
-                            position="absolute"
-                            top={2}
-                            right={2}
-                            onClick={() => removeTier(index)}
-                          />
-                        )}
+                        <IconButton
+                          aria-label="Remover faixa"
+                          icon={<CloseIcon />}
+                          size="xs"
+                          colorScheme="red"
+                          variant="ghost"
+                          position="absolute"
+                          top={2}
+                          right={2}
+                          onClick={() => removeTier(index)}
+                        />
                         <Grid
                           templateColumns={{
                             base: "repeat(2,1fr)",
