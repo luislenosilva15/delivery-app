@@ -6,6 +6,7 @@ import {
   Heading,
   InputGroup,
   InputLeftAddon,
+  Input,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
@@ -124,6 +125,14 @@ const DeliveryFeesPage = () => {
   const addCardBorder = useColorModeValue("primary.300", "primary.200");
   const disabledPriceBg = useColorModeValue("gray.50", "whiteAlpha.100");
 
+  // Currency formatting helper (BRL with comma decimal). We store numeric value and mask on display.
+  const formatBRL = (value: number) => {
+    return value.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+
   return (
     <Box w="100%" p={6}>
       <Breadcrumb links={breadcrumbLinks} />
@@ -203,7 +212,6 @@ const DeliveryFeesPage = () => {
               </Box>
             )}
 
-            {/* Baseada em Distância */}
             {formData.type === "DISTANCE_BASED" && (
               <Box
                 p={6}
@@ -216,10 +224,10 @@ const DeliveryFeesPage = () => {
                   Taxa Baseada em Distância
                 </Heading>
                 <VStack spacing={4} align="stretch">
-                  <Text fontWeight="semibold">Faixas de Distância</Text>
+                  <Text fontWeight="semibold">Taxas de Distância</Text>
                   {formData.distanceBasedFee.tiers.length === 0 && (
                     <Text fontSize="sm" color="gray.500">
-                      Nenhuma faixa cadastrada. Adicione a primeira.
+                      Nenhuma taxa cadastrada. Adicione a primeira.
                     </Text>
                   )}
                   {formData.distanceBasedFee.tiers.map((tier, index) => {
@@ -237,15 +245,28 @@ const DeliveryFeesPage = () => {
                         transition="box-shadow 0.15s ease"
                       >
                         <IconButton
-                          aria-label="Remover faixa"
-                          icon={<CloseIcon />}
-                          size="xs"
+                          aria-label="Remover taxa"
+                          icon={<CloseIcon boxSize={3} />}
+                          size="md"
                           colorScheme="red"
                           variant="ghost"
                           position="absolute"
                           top={2}
                           right={2}
                           onClick={() => removeTier(index)}
+                          zIndex={10}
+                          borderRadius="full"
+                          minW="34px"
+                          h="34px"
+                          _hover={{
+                            bg: useColorModeValue("red.100", "red.700"),
+                          }}
+                          _active={{
+                            bg: useColorModeValue("red.200", "red.600"),
+                          }}
+                          _focusVisible={{
+                            boxShadow: "0 0 0 3px rgba(229,62,62,0.4)",
+                          }}
                         />
                         <Grid
                           templateColumns={{
@@ -258,7 +279,7 @@ const DeliveryFeesPage = () => {
                           {/* Máx. KM */}
                           <FormControl>
                             <Text fontSize="xs" mb={1} fontWeight="semibold">
-                              Máx. KM
+                              Km. Máximo
                             </Text>
                             <NumberInput
                               value={tier.maxKm}
@@ -279,34 +300,30 @@ const DeliveryFeesPage = () => {
                               </NumberInputStepper>
                             </NumberInput>
                           </FormControl>
-                          {/* Preço (R$) */}
+                          {/* Preço (R$) com máscara BRL */}
                           <FormControl>
                             <Text fontSize="xs" mb={1} fontWeight="semibold">
                               Preço (R$)
                             </Text>
-                            <NumberInput
-                              value={tier.price}
-                              onChange={(valueString) =>
-                                handleTierChange(
-                                  index,
-                                  "price",
-                                  parseFloat(valueString) || 0
-                                )
-                              }
-                              min={0}
-                              precision={2}
-                              isDisabled={isFree}
-                            >
-                              <NumberInputField
+                            <InputGroup>
+                              <InputLeftAddon>R$</InputLeftAddon>
+                              <Input
+                                isDisabled={isFree}
                                 bg={isFree ? disabledPriceBg : undefined}
+                                value={formatBRL(tier.price)}
+                                inputMode="numeric"
+                                onChange={(e) => {
+                                  const rawDigits = e.target.value.replace(
+                                    /\D/g,
+                                    ""
+                                  );
+                                  const numeric =
+                                    parseInt(rawDigits || "0", 10) / 100;
+                                  handleTierChange(index, "price", numeric);
+                                }}
                               />
-                              <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                              </NumberInputStepper>
-                            </NumberInput>
+                            </InputGroup>
                           </FormControl>
-                          {/* Switch Grátis */}
                           <Flex
                             direction="column"
                             justify="center"
@@ -339,7 +356,6 @@ const DeliveryFeesPage = () => {
                               </Badge>
                             )}
                           </Flex>
-                          {/* Tempo Estimado */}
                           <FormControl>
                             <Text fontSize="xs" mb={1} fontWeight="semibold">
                               Tempo Est. (min)
@@ -368,7 +384,7 @@ const DeliveryFeesPage = () => {
                   })}
 
                   {/* Add tier card */}
-                  <Tooltip label="Adicionar nova faixa de distância" hasArrow>
+                  <Tooltip label="Adicionar nova taxa de distância" hasArrow>
                     <Flex
                       onClick={addTier}
                       cursor="pointer"
@@ -385,7 +401,7 @@ const DeliveryFeesPage = () => {
                     >
                       <AddIcon boxSize={3} />
                       <Text fontSize="sm" fontWeight="semibold">
-                        Adicionar nova faixa
+                        Adicionar nova taxa
                       </Text>
                     </Flex>
                   </Tooltip>
