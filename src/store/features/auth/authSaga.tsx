@@ -22,6 +22,9 @@ import {
   setLoginSuccess,
   setTemporaryClosedRequest,
   setTemporaryClosedSuccess,
+  setUpdateDeliveryFeeRequest,
+  setUpdateDeliveryFeeSuccess,
+  setUpdateDeliveryFeeError,
 } from "./authSlice";
 import apiClient from "@/api";
 import type { AxiosResponse } from "axios";
@@ -37,6 +40,8 @@ import type {
   SetEditUserRequest,
   SetEditUserResponse,
   SetTemporaryClosedRequest,
+  UpdateDeliveryFeeRequest,
+  UpdateDeliveryFeeResponse,
 } from "@/store/features/auth/types/request";
 import { LOCAL_STORAGE_KEYS } from "@/localStorage";
 import { toast } from "@/utils/toast";
@@ -391,6 +396,8 @@ export default function* authSaga() {
     setEditDeliverySettingsSaga
   );
 
+  yield takeLatest(setUpdateDeliveryFeeRequest.type, setUpdateDeliveryFeeSaga);
+
   yield takeLatest(setLoginSuccess.type, function* (action: any) {
     const companyId = action.payload?.company?.id;
     if (companyId) {
@@ -404,4 +411,38 @@ export default function* authSaga() {
       yield fork(watchNewOrders, companyId);
     }
   });
+}
+
+export function* setUpdateDeliveryFeeSaga(
+  action: PayloadAction<UpdateDeliveryFeeRequest>
+): Generator<any, void, AxiosResponse<UpdateDeliveryFeeResponse>> {
+  try {
+    const response = yield call(() =>
+      apiClient.put(`company/fees`, action.payload)
+    );
+
+    let company;
+    if (response?.data && (response.data as any).company) {
+      company = (response.data as any).company;
+    } else {
+      const me: AxiosResponse<AuthResponse> = (yield call(() =>
+        apiClient.get(`/auth/me`)
+      )) as any;
+      company = me.data.company;
+    }
+
+    yield put(setUpdateDeliveryFeeSuccess(company));
+
+    toast({
+      title: "Taxas de entrega atualizadas",
+      status: "success",
+    });
+  } catch (error) {
+    yield put(setUpdateDeliveryFeeError());
+    toast({
+      title: "Erro ao atualizar taxas de entrega",
+      status: "error",
+    });
+    console.log(error);
+  }
 }

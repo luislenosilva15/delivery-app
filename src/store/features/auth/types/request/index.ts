@@ -1,5 +1,12 @@
 import type { CompanyAboutData } from "@/pages/About/types";
-import type { TAvailability, TCompany, TCompanyPayment } from "../models";
+import type {
+  TAvailability,
+  TCompany,
+  TCompanyPayment,
+  DeliveryFeeConfig,
+  DeliveryFeeType,
+  DeliveryFeeTier,
+} from "../models";
 import type { TUser } from "@/store/features/team/types/models";
 
 export interface LoginRequest {
@@ -91,4 +98,28 @@ export interface SetEditDeliverySettingsSuccess {
 
 export interface SetEditDeliverySettingsResponse {
   company: TCompany;
+}
+
+// ===== Delivery Fee Update =====
+export type UpdateDeliveryFeeFixedPayload = {
+  isFree: boolean;
+  type: Extract<DeliveryFeeType, "FIXED">;
+  fixedFee: number;
+};
+
+export type UpdateDeliveryFeeDistancePayload = {
+  isFree: boolean;
+  type: Extract<DeliveryFeeType, "DISTANCE_BASED">;
+  estimatedTime?: number;
+  tiers: Array<
+    Pick<DeliveryFeeTier, "maxKm" | "price" | "isFree" | "estimatedTime">
+  >;
+};
+
+export type UpdateDeliveryFeeRequest =
+  | UpdateDeliveryFeeFixedPayload
+  | UpdateDeliveryFeeDistancePayload;
+
+export interface UpdateDeliveryFeeResponse {
+  company: TCompany & { deliveryFee: DeliveryFeeConfig };
 }

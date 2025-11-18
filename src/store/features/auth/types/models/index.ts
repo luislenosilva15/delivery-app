@@ -101,6 +101,27 @@ export type TCompanyPayment = {
   requiredDocument: boolean;
 };
 
+export interface DeliveryFeeTier {
+  id: number;
+  deliveryFeeId: number;
+  maxKm: number;
+  price: number;
+  isFree: boolean;
+  estimatedTime: number;
+}
+
+export type DeliveryFeeType = "DISTANCE_BASED" | "FIXED";
+
+export interface DeliveryFeeConfig {
+  id: number;
+  companyId: number;
+  type: DeliveryFeeType;
+  fixedFee: number;
+  isFree: boolean;
+  estimatedTime: number;
+  tiers: DeliveryFeeTier[];
+}
+
 export type TCompany = {
   id: 1;
   availability: TAvailability;
@@ -109,6 +130,7 @@ export type TCompany = {
   openingHours: TOpeningHours[];
   temporaryClosed: boolean;
   isAlwaysOpening: boolean;
+  deliveryFee: DeliveryFeeConfig;
   legalName: string;
   document?: string;
   email: string;

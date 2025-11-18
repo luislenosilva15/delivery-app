@@ -19,6 +19,7 @@ export interface AuthState {
   isSubmitting: boolean;
   isSubmitEditForm: boolean;
   isSubmitDeliverySettingsForm: boolean;
+  isSubmitDeliveryFeeForm: boolean;
   user: TUser | null;
   company: TCompany | null;
   autenticated: boolean;
@@ -36,6 +37,7 @@ const initialState: AuthState = {
   isSubmitEditOpeningHoursForm: false,
   isSubmitEditCompanyForm: false,
   isSubmitDeliverySettingsForm: false,
+  isSubmitDeliveryFeeForm: false,
 };
 
 const authSlice = createSlice({
@@ -188,6 +190,20 @@ const authSlice = createSlice({
     setEditDeliverySettingsError(state) {
       state.isSubmitDeliverySettingsForm = false;
     },
+
+    // ===== Delivery Fee =====
+    setUpdateDeliveryFeeRequest(state, _action: PayloadAction<any>) {
+      state.isSubmitDeliveryFeeForm = true;
+    },
+    setUpdateDeliveryFeeSuccess(state, action: PayloadAction<TCompany>) {
+      state.isSubmitDeliveryFeeForm = false;
+      if (state.company) {
+        state.company.deliveryFee = action.payload.deliveryFee;
+      }
+    },
+    setUpdateDeliveryFeeError(state) {
+      state.isSubmitDeliveryFeeForm = false;
+    },
   },
 });
 
@@ -215,6 +231,9 @@ export const {
   setEditDeliverySettingsError,
   setEditDeliverySettingsRequest,
   setEditDeliverySettingsSuccess,
+  setUpdateDeliveryFeeRequest,
+  setUpdateDeliveryFeeSuccess,
+  setUpdateDeliveryFeeError,
 } = authSlice.actions;
 
 export default authSlice.reducer;

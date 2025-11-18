@@ -25,15 +25,18 @@ import {
   Badge,
   Tooltip,
   useColorModeValue,
-  useToast,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AddIcon, CloseIcon } from "@chakra-ui/icons";
 import Breadcrumb from "@/components/Breadcrumb";
 import type { FormData, DeliveryFeeType, DistanceTier } from "./types";
+import { useAuth } from "@/hook/auth";
+import { useDispatch } from "react-redux";
+import { setUpdateDeliveryFeeRequest } from "@/store/features/auth/authSlice";
 
 const DeliveryFeesPage = () => {
-  const toast = useToast();
+  const dispatch = useDispatch();
+  const { company, isSubmitDeliveryFeeForm } = useAuth();
 
   const [formData, setFormData] = useState<FormData>({
     type: "FIXED",
@@ -52,6 +55,38 @@ const DeliveryFeesPage = () => {
       ],
     },
   });
+
+  useEffect(() => {
+    const df = company?.deliveryFee;
+    if (!df) return;
+
+    if (df.type === "FIXED") {
+      setFormData({
+        type: "FIXED",
+        fixedFee: {
+          isFree: df.isFree,
+          type: "FIXED",
+          fixedFee: df.fixedFee || 0,
+        },
+        distanceBasedFee: { isFree: false, type: "DISTANCE_BASED", tiers: [] },
+      });
+    } else {
+      setFormData({
+        type: "DISTANCE_BASED",
+        fixedFee: { isFree: false, type: "FIXED", fixedFee: 0 },
+        distanceBasedFee: {
+          isFree: df.isFree ?? false,
+          type: "DISTANCE_BASED",
+          tiers: (df.tiers || []).map((t) => ({
+            maxKm: t.maxKm,
+            price: t.price,
+            isFree: Boolean(t.isFree),
+            estimatedTime: t.estimatedTime ?? 0,
+          })),
+        },
+      });
+    }
+  }, [company?.deliveryFee]);
 
   const [invalidFixedFee, setInvalidFixedFee] = useState(false);
   const [invalidTierKm, setInvalidTierKm] = useState<Set<number>>(new Set());
@@ -147,29 +182,36 @@ const DeliveryFeesPage = () => {
     setInvalidTierKm(tierKm);
     setInvalidTierPrice(tierPrice);
 
-    if (errors.length > 0) {
-      toast({
-        title: "Corrija os campos antes de salvar",
-        description: errors.join("\n"),
-        status: "error",
-        duration: 7000,
-        isClosable: true,
-      });
-      return false;
-    }
     return true;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
-    toast({
-      title: "Configurações salvas",
-      description: "As taxas de entrega foram atualizadas com sucesso.",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
+
+    if (formData.type === "FIXED") {
+      dispatch(
+        setUpdateDeliveryFeeRequest({
+          isFree: formData.fixedFee.isFree,
+          type: "FIXED",
+          fixedFee: formData.fixedFee.fixedFee,
+        })
+      );
+    } else {
+      dispatch(
+        setUpdateDeliveryFeeRequest({
+          isFree: false,
+          type: "DISTANCE_BASED",
+          estimatedTime: 0,
+          tiers: formData.distanceBasedFee.tiers.map((t) => ({
+            maxKm: t.maxKm,
+            price: t.price,
+            isFree: t.isFree,
+            estimatedTime: t.estimatedTime,
+          })),
+        })
+      );
+    }
   };
 
   const breadcrumbLinks = [
@@ -186,13 +228,21 @@ const DeliveryFeesPage = () => {
   const removeIconHoverBg = useColorModeValue("red.100", "red.700");
   const removeIconActiveBg = useColorModeValue("red.200", "red.600");
 
-  // Currency formatting helper (BRL with comma decimal). We store numeric value and mask on display.
   const formatBRL = (value: number) => {
     return value.toLocaleString("pt-BR", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
   };
+
+  const canSubmit = useMemo(() => {
+    if (formData.type === "FIXED") {
+      return formData.fixedFee.isFree || formData.fixedFee.fixedFee > 0;
+    }
+    const tiers = formData.distanceBasedFee.tiers;
+    if (!tiers || tiers.length === 0) return false;
+    return tiers.every((t) => t.maxKm > 0 && (t.isFree || t.price > 0));
+  }, [formData]);
 
   return (
     <Box w="100%" p={6}>
@@ -486,6 +536,8 @@ const DeliveryFeesPage = () => {
               colorScheme="primary"
               size="md"
               w="max-content"
+              isLoading={isSubmitDeliveryFeeForm}
+              isDisabled={!canSubmit || isSubmitDeliveryFeeForm}
             >
               Salvar
             </Button>
