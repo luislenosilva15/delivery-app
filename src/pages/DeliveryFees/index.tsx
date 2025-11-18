@@ -3,6 +3,7 @@ import {
   Button,
   Checkbox,
   FormControl,
+  FormErrorMessage,
   Heading,
   InputGroup,
   InputLeftAddon,
@@ -52,6 +53,12 @@ const DeliveryFeesPage = () => {
     },
   });
 
+  const [invalidFixedFee, setInvalidFixedFee] = useState(false);
+  const [invalidTierKm, setInvalidTierKm] = useState<Set<number>>(new Set());
+  const [invalidTierPrice, setInvalidTierPrice] = useState<Set<number>>(
+    new Set()
+  );
+
   const handleTypeChange = (value: DeliveryFeeType) => {
     setFormData((prev) => ({ ...prev, type: value }));
   };
@@ -65,8 +72,6 @@ const DeliveryFeesPage = () => {
       fixedFee: { ...prev.fixedFee, [field]: value },
     }));
   };
-
-  // Removed global distance based change handler (only tiers are modified now)
 
   const handleTierChange = (
     index: number,
@@ -102,8 +107,62 @@ const DeliveryFeesPage = () => {
     }));
   };
 
+  const validateForm = (): boolean => {
+    const errors: string[] = [];
+    setInvalidFixedFee(false);
+    const tierKm = new Set<number>();
+    const tierPrice = new Set<number>();
+
+    if (formData.type === "FIXED") {
+      if (!formData.fixedFee.isFree && formData.fixedFee.fixedFee <= 0) {
+        errors.push(
+          "Informe um valor maior que zero ou marque a opção 'Entrega grátis'."
+        );
+        setInvalidFixedFee(true);
+      }
+    } else if (formData.type === "DISTANCE_BASED") {
+      const tiers = formData.distanceBasedFee.tiers;
+      if (tiers.length === 0) {
+        errors.push("Adicione pelo menos uma taxa de distância.");
+      } else {
+        tiers.forEach((t, i) => {
+          if (t.maxKm <= 0) {
+            errors.push(
+              `Na taxa #${i + 1}, o Km máximo precisa ser maior que zero.`
+            );
+            tierKm.add(i);
+          }
+          if (!t.isFree && t.price <= 0) {
+            errors.push(
+              `Na taxa #${
+                i + 1
+              }, informe um preço maior que zero ou marque como grátis.`
+            );
+            tierPrice.add(i);
+          }
+        });
+      }
+    }
+
+    setInvalidTierKm(tierKm);
+    setInvalidTierPrice(tierPrice);
+
+    if (errors.length > 0) {
+      toast({
+        title: "Corrija os campos antes de salvar",
+        description: errors.join("\n"),
+        status: "error",
+        duration: 7000,
+        isClosable: true,
+      });
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
     toast({
       title: "Configurações salvas",
       description: "As taxas de entrega foram atualizadas com sucesso.",
@@ -124,6 +183,8 @@ const DeliveryFeesPage = () => {
   const addCardHover = useColorModeValue("primary.50", "whiteAlpha.50");
   const addCardBorder = useColorModeValue("primary.300", "primary.200");
   const disabledPriceBg = useColorModeValue("gray.50", "whiteAlpha.100");
+  const removeIconHoverBg = useColorModeValue("red.100", "red.700");
+  const removeIconActiveBg = useColorModeValue("red.200", "red.600");
 
   // Currency formatting helper (BRL with comma decimal). We store numeric value and mask on display.
   const formatBRL = (value: number) => {
@@ -143,7 +204,6 @@ const DeliveryFeesPage = () => {
 
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
           <Stack spacing={8} w="100%">
-            {/* Tipo de Taxa */}
             <Box
               p={6}
               borderWidth="1px"
@@ -162,7 +222,6 @@ const DeliveryFeesPage = () => {
               </RadioGroup>
             </Box>
 
-            {/* Taxa Única */}
             {formData.type === "FIXED" && (
               <Box
                 p={6}
@@ -185,27 +244,29 @@ const DeliveryFeesPage = () => {
                     Entrega Grátis
                   </Checkbox>
                   {!formData.fixedFee.isFree && (
-                    <FormControl>
+                    <FormControl isInvalid={invalidFixedFee}>
+                      <Text fontSize="xs" mb={1} fontWeight="semibold">
+                        Valor da taxa
+                      </Text>
                       <InputGroup>
                         <InputLeftAddon>R$</InputLeftAddon>
-                        <NumberInput
-                          value={formData.fixedFee.fixedFee}
-                          onChange={(valueString) =>
-                            handleFixedFeeChange(
-                              "fixedFee",
-                              parseFloat(valueString) || 0
-                            )
-                          }
-                          min={0}
-                          precision={2}
-                        >
-                          <NumberInputField />
-                          <NumberInputStepper>
-                            <NumberIncrementStepper />
-                            <NumberDecrementStepper />
-                          </NumberInputStepper>
-                        </NumberInput>
+                        <Input
+                          value={formatBRL(formData.fixedFee.fixedFee)}
+                          inputMode="numeric"
+                          onChange={(e) => {
+                            const rawDigits = e.target.value.replace(/\D/g, "");
+                            const numeric =
+                              parseInt(rawDigits || "0", 10) / 100;
+                            handleFixedFeeChange("fixedFee", numeric);
+                          }}
+                        />
                       </InputGroup>
+                      {invalidFixedFee && (
+                        <FormErrorMessage>
+                          Informe um valor maior que zero ou marque a opção de
+                          entrega grátis.
+                        </FormErrorMessage>
+                      )}
                     </FormControl>
                   )}
                 </VStack>
@@ -256,13 +317,13 @@ const DeliveryFeesPage = () => {
                           onClick={() => removeTier(index)}
                           zIndex={10}
                           borderRadius="full"
-                          minW="34px"
-                          h="34px"
+                          minW="32px"
+                          h="32px"
                           _hover={{
-                            bg: useColorModeValue("red.100", "red.700"),
+                            bg: removeIconHoverBg,
                           }}
                           _active={{
-                            bg: useColorModeValue("red.200", "red.600"),
+                            bg: removeIconActiveBg,
                           }}
                           _focusVisible={{
                             boxShadow: "0 0 0 3px rgba(229,62,62,0.4)",
@@ -274,10 +335,10 @@ const DeliveryFeesPage = () => {
                             md: "140px 1fr 90px 140px",
                           }}
                           gap={4}
-                          alignItems="flex-end"
+                          alignItems="start"
                         >
                           {/* Máx. KM */}
-                          <FormControl>
+                          <FormControl isInvalid={invalidTierKm.has(index)}>
                             <Text fontSize="xs" mb={1} fontWeight="semibold">
                               Km. Máximo
                             </Text>
@@ -299,9 +360,14 @@ const DeliveryFeesPage = () => {
                                 <NumberDecrementStepper />
                               </NumberInputStepper>
                             </NumberInput>
+                            {invalidTierKm.has(index) && (
+                              <FormErrorMessage>
+                                Digite um valor de Km máximo maior que zero.
+                              </FormErrorMessage>
+                            )}
                           </FormControl>
                           {/* Preço (R$) com máscara BRL */}
-                          <FormControl>
+                          <FormControl isInvalid={invalidTierPrice.has(index)}>
                             <Text fontSize="xs" mb={1} fontWeight="semibold">
                               Preço (R$)
                             </Text>
@@ -323,6 +389,12 @@ const DeliveryFeesPage = () => {
                                 }}
                               />
                             </InputGroup>
+                            {invalidTierPrice.has(index) && !isFree && (
+                              <FormErrorMessage>
+                                Informe um preço maior que zero ou marque como
+                                grátis.
+                              </FormErrorMessage>
+                            )}
                           </FormControl>
                           <Flex
                             direction="column"
