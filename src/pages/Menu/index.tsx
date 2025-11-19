@@ -188,8 +188,54 @@ export default function MenuPage() {
     dispatch(setToggleDisableProductRequest({ productId, disabled }));
   };
 
-  if (!groups?.length && !loading)
-    <GroupEmptyState onOpenGroupModal={onOpenGroupModal} />;
+  if (!groups?.length && !loading) {
+    return (
+      <>
+        <GroupEmptyState
+          onOpenGroupModal={() => {
+            setCurrentGroup(null);
+            onOpenGroupModal();
+          }}
+        />
+        <NewGroupModal
+          isOpen={isOpenGroupModal}
+          onClose={() => {
+            setCurrentGroup(null);
+            onCloseGroupModal();
+          }}
+          onSubmit={handleCreateNewGroup}
+          groupId={currentGroup?.id}
+        />
+        <ConfirmModal
+          isOpen={isOpenDeleteGroupModal}
+          onClose={onCloseDeleteGroupModal}
+          onSave={handleDeleteGroup}
+          title="Excluir Grupo"
+          description="Tem certeza que deseja excluir este grupo? Todos os produtos associados a ele também serão excluídos."
+        />
+        <ConfirmModal
+          isOpen={isOpenDeleteProductModal}
+          onClose={onCloseDeleteProductModal}
+          onSave={handleDeleteProduct}
+          title="Excluir Produto"
+          description="Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita."
+        />
+        <ProductModalDetails
+          isOpen={isOpenProductDetailsModal}
+          onClose={() => {
+            setCurrentProductId(null);
+            onCloseProductDetailsModal();
+          }}
+          productId={currentProductId}
+        />
+        <GroupModalDetails
+          isOpen={isOpenGroupDetailsModal}
+          onClose={onCloseGroupDetailsModal}
+          groupId={currentGroup?.id as number}
+        />
+      </>
+    );
+  }
 
   return (
     <>

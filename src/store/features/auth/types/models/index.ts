@@ -122,6 +122,17 @@ export interface DeliveryFeeConfig {
   tiers: DeliveryFeeTier[];
 }
 
+export type TAddress = {
+  id: number;
+  street: string;
+  number: string;
+  city: string;
+  state: string;
+  complement?: string;
+  zipCode: string;
+  coordinates: string;
+};
+
 export type TCompany = {
   id: 1;
   availability: TAvailability;
@@ -135,10 +146,6 @@ export type TCompany = {
   document?: string;
   email: string;
   phone?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
   createdAt: string;
   updatedAt: string;
   isOpen?: boolean;
@@ -146,6 +153,7 @@ export type TCompany = {
   menuId?: number;
   themePrimaryColor: string;
   companyPayment: TCompanyPayment;
+  address: TAddress;
 };
 
 export type TOpeningHours = {

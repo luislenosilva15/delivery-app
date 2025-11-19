@@ -6,9 +6,13 @@ export type CompanyAboutData = {
   phone?: string;
   logoUrl: string;
   logoFile?: File | null | string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
+  address: {
+    street: string;
+    number: string;
+    complement?: string;
+    city: string;
+    state: string;
+    zipCode: string;
+  };
   cuisineType: string;
 };

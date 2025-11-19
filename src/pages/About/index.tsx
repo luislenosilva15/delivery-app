@@ -16,7 +16,7 @@ import type { CompanyAboutData } from "./types";
 import ImageUploader from "@/components/ImageUploader";
 import FormErrorInfo from "@/components/FormErrorInfo";
 import { isValidPhone } from "@/utils/validations";
-import { maskPhone } from "@/utils/mask";
+import { maskPhone, maskCpfCnpj } from "@/utils/mask";
 import { setEditCompanyRequest } from "@/store/features/auth/authSlice";
 import { cuisineTypes } from "@/constants";
 
@@ -28,13 +28,17 @@ const AboutPage = () => {
     email: company?.email || "",
     name: company?.name || "",
     legalName: company?.legalName || "",
-    document: company?.document || "",
-    phone: company?.phone || "",
+    document: company?.document ? maskCpfCnpj(company.document) : "",
+    phone: company?.phone ? maskPhone(company.phone) : "",
     logoUrl: company?.logoUrl || "",
-    address: company?.address || "",
-    city: company?.city || "",
-    state: company?.state || "",
-    zipCode: company?.zipCode || "",
+    address: {
+      street: company?.address?.street || "",
+      number: company?.address?.number || "",
+      complement: company?.address?.complement || "",
+      city: company?.address?.city || "",
+      state: company?.address?.state || "",
+      zipCode: company?.address?.zipCode || "",
+    },
     logoFile: null,
     cuisineType: company?.cuisineType || "",
   });
@@ -44,12 +48,28 @@ const AboutPage = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    const maskedValue = name === "phone" ? maskPhone(value) : value;
+    let maskedValue = value;
+    if (name === "phone") {
+      maskedValue = maskPhone(value);
+    } else if (name === "document") {
+      maskedValue = maskCpfCnpj(value);
+    }
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: maskedValue,
-    }));
+    if (name.startsWith("address.")) {
+      const addressField = name.split(".")[1];
+      setFormData((prev) => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          [addressField]: maskedValue,
+        },
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: maskedValue,
+      }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -185,41 +205,62 @@ const AboutPage = () => {
               </FormControl>
             </Stack>
 
-            <FormControl>
-              <FormLabel>Endereço</FormLabel>
+            <Stack direction={{ base: "column", md: "row" }} spacing={4}>
+              <FormControl isRequired isDisabled={true}>
+                <FormLabel>Rua</FormLabel>
+                <Input
+                  focusBorderColor="primary.500"
+                  name="address.street"
+                  value={formData.address.street}
+                  onChange={handleChange}
+                />
+              </FormControl>
+              <FormControl isRequired isDisabled={true}>
+                <FormLabel>Número</FormLabel>
+                <Input
+                  focusBorderColor="primary.500"
+                  name="address.number"
+                  value={formData.address.number}
+                  onChange={handleChange}
+                />
+              </FormControl>
+            </Stack>
+
+            <FormControl isDisabled={true}>
+              <FormLabel>Complemento</FormLabel>
               <Input
                 focusBorderColor="primary.500"
-                name="address"
-                value={formData.address}
+                name="address.complement"
+                value={formData.address.complement}
                 onChange={handleChange}
               />
             </FormControl>
 
             <Stack direction={{ base: "column", md: "row" }} spacing={4}>
-              <FormControl>
+              <FormControl isRequired isDisabled={true}>
                 <FormLabel>Cidade</FormLabel>
                 <Input
                   focusBorderColor="primary.500"
-                  name="city"
-                  value={formData.city}
+                  name="address.city"
+                  value={formData.address.city}
                   onChange={handleChange}
                 />
               </FormControl>
-              <FormControl>
+              <FormControl isRequired isDisabled={true}>
                 <FormLabel>Estado</FormLabel>
                 <Input
                   focusBorderColor="primary.500"
-                  name="state"
-                  value={formData.state}
+                  name="address.state"
+                  value={formData.address.state}
                   onChange={handleChange}
                 />
               </FormControl>
-              <FormControl>
+              <FormControl isRequired isDisabled={true}>
                 <FormLabel>CEP</FormLabel>
                 <Input
                   focusBorderColor="primary.500"
-                  name="zipCode"
-                  value={formData.zipCode}
+                  name="address.zipCode"
+                  value={formData.address.zipCode}
                   onChange={handleChange}
                 />
               </FormControl>
