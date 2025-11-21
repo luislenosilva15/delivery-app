@@ -14,6 +14,7 @@ export interface OrderManagerState {
   loading: boolean;
   loadingOrdersCount: boolean;
   loadingOrder: boolean;
+  currentTab: string;
   ordersCount?: {
     pending: number;
     inPreparation: number;
@@ -30,6 +31,7 @@ const initialState: OrderManagerState = {
   loading: true,
   loadingOrdersCount: true,
   loadingOrder: false,
+  currentTab: "PENDING",
   orders: [],
   currentOrder: null,
   ordersCount: {
@@ -103,8 +105,17 @@ const orderManagerSlice = createSlice({
         (order) => order.id !== action.payload.orderId
       );
     },
+    setCurrentTab(state, action: PayloadAction<string>) {
+      state.currentTab = action.payload;
+    },
     socketAddNewOrder(state, action: PayloadAction<TOrder>) {
-      state.orders = [action.payload, ...state.orders];
+      const shouldAddToList = state.currentTab === "PENDING";
+      if (shouldAddToList) {
+        state.orders = [action.payload, ...state.orders];
+      }
+      if (state.ordersCount) {
+        state.ordersCount.pending += 1;
+      }
     },
   },
 });
@@ -121,6 +132,7 @@ export const {
   fetchOrderError,
   setChangeOrderStatusSuccess,
   setChangeOrderStatusRequest,
+  setCurrentTab,
   socketAddNewOrder,
 } = orderManagerSlice.actions;
 

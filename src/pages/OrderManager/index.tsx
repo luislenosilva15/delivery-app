@@ -8,6 +8,7 @@ import {
   fetchOrdersCountRequest,
   fetchOrdersRequest,
   setChangeOrderStatusRequest,
+  setCurrentTab,
 } from "@/store/features/orderManager/orderManagerSlice";
 import {
   Box,
@@ -54,6 +55,10 @@ export default function OrderManagerPage() {
   useEffect(() => {
     dispatch(fetchOrdersCountRequest());
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(setCurrentTab(statusTabs[tabIndex].status));
+  }, [dispatch, tabIndex]);
 
   const handleChangeOrderStatus = (status: OrderStatus, orderId: number) => {
     dispatch(setChangeOrderStatusRequest({ orderId, status }));
