@@ -14,7 +14,9 @@ import {
   Progress,
   Divider,
   VStack,
+  Tooltip,
 } from "@chakra-ui/react";
+import { FiHelpCircle } from "react-icons/fi";
 
 import { moneyFormat } from "@/helpers/shared";
 import {
@@ -23,7 +25,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   ResponsiveContainer,
 } from "recharts";
 import { format, subDays } from "date-fns";
@@ -311,9 +313,20 @@ const DashboardPage: React.FC = () => {
         >
           <Flex justify="space-between" align="center">
             <Box flex="1">
-              <Text fontSize="sm" color="gray.500">
-                Receita mensal
-              </Text>
+              <Flex align="center" gap={2} mb={1}>
+                <Text fontSize="sm" color="gray.500">
+                  Receita mensal
+                </Text>
+                <Tooltip
+                  label="As estatísticas e gráficos mostram apenas dados de pedidos finalizados com sucesso. Pedidos pendentes, cancelados ou em andamento não são incluídos."
+                  placement="top"
+                  hasArrow
+                >
+                  <Box as="span" cursor="help">
+                    <FiHelpCircle size={14} color="gray" />
+                  </Box>
+                </Tooltip>
+              </Flex>
               <Text fontSize="2xl" fontWeight="bold">
                 {moneyFormat(totalSalesAmount)}
               </Text>
@@ -343,7 +356,7 @@ const DashboardPage: React.FC = () => {
                     <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                     <XAxis dataKey="date" tick={{ fontSize: 10 }} />
                     <YAxis />
-                    <Tooltip />
+                    <RechartsTooltip />
                     <Line
                       type="monotone"
                       dataKey="pedidos"
