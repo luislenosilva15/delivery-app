@@ -42,3 +42,10 @@ export const maskCpfCnpj = (value: string) => {
   if (p5) out += `-${p5}`;
   return out;
 };
+
+export const maskMoney = (value: string) => {
+  const numericValue = value.replace(/\D/g, "");
+  const cents = numericValue.slice(-2);
+  const reais = numericValue.slice(0, -2) || "0";
+  return `R$ ${reais},${cents}`;
+};

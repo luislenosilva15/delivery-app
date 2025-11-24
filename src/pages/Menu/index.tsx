@@ -50,6 +50,7 @@ import ProductCard from "@/components/Card/Product";
 import { GroupEmptyState } from "./emptyState";
 import { ProductModalDetails } from "@/components/Modals/Product/Details";
 import { GroupModalDetails } from "@/components/Modals/Group/Details";
+import OptionalsContent from "@/components/OptionalsContent";
 
 export default function MenuPage() {
   const dispatch = useDispatch();
@@ -319,6 +320,14 @@ export default function MenuPage() {
                 {groups?.map((group) => {
                   const isEmptyProducts =
                     !loadingProducts && products?.length === 0;
+
+                  if (group.id === -1) {
+                    return (
+                      <TabPanel key={group.id}>
+                        <OptionalsContent />
+                      </TabPanel>
+                    );
+                  }
 
                   return (
                     <TabPanel key={group.id}>
