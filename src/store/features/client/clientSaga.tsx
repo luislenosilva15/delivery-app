@@ -283,7 +283,7 @@ let socket: Socket | null = null;
 
 function createClientSocketChannel(clientId: number) {
   if (!socket) {
-    socket = io("http://localhost:3000", {
+    socket = io("http://localhost:3030", {
       transports: ["websocket"],
     });
   }

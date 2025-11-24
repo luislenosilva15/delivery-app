@@ -59,7 +59,7 @@ let socket: Socket | null = null;
 
 function createSocketChannel(companyId: number) {
   if (!socket) {
-    socket = io("http://localhost:3000", {
+    socket = io("http://localhost:3030", {
       transports: ["websocket"],
     });
   }
