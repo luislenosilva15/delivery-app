@@ -169,15 +169,17 @@ function SidebarContent() {
                 icon={SettingsIcon}
                 label="Configurações"
               />
-            </VStack>
-          </Collapse>
-          <Collapse in={deliveryOpen} animateOpacity>
-            <VStack pl={6} align="start" mt={2} spacing={2}>
               <SidebarItem
                 isActive={optionIsActive("/delivery/fees")}
                 onClick={() => navigate("/delivery/fees")}
                 icon={MdOutlinePriceChange}
                 label="Taxas"
+              />
+              <SidebarItem
+                isActive={optionIsActive("/optionals")}
+                onClick={() => navigate("/optionals")}
+                icon={MdOutlinePriceChange}
+                label="Opcionais"
               />
             </VStack>
           </Collapse>

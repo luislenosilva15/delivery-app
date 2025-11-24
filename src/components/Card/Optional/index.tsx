@@ -22,6 +22,10 @@ export default function OptionalCard({
 }: Props) {
   const itemBgColor = useColorModeValue("white", "gray.700");
   const itemBorderColor = useColorModeValue("gray.200", "gray.600");
+  const textColor = useColorModeValue("gray.600", "gray.300");
+  const secondaryTextColor = useColorModeValue("gray.500", "gray.400");
+  const headingColor = useColorModeValue("gray.700", "gray.200");
+  const priceColor = useColorModeValue("green.600", "green.400");
 
   const handleDisable = () => {
     onDisable?.(optional.id);
@@ -55,13 +59,13 @@ export default function OptionalCard({
         </HStack>
 
         {optional.code && (
-          <Text fontSize="sm" color="gray.600">
+          <Text fontSize="sm" color={textColor}>
             Código: {optional.code}
           </Text>
         )}
 
         {optional.type === "simple" && optional.price && (
-          <Text fontSize="sm" color="gray.600">
+          <Text fontSize="sm" color={textColor}>
             Preço: R$ {optional.price.toFixed(2).replace(".", ",")}
           </Text>
         )}
@@ -69,37 +73,37 @@ export default function OptionalCard({
         {optional.type === "options" && (
           <>
             {optional.min !== undefined && optional.max !== undefined && (
-              <Text fontSize="sm" color="gray.600">
+              <Text fontSize="sm" color={textColor}>
                 Seleção: {optional.min}-{optional.max} opções
               </Text>
             )}
             {optional.canRepeat !== undefined && (
-              <Text fontSize="sm" color="gray.600">
+              <Text fontSize="sm" color={textColor}>
                 Pode repetir: {optional.canRepeat ? "Sim" : "Não"}
               </Text>
             )}
             {optional.options && optional.options.length > 0 && (
               <VStack align="start" spacing={1}>
-                <Text fontSize="sm" fontWeight="medium" color="gray.700">
+                <Text fontSize="sm" fontWeight="medium" color={headingColor}>
                   Opções ({optional.options.length}):
                 </Text>
                 {optional.options.slice(0, 3).map((option, index) => (
                   <HStack key={index} spacing={2}>
-                    <Text fontSize="xs" color="gray.600">
+                    <Text fontSize="xs" color={textColor}>
                       • {option.name}
                     </Text>
-                    <Text fontSize="xs" color="green.600" fontWeight="medium">
+                    <Text fontSize="xs" color={priceColor} fontWeight="medium">
                       R$ {option.price.toFixed(2).replace(".", ",")}
                     </Text>
                     {option.code && (
-                      <Text fontSize="xs" color="gray.500">
+                      <Text fontSize="xs" color={secondaryTextColor}>
                         ({option.code})
                       </Text>
                     )}
                   </HStack>
                 ))}
                 {optional.options.length > 3 && (
-                  <Text fontSize="xs" color="gray.500">
+                  <Text fontSize="xs" color={secondaryTextColor}>
                     ...e mais {optional.options.length - 3} opções
                   </Text>
                 )}
@@ -108,7 +112,7 @@ export default function OptionalCard({
           </>
         )}
 
-        <Text fontSize="xs" color="gray.500">
+        <Text fontSize="xs" color={secondaryTextColor}>
           Criado em {new Date(optional.createdAt).toLocaleDateString("pt-BR")}
         </Text>
       </VStack>

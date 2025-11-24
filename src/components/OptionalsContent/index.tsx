@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Box, Button, Flex, Stack, useDisclosure } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Stack,
+  useDisclosure,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import NewOptionalModal from "@/components/Modals/Optional/Create";
 import type { FormData } from "@/components/Modals/Optional/Create/types";
@@ -12,6 +19,8 @@ export default function OptionalsContent() {
   const [currentOptionalId, setCurrentOptionalId] = useState<number | null>(
     null
   );
+
+  const emptyStateTextColor = useColorModeValue("gray.600", "gray.400");
 
   const {
     isOpen: isOpenOptionalModal,
@@ -55,7 +64,7 @@ export default function OptionalsContent() {
 
   return (
     <>
-      <Flex justify="space-between" align="center" mb={6}>
+      <Flex justify="space-between" align="center">
         <Box />
         <Button
           leftIcon={<AddIcon />}
@@ -81,7 +90,7 @@ export default function OptionalsContent() {
           <Box fontSize="lg" fontWeight="semibold" mb={2}>
             Nenhum opcional encontrado
           </Box>
-          <Box mb={4} color="gray.600">
+          <Box mb={4} color={emptyStateTextColor}>
             Adicione opcionais ao seu cardápio para que os clientes possam
             personalizar seus pedidos.
           </Box>

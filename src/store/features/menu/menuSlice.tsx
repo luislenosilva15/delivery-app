@@ -62,20 +62,6 @@ const menuSlice = createSlice({
     fetchGroupsSuccess(state, action: PayloadAction<FetchGroupsSuccess>) {
       state.loading = false;
       state.groups = action.payload.groups;
-      if (state.groups.length > 0) {
-        const opcionaisGroup: TGroup = {
-          id: -1,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          name: "Opcionais",
-          menuId: state.currentMenu?.id || 0,
-          disabled: false,
-          alwaysAvailable: true,
-          menuHours: [],
-          products: [],
-        };
-        state.groups.push(opcionaisGroup);
-      }
     },
 
     fetchGroupsError(state) {

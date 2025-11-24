@@ -101,15 +101,6 @@ function* fetchProductsSaga({
   AxiosResponse<FetchProductsResponse>
 > {
   try {
-    if (groupId === -1) {
-      yield put(
-        fetchProductsSuccess({
-          products: [],
-        })
-      );
-      return;
-    }
-
     const response = yield call(apiClient.get, `/product/group/${groupId}`);
 
     yield put(

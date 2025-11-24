@@ -13,6 +13,7 @@ import OpeningHourPage from "@/pages/OpeningHour";
 import AboutPage from "@/pages/About";
 import TeamPage from "@/pages/Team";
 import MenuPage from "@/pages/Menu";
+import OptionalsPage from "@/pages/Optionals";
 import ClientHomePage from "@/pages/Client/Home";
 import ClientMenuPage from "@/pages/Client/Menu";
 import DeliverySettings from "@/pages/DeliverySettings";
@@ -62,6 +63,10 @@ export const router = createBrowserRouter([
       {
         element: <PrivateLayout />,
         children: [{ path: "/menu", element: <MenuPage /> }],
+      },
+      {
+        element: <PrivateLayout />,
+        children: [{ path: "/optionals", element: <OptionalsPage /> }],
       },
       {
         element: <PrivateLayout />,
