@@ -168,7 +168,7 @@ const CompanyInfoModal = ({
                 </Box>
               )}
 
-              {(company.address || company.city) && (
+              {company.address && (
                 <Box>
                   <HStack spacing={2}>
                     <Icon as={FiMapPin} color={iconColor} />
@@ -177,10 +177,15 @@ const CompanyInfoModal = ({
                     </Text>
                   </HStack>
                   <Text fontSize="sm" color={subtitleColor} pl={6}>
-                    {[company.address, company.city, company.state]
+                    {[
+                      company.address.street,
+                      company.address.city,
+                      company.address.state,
+                    ]
                       .filter(Boolean)
                       .join(", ")}
-                    {company.zipCode && ` - CEP: ${company.zipCode}`}
+                    {company.address.zipCode &&
+                      ` - CEP: ${company.address.zipCode}`}
                   </Text>
                 </Box>
               )}
@@ -248,8 +253,8 @@ const CompanyInfoModal = ({
                     company.availability.includes("LOCAL")
                       ? "Delivery e Retirada"
                       : company.availability.includes("DELIVERY")
-                      ? "Apenas Delivery"
-                      : "Apenas Retirada"}
+                        ? "Apenas Delivery"
+                        : "Apenas Retirada"}
                   </Text>
                 </HStack>
               </VStack>

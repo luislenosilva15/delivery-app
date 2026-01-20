@@ -99,7 +99,7 @@ function* watchNewOrders(companyId: number): Generator<unknown, void, any> {
 /* ==================== Auth sagas ==================== */
 
 function* setLoginSaga(
-  action: PayloadAction<LoginRequest>
+  action: PayloadAction<LoginRequest>,
 ): Generator<any, void, AxiosResponse<LoginResponse>> {
   try {
     const { payload } = action;
@@ -113,7 +113,7 @@ function* setLoginSaga(
       setLoginSuccess({
         user: response.data.user,
         company: response.data.company,
-      })
+      }),
     );
 
     localStorage.setItem(LOCAL_STORAGE_KEYS["token"], response.data.acessToken);
@@ -142,7 +142,7 @@ export function* setAuthValidSaga(): Generator<
       setAuthValidSuccess({
         user: response.data.user,
         company: response.data.company,
-      })
+      }),
     );
   } catch (error) {
     yield put(setLoginError());
@@ -152,7 +152,7 @@ export function* setAuthValidSaga(): Generator<
 }
 
 export function* setEditUserSaga(
-  action: PayloadAction<SetEditUserRequest>
+  action: PayloadAction<SetEditUserRequest>,
 ): Generator<any, void, AxiosResponse<SetEditUserResponse>> {
   const { id, user } = action.payload;
   try {
@@ -171,7 +171,7 @@ export function* setEditUserSaga(
     yield put(
       setEditUserSuccess({
         user: data.user,
-      })
+      }),
     );
 
     toast({
@@ -189,13 +189,13 @@ export function* setEditUserSaga(
 }
 
 export function* setTemporaryClosedSaga(
-  action: PayloadAction<SetTemporaryClosedRequest>
+  action: PayloadAction<SetTemporaryClosedRequest>,
 ): Generator<any, void, AxiosResponse<string>> {
   try {
     yield call(() =>
       apiClient.post(`opening-hours/temporary-closed`, {
         closed: action.payload.closed,
-      })
+      }),
     );
 
     yield put(setTemporaryClosedSuccess());
@@ -209,19 +209,19 @@ export function* setTemporaryClosedSaga(
 }
 
 export function* setEditOpeningHoursSaga(
-  action: PayloadAction<SetEditOpeningHoursRequest>
+  action: PayloadAction<SetEditOpeningHoursRequest>,
 ): Generator<any, void, AxiosResponse<TCompany["openingHours"]>> {
   try {
     const openingHoursData = normalizeSchedule(action.payload.schedule as any);
 
     const { data } = yield call(() =>
-      apiClient.patch(`opening-hours`, openingHoursData)
+      apiClient.patch(`opening-hours`, openingHoursData),
     );
 
     yield put(
       setEditOpeningHoursSuccess({
         openingHours: data,
-      })
+      }),
     );
 
     toast({
@@ -261,7 +261,7 @@ export function* setAlwaysOpenSaga(): Generator<
 }
 
 export function* setEditCompanySaga(
-  action: PayloadAction<SetEditCompanyRequest>
+  action: PayloadAction<SetEditCompanyRequest>,
 ): Generator<any, void, AxiosResponse<SetEditCompanyResponse>> {
   const { company, id } = action.payload;
   try {
@@ -269,23 +269,25 @@ export function* setEditCompanySaga(
     company?.name && formData.append("name", company.name);
     company?.phone && formData.append("phone", company.phone);
     company?.logoFile && formData.append("image", company.logoFile);
-    company?.city && formData.append("city", company.city);
-    company?.state && formData.append("state", company.state);
-    company?.zipCode && formData.append("zipCode", company.zipCode);
-    company?.address && formData.append("address", company.address);
+    company?.address?.city && formData.append("city", company.address.city);
+    company?.address?.state && formData.append("state", company.address.state);
+    company?.address?.zipCode &&
+      formData.append("zipCode", company.address.zipCode);
+    company?.address?.street &&
+      formData.append("address", company.address.street);
     company?.document && formData.append("document", company.document);
     company?.legalName && formData.append("legalName", company.legalName);
     company?.email && formData.append("email", company.email);
     company?.cuisineType && formData.append("cuisineType", company.cuisineType);
 
     const { data } = yield call(() =>
-      apiClient.patch(`/company/${id}`, formData)
+      apiClient.patch(`/company/${id}`, formData),
     );
 
     yield put(
       setEditCompanySuccess({
         company: data.company,
-      })
+      }),
     );
 
     toast({
@@ -303,7 +305,7 @@ export function* setEditCompanySaga(
 }
 
 export function* setEditDeliverySettingsSaga(
-  action: PayloadAction<SetEditDeliverySettingsRequest>
+  action: PayloadAction<SetEditDeliverySettingsRequest>,
 ): Generator<any, void, AxiosResponse<SetEditDeliverySettingsResponse>> {
   const { companyId, companyPayment, availability } = action.payload;
   try {
@@ -317,42 +319,42 @@ export function* setEditDeliverySettingsSaga(
       if (companyPayment.method) {
         formData.append(
           "paymentMethodAvailable",
-          JSON.stringify(companyPayment.method)
+          JSON.stringify(companyPayment.method),
         );
       }
 
       if (companyPayment.cardBrand) {
         formData.append(
           "paymentCardBrand",
-          JSON.stringify(companyPayment.cardBrand)
+          JSON.stringify(companyPayment.cardBrand),
         );
       }
 
       if (companyPayment.debitCardBrand) {
         formData.append(
           "paymentDebitCardBrand",
-          JSON.stringify(companyPayment.debitCardBrand)
+          JSON.stringify(companyPayment.debitCardBrand),
         );
       }
 
       if (companyPayment.voucherBrand) {
         formData.append(
           "paymentVoucherBrand",
-          JSON.stringify(companyPayment.voucherBrand)
+          JSON.stringify(companyPayment.voucherBrand),
         );
       }
 
       if (companyPayment.documentInTicket) {
         formData.append(
           "paymentDocumentInTicket",
-          JSON.stringify(companyPayment.documentInTicket)
+          JSON.stringify(companyPayment.documentInTicket),
         );
       }
 
       if (companyPayment.requiredDocument) {
         formData.append(
           "paymentRequiredDocument",
-          JSON.stringify(companyPayment.requiredDocument)
+          JSON.stringify(companyPayment.requiredDocument),
         );
       }
     }
@@ -366,7 +368,7 @@ export function* setEditDeliverySettingsSaga(
         availability: company.availability,
         companyId: company.id,
         companyPayment: company.companyPayment,
-      })
+      }),
     );
 
     toast({
@@ -393,7 +395,7 @@ export default function* authSaga() {
   yield takeLatest(setEditCompanyRequest.type, setEditCompanySaga);
   yield takeLatest(
     setEditDeliverySettingsRequest.type,
-    setEditDeliverySettingsSaga
+    setEditDeliverySettingsSaga,
   );
 
   yield takeLatest(setUpdateDeliveryFeeRequest.type, setUpdateDeliveryFeeSaga);
@@ -414,11 +416,11 @@ export default function* authSaga() {
 }
 
 export function* setUpdateDeliveryFeeSaga(
-  action: PayloadAction<UpdateDeliveryFeeRequest>
+  action: PayloadAction<UpdateDeliveryFeeRequest>,
 ): Generator<any, void, AxiosResponse<UpdateDeliveryFeeResponse>> {
   try {
     const response = yield call(() =>
-      apiClient.put(`company/fees`, action.payload)
+      apiClient.put(`company/fees`, action.payload),
     );
 
     let company;
@@ -426,7 +428,7 @@ export function* setUpdateDeliveryFeeSaga(
       company = (response.data as any).company;
     } else {
       const me: AxiosResponse<AuthResponse> = (yield call(() =>
-        apiClient.get(`/auth/me`)
+        apiClient.get(`/auth/me`),
       )) as any;
       company = me.data.company;
     }
